@@ -1,7 +1,0 @@
--I/home/aardvark/git/kydra/src
--I/home/aardvark/git/kydra/build-deb/src
--D_GNU_SOURCE
--D_LARGEFILE64_SOURCE
--o
-/home/aardvark/git/kydra/build-deb/src/MuonSettings.moc
-/home/aardvark/git/kydra/build-deb/src/MuonSettings.h

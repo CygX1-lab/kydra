@@ -1,6 +1,6 @@
 <<<<<<< HEAD
-docs/BRANDING.md
-docs/TODO
+local/BRANDING.md
+local/TODO
 
 build/
 buid-deb/
@@ -51,3 +51,4 @@ buid-deb/
 build/
 build-deb/
 build-test/
+local/

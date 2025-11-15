@@ -45,19 +45,6 @@ sudo apt-get install -y \
     fakeroot
 ```
 
-### Quick Build and Install
-
-1. **Clone or download the Kydra source code**
-2. **Run the build script:**
-   ```bash
-   cd scripts
-   ./build-deb.sh
-   ```
-3. **Install the generated package:**
-   ```bash
-   sudo dpkg -i ../releases/kydra_1.0.0_amd64.deb
-   ```
-
 ### Using the Build Script
 
 The `scripts/build-deb.sh` script provides an automated way to build a .deb package with the following features:
@@ -81,9 +68,13 @@ The `scripts/build-deb.sh` script provides an automated way to build a .deb pack
 cd /path/to/kydra/source/scripts
 ./build-deb.sh
 ```
-
 The script will output the final .deb package in the `releases/` directory.
 
+**Install the generated package:**
+   ```bash
+   sudo dpkg -i ../releases/kydra_1.0.0_amd64.deb
+   ```
+    
 ### Manual Build Process
 
 If you prefer to build manually:

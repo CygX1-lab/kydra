@@ -32,6 +32,9 @@
 #include <QStyle>
 #include <QProcess>
 
+// Own includes
+#include "DonateDialog.h"
+
 // KDE includes
 #include <KActionCollection>
 #include <KLocalizedString>
@@ -244,6 +247,13 @@ void MainWindow::setupActions()
     configureRepositoriesAction->setIcon(QIcon::fromTheme("network-server"));
     configureRepositoriesAction->setText(i18nc("@action Configure package repositories", "Configure Repositories"));
     connect(configureRepositoriesAction, SIGNAL(triggered()), this, SLOT(configureRepositories()));
+
+    QAction* donateAction = actionCollection()->addAction("donate");
+    donateAction->setIcon(QIcon::fromTheme("help-donate"));
+    donateAction->setText(i18nc("@action Open donation dialog", "Donate"));
+    connect(donateAction, SIGNAL(triggered()), this, SLOT(openDonateDialog()));
+
+    KStandardAction::aboutApp(this, SLOT(showAboutApplication()), actionCollection());
 
     setActionsEnabled(false);
 
@@ -521,6 +531,18 @@ void MainWindow::configureRepositories()
     } else {
         m_settingsDialog->raise();
     }
+}
+
+void MainWindow::openDonateDialog()
+{
+    DonateDialog dlg(this);
+    dlg.exec();
+}
+
+void MainWindow::showAboutApplication()
+{
+    // The about dialog will be handled by KXmlGuiWindow automatically
+    // when using KStandardAction::aboutApp
 }
 
 void MainWindow::revertChanges()

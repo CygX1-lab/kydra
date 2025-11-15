@@ -406,6 +406,9 @@ src/CMakeFiles/kydra.dir/MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qstyle.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qprocess.h \
+ /home/aardvark/git/kydra/src/DonateDialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/KF5/KXmlGui/KActionCollection \
  /usr/include/KF5/KXmlGui/kactioncollection.h \
  /usr/include/KF5/KConfigWidgets/KStandardAction \
@@ -581,8 +584,6 @@ src/CMakeFiles/kydra.dir/MainWindow.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
  /usr/include/KF5/KWidgetsAddons/KPageDialog \
  /usr/include/KF5/KWidgetsAddons/kpagedialog.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/KF5/KWidgetsAddons/kpagewidget.h \
  /usr/include/KF5/KWidgetsAddons/kpagewidgetmodel.h \
  /usr/include/KF5/KWidgetsAddons/kpagemodel.h \

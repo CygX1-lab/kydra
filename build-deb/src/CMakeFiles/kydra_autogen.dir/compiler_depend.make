@@ -19,6 +19,8 @@ src/kydra_autogen/timestamp: src/kydra_autogen/moc_predefs.h \
   /home/aardvark/git/kydra/src/DetailsTabs/VersionTab.h \
   /home/aardvark/git/kydra/src/DetailsWidget.cpp \
   /home/aardvark/git/kydra/src/DetailsWidget.h \
+  /home/aardvark/git/kydra/src/DonateDialog.cpp \
+  /home/aardvark/git/kydra/src/DonateDialog.h \
   /home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.cpp \
   /home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.h \
   /home/aardvark/git/kydra/src/DownloadModel/DownloadModel.cpp \
@@ -797,6 +799,12 @@ src/kydra_autogen/timestamp: src/kydra_autogen/moc_predefs.h \
 
 /usr/include/x86_64-linux-gnu/qt5/QtGui/qicon.h:
 
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdockwidget.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtGui/qfontmetrics.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtGui/qfontinfo.h:
+
 /usr/include/c++/15/debug/assertions.h:
 
 /usr/include/KF5/KXmlGui/kxmlguibuilder.h:
@@ -874,8 +882,6 @@ src/kydra_autogen/timestamp: src/kydra_autogen/moc_predefs.h \
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit:
 
 /home/aardvark/git/kydra/src/FilterWidget/StatusFilter.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtGui/qfontinfo.h:
 
 /home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.h:
 
@@ -1021,8 +1027,6 @@ src/kydra_autogen/timestamp: src/kydra_autogen/moc_predefs.h \
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
 
-/usr/include/asm-generic/bitsperlong.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h:
@@ -1031,17 +1035,15 @@ src/kydra_autogen/timestamp: src/kydra_autogen/moc_predefs.h \
 
 /usr/include/asm-generic/errno-base.h:
 
-/home/aardvark/git/kydra/src/config/GeneralSettingsPage.h:
+/usr/include/apt-pkg/pkgcache.h:
 
-/home/aardvark/git/kydra/src/DownloadModel/DownloadModel.cpp:
-
-/usr/include/x86_64-linux-gnu/qt5/QtCore/QObject:
-
-/usr/include/assert.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtCore/qstringliteral.h:
+/usr/include/QApt/Backend:
 
 /home/aardvark/git/kydra/src/TransactionWidget.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/home/aardvark/git/kydra/src/DonateDialog.h:
 
 src/kydra_autogen/moc_predefs.h:
 
@@ -1073,10 +1075,6 @@ src/kydra_autogen/moc_predefs.h:
 
 /usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
-/usr/include/apt-pkg/pkgcache.h:
-
-/usr/include/QApt/Backend:
-
 /home/aardvark/git/kydra/src/PackageModel/PackageModel.h:
 
 /home/aardvark/git/kydra/src/ReviewWidget.cpp:
@@ -1095,9 +1093,29 @@ src/kydra_autogen/moc_predefs.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h:
 
+/usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h:
+
+/usr/include/c++/15/bits/uses_allocator.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtGui/qtgui-config.h:
+
+/usr/include/x86_64-linux-gnu/c++/15/bits/os_defines.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollArea:
+
+/home/aardvark/git/kydra/src/FilterWidget/FilterWidget.cpp:
+
+/home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryView.h:
+
+/usr/include/KF5/KXmlGui/kmainwindow.h:
+
+/usr/include/KF5/KCompletion/kcompletion_export.h:
+
 /usr/include/KF5/KConfigWidgets/kcolorscheme.h:
 
 /usr/include/KF5/KWidgetsAddons/kpagedialog.h:
+
+/home/aardvark/git/kydra/src/ManagerWidget.cpp:
 
 /usr/include/c++/15/bits/list.tcc:
 
@@ -1113,13 +1131,9 @@ src/kydra_autogen/moc_predefs.h:
 
 /home/aardvark/git/kydra/src/PackageModel/PackageDelegate.cpp:
 
-/home/aardvark/git/kydra/src/ManagerWidget.cpp:
-
 /home/aardvark/git/kydra/src/DetailsTabs/TechnicalDetailsTab.cpp:
 
 /home/aardvark/git/kydra/src/config/ManagerSettingsDialog.h:
-
-/usr/include/c++/15/ctime:
 
 /usr/include/c++/15/bits/ostream.h:
 
@@ -1128,12 +1142,6 @@ src/kydra_autogen/moc_predefs.h:
 /home/aardvark/git/kydra/src/DetailsTabs/InstalledFilesTab.cpp:
 
 /usr/include/c++/15/mutex:
-
-/home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryView.h:
-
-/usr/include/KF5/KXmlGui/kmainwindow.h:
-
-/usr/include/KF5/KCompletion/kcompletion_export.h:
 
 /home/aardvark/git/kydra/src/PackageModel/PackageView.cpp:
 
@@ -1151,27 +1159,17 @@ src/kydra_autogen/moc_predefs.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qflags.h:
 
-/usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h:
+/home/aardvark/git/kydra/src/DownloadModel/DownloadModel.cpp:
 
-/usr/include/c++/15/bits/uses_allocator.h:
+/usr/include/x86_64-linux-gnu/qt5/QtCore/QObject:
 
-/usr/include/x86_64-linux-gnu/qt5/QtGui/qtgui-config.h:
+/usr/include/assert.h:
 
-/usr/include/x86_64-linux-gnu/c++/15/bits/os_defines.h:
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qstringliteral.h:
 
-/usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollArea:
-
-/home/aardvark/git/kydra/src/FilterWidget/FilterWidget.cpp:
+/home/aardvark/git/kydra/src/config/GeneralSettingsPage.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
-
-/home/aardvark/git/kydra/src/MainWindow.cpp:
-
-/usr/include/x86_64-linux-gnu/qt5/QtCore/qcompilerdetection.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtCore/QDir:
-
-/usr/include/x86_64-linux-gnu/qt5/QtCore/qrunnable.h:
 
 /home/aardvark/git/kydra/src/TransactionWidget.cpp:
 
@@ -1211,6 +1209,30 @@ src/kydra_autogen/moc_predefs.h:
 
 /usr/include/KF5/KConfigWidgets/KColorScheme:
 
+/home/aardvark/git/kydra/src/MainWindow.cpp:
+
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qcompilerdetection.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtCore/QDir:
+
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qrunnable.h:
+
+/usr/include/c++/15/bits/stl_map.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
+/usr/include/c++/15/bits/locale_classes.h:
+
+/usr/include/c++/15/list:
+
+/usr/include/linux/stddef.h:
+
+/home/aardvark/git/kydra/src/muonapt/MuonStrings.cpp:
+
+/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h:
+
+/usr/include/c++/15/bits/basic_string.h:
+
 /home/aardvark/git/kydra/src/ManagerWidget.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qabstractitemmodel.h:
@@ -1228,12 +1250,6 @@ src/kydra_autogen/moc_predefs.h:
 /usr/include/c++/15/bits/unique_ptr.h:
 
 /usr/include/c++/15/bits/cpp_type_traits.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h:
-
-/usr/include/c++/15/bits/basic_string.h:
-
-/home/aardvark/git/kydra/src/muonapt/MuonStrings.cpp:
 
 /usr/include/QApt/DownloadProgress:
 
@@ -1288,16 +1304,6 @@ src/kydra_autogen/moc_predefs.h:
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qrefcount.h:
 
 /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_base.h:
-
-/usr/include/c++/15/bits/stl_map.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
-
-/usr/include/c++/15/bits/locale_classes.h:
-
-/usr/include/c++/15/list:
-
-/usr/include/linux/stddef.h:
 
 /usr/include/c++/15/cwctype:
 
@@ -1445,6 +1451,16 @@ src/kydra_autogen/moc_predefs.h:
 
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
+/usr/include/c++/15/ctime:
+
+/home/aardvark/git/kydra/src/DonateDialog.cpp:
+
+/usr/include/x86_64-linux-gnu/bits/locale.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
+
+/usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h:
+
 /home/aardvark/git/kydra/src/DetailsTabs/VersionTab.cpp:
 
 /usr/include/c++/15/bits/stl_tempbuf.h:
@@ -1521,9 +1537,9 @@ src/kydra_autogen/moc_predefs.h:
 
 /usr/include/linux/errno.h:
 
-/usr/include/c++/15/exception:
-
 /usr/include/c++/15/backward/binders.h:
+
+/usr/include/c++/15/exception:
 
 /usr/include/c++/15/numbers:
 
@@ -1682,12 +1698,6 @@ src/kydra_autogen/moc_predefs.h:
 /usr/include/x86_64-linux-gnu/bits/mman-shared.h:
 
 /usr/include/x86_64-linux-gnu/bits/mman_ext.h:
-
-/usr/include/x86_64-linux-gnu/bits/locale.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h:
 
 /home/aardvark/git/kydra/src/CMakeLists.txt:
 
@@ -1966,7 +1976,3 @@ src/kydra_autogen/moc_predefs.h:
 /usr/include/x86_64-linux-gnu/qt5/QtGui/QStandardItemModel:
 
 /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdockwidget.h:
-
-/usr/include/x86_64-linux-gnu/qt5/QtGui/qfontmetrics.h:

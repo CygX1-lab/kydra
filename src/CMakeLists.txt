@@ -33,6 +33,7 @@ set(kydra_SRCS
     config/GeneralSettingsPage.cpp
     config/RepositorySettingsPage.cpp
     settings/SettingsPageBase.cpp
+    DonateDialog.cpp
     
     muonapt/ChangesDialog.cpp
     muonapt/MuonStrings.cpp

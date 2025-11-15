@@ -36,6 +36,7 @@ class ManagerWidget;
 class ReviewWidget;
 class TransactionWidget;
 class StatusWidget;
+class DonateDialog;
 
 namespace QApt {
     class Backend;
@@ -113,6 +114,8 @@ public Q_SLOTS:
     void editSettings();
     void closeSettingsDialog();
     void configureRepositories();
+    void openDonateDialog();
+    void showAboutApplication();
 
     void setupTransaction(QApt::Transaction *trans);
     bool useKAuthForPrivileges() const;

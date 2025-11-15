@@ -20,6 +20,8 @@
  /home/aardvark/git/kydra/src/DetailsTabs/VersionTab.h
  /home/aardvark/git/kydra/src/DetailsWidget.cpp
  /home/aardvark/git/kydra/src/DetailsWidget.h
+ /home/aardvark/git/kydra/src/DonateDialog.cpp
+ /home/aardvark/git/kydra/src/DonateDialog.h
  /home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.cpp
  /home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.h
  /home/aardvark/git/kydra/src/DownloadModel/DownloadModel.cpp

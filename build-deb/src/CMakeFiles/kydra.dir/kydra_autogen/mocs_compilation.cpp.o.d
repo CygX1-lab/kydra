@@ -388,6 +388,10 @@ src/CMakeFiles/kydra.dir/kydra_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtabwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qicon.h \
+ /home/aardvark/git/kydra/build-deb/src/kydra_autogen/EWIEGA46WW/moc_DonateDialog.cpp \
+ /home/aardvark/git/kydra/build-deb/src/kydra_autogen/EWIEGA46WW/../../../../src/DonateDialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /home/aardvark/git/kydra/build-deb/src/kydra_autogen/4H5P23O3AD/moc_DownloadDelegate.cpp \
  /home/aardvark/git/kydra/build-deb/src/kydra_autogen/4H5P23O3AD/../../../../src/DownloadModel/DownloadDelegate.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QStyledItemDelegate \
@@ -531,8 +535,6 @@ src/CMakeFiles/kydra.dir/kydra_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
  /usr/include/KF5/KWidgetsAddons/KPageDialog \
  /usr/include/KF5/KWidgetsAddons/kpagedialog.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialogButtonBox \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialogbuttonbox.h \
  /usr/include/KF5/KWidgetsAddons/kpagewidget.h \

@@ -553,10 +553,24 @@ src/CMakeFiles/kydra.dir/settings/SettingsPageBase.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/kydra.dir/settings/SettingsPageBase.cpp.s"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aardvark/git/kydra/src/settings/SettingsPageBase.cpp -o CMakeFiles/kydra.dir/settings/SettingsPageBase.cpp.s
 
+src/CMakeFiles/kydra.dir/DonateDialog.cpp.o: src/CMakeFiles/kydra.dir/flags.make
+src/CMakeFiles/kydra.dir/DonateDialog.cpp.o: /home/aardvark/git/kydra/src/DonateDialog.cpp
+src/CMakeFiles/kydra.dir/DonateDialog.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object src/CMakeFiles/kydra.dir/DonateDialog.cpp.o"
+	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/DonateDialog.cpp.o -MF CMakeFiles/kydra.dir/DonateDialog.cpp.o.d -o CMakeFiles/kydra.dir/DonateDialog.cpp.o -c /home/aardvark/git/kydra/src/DonateDialog.cpp
+
+src/CMakeFiles/kydra.dir/DonateDialog.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/kydra.dir/DonateDialog.cpp.i"
+	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aardvark/git/kydra/src/DonateDialog.cpp > CMakeFiles/kydra.dir/DonateDialog.cpp.i
+
+src/CMakeFiles/kydra.dir/DonateDialog.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/kydra.dir/DonateDialog.cpp.s"
+	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aardvark/git/kydra/src/DonateDialog.cpp -o CMakeFiles/kydra.dir/DonateDialog.cpp.s
+
 src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o: src/CMakeFiles/kydra.dir/flags.make
 src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o: /home/aardvark/git/kydra/src/muonapt/ChangesDialog.cpp
 src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o -MF CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o.d -o CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o -c /home/aardvark/git/kydra/src/muonapt/ChangesDialog.cpp
 
 src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.i: cmake_force
@@ -570,7 +584,7 @@ src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.s: cmake_force
 src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o: src/CMakeFiles/kydra.dir/flags.make
 src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o: /home/aardvark/git/kydra/src/muonapt/MuonStrings.cpp
 src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o -MF CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o.d -o CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o -c /home/aardvark/git/kydra/src/muonapt/MuonStrings.cpp
 
 src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.i: cmake_force
@@ -584,7 +598,7 @@ src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.s: cmake_force
 src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o: src/CMakeFiles/kydra.dir/flags.make
 src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o: /home/aardvark/git/kydra/src/muonapt/QAptActions.cpp
 src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o -MF CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o.d -o CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o -c /home/aardvark/git/kydra/src/muonapt/QAptActions.cpp
 
 src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.i: cmake_force
@@ -598,7 +612,7 @@ src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.s: cmake_force
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o: src/CMakeFiles/kydra.dir/flags.make
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o: /home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryView.cpp
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o -MF CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o.d -o CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.o -c /home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryView.cpp
 
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.i: cmake_force
@@ -612,7 +626,7 @@ src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryView.cpp.s: cmake_force
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o: src/CMakeFiles/kydra.dir/flags.make
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o: /home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryProxyModel.cpp
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o -MF CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o.d -o CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.o -c /home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryProxyModel.cpp
 
 src/CMakeFiles/kydra.dir/muonapt/HistoryView/HistoryProxyModel.cpp.i: cmake_force
@@ -627,7 +641,7 @@ src/CMakeFiles/kydra.dir/MuonSettings.cpp.o: src/CMakeFiles/kydra.dir/flags.make
 src/CMakeFiles/kydra.dir/MuonSettings.cpp.o: src/MuonSettings.cpp
 src/CMakeFiles/kydra.dir/MuonSettings.cpp.o: src/MuonSettings.moc
 src/CMakeFiles/kydra.dir/MuonSettings.cpp.o: src/CMakeFiles/kydra.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object src/CMakeFiles/kydra.dir/MuonSettings.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object src/CMakeFiles/kydra.dir/MuonSettings.cpp.o"
 	cd /home/aardvark/git/kydra/build-deb/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/kydra.dir/MuonSettings.cpp.o -MF CMakeFiles/kydra.dir/MuonSettings.cpp.o.d -o CMakeFiles/kydra.dir/MuonSettings.cpp.o -c /home/aardvark/git/kydra/build-deb/src/MuonSettings.cpp
 
 src/CMakeFiles/kydra.dir/MuonSettings.cpp.i: cmake_force
@@ -673,6 +687,7 @@ kydra_OBJECTS = \
 "CMakeFiles/kydra.dir/config/GeneralSettingsPage.cpp.o" \
 "CMakeFiles/kydra.dir/config/RepositorySettingsPage.cpp.o" \
 "CMakeFiles/kydra.dir/settings/SettingsPageBase.cpp.o" \
+"CMakeFiles/kydra.dir/DonateDialog.cpp.o" \
 "CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o" \
 "CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o" \
 "CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o" \
@@ -716,6 +731,7 @@ src/kydra: src/CMakeFiles/kydra.dir/config/ManagerSettingsDialog.cpp.o
 src/kydra: src/CMakeFiles/kydra.dir/config/GeneralSettingsPage.cpp.o
 src/kydra: src/CMakeFiles/kydra.dir/config/RepositorySettingsPage.cpp.o
 src/kydra: src/CMakeFiles/kydra.dir/settings/SettingsPageBase.cpp.o
+src/kydra: src/CMakeFiles/kydra.dir/DonateDialog.cpp.o
 src/kydra: src/CMakeFiles/kydra.dir/muonapt/ChangesDialog.cpp.o
 src/kydra: src/CMakeFiles/kydra.dir/muonapt/MuonStrings.cpp.o
 src/kydra: src/CMakeFiles/kydra.dir/muonapt/QAptActions.cpp.o
@@ -726,7 +742,7 @@ src/kydra: src/CMakeFiles/kydra.dir/build.make
 src/kydra: /usr/lib/x86_64-linux-gnu/libX11.so
 src/kydra: /usr/lib/x86_64-linux-gnu/libapt-pkg.so
 src/kydra: src/CMakeFiles/kydra.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Linking CXX executable kydra"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Linking CXX executable kydra"
 	cd /home/aardvark/git/kydra/build-deb/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kydra.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

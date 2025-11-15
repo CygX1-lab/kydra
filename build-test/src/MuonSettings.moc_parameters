@@ -1,0 +1,7 @@
+-I/home/aardvark/git/kydra/src
+-I/home/aardvark/git/kydra/build-test/src
+-D_GNU_SOURCE
+-D_LARGEFILE64_SOURCE
+-o
+/home/aardvark/git/kydra/build-test/src/MuonSettings.moc
+/home/aardvark/git/kydra/build-test/src/MuonSettings.h

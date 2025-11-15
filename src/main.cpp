@@ -40,6 +40,12 @@ int main(int argc, char **argv)
     about.addCredit(i18n("Harald Sitter"), i18n("Top Gardener"), "sitter@kde.org", QString(), QStringLiteral("apachelogger"));
     about.setProductName("kydra/kydra");
     about.setBugAddress("cygnx1@gmail.com");
+    about.setOtherText(
+        i18n("Support development:\n"
+             "BTC: bc1q4z3d06unklcp868wgy6uy8t6y424r8hvy32uvw\n"
+             "ETH: 0xcAFdd35c1e00e6cc142F3df0c5DA4B0D428e6bf9\n"
+             "SOL: 89xBb3fXYm68WHJsi7hpNBv4hVcaN3GJVXsLNiuYVqv1")
+    );
     KAboutData::setApplicationData(about);
 
     {

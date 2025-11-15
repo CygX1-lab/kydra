@@ -395,6 +395,30 @@ DetailsWidget.cpp.s:
 	cd /home/aardvark/git/kydra/build-deb && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/kydra.dir/build.make src/CMakeFiles/kydra.dir/DetailsWidget.cpp.s
 .PHONY : DetailsWidget.cpp.s
 
+DonateDialog.o: DonateDialog.cpp.o
+.PHONY : DonateDialog.o
+
+# target to build an object file
+DonateDialog.cpp.o:
+	cd /home/aardvark/git/kydra/build-deb && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/kydra.dir/build.make src/CMakeFiles/kydra.dir/DonateDialog.cpp.o
+.PHONY : DonateDialog.cpp.o
+
+DonateDialog.i: DonateDialog.cpp.i
+.PHONY : DonateDialog.i
+
+# target to preprocess a source file
+DonateDialog.cpp.i:
+	cd /home/aardvark/git/kydra/build-deb && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/kydra.dir/build.make src/CMakeFiles/kydra.dir/DonateDialog.cpp.i
+.PHONY : DonateDialog.cpp.i
+
+DonateDialog.s: DonateDialog.cpp.s
+.PHONY : DonateDialog.s
+
+# target to generate assembly for a file
+DonateDialog.cpp.s:
+	cd /home/aardvark/git/kydra/build-deb && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/kydra.dir/build.make src/CMakeFiles/kydra.dir/DonateDialog.cpp.s
+.PHONY : DonateDialog.cpp.s
+
 DownloadModel/DownloadDelegate.o: DownloadModel/DownloadDelegate.cpp.o
 .PHONY : DownloadModel/DownloadDelegate.o
 
@@ -1178,6 +1202,9 @@ help:
 	@echo "... DetailsWidget.o"
 	@echo "... DetailsWidget.i"
 	@echo "... DetailsWidget.s"
+	@echo "... DonateDialog.o"
+	@echo "... DonateDialog.i"
+	@echo "... DonateDialog.s"
 	@echo "... DownloadModel/DownloadDelegate.o"
 	@echo "... DownloadModel/DownloadDelegate.i"
 	@echo "... DownloadModel/DownloadDelegate.s"

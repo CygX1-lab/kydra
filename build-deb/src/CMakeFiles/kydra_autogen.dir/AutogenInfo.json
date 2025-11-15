@@ -64,6 +64,12 @@
 			null
 		],
 		[
+			"/home/aardvark/git/kydra/src/DonateDialog.h",
+			"Mu",
+			"EWIEGA46WW/moc_DonateDialog.cpp",
+			null
+		],
+		[
 			"/home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.h",
 			"Mu",
 			"4H5P23O3AD/moc_DownloadDelegate.cpp",
@@ -370,6 +376,7 @@
 		],
 		[ "/home/aardvark/git/kydra/src/DetailsTabs/VersionTab.cpp", "Mu", null ],
 		[ "/home/aardvark/git/kydra/src/DetailsWidget.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/DonateDialog.cpp", "Mu", null ],
 		[
 			"/home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.cpp",
 			"Mu",

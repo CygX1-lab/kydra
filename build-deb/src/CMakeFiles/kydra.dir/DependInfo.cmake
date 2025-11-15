@@ -17,6 +17,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/aardvark/git/kydra/src/DetailsTabs/TechnicalDetailsTab.cpp" "src/CMakeFiles/kydra.dir/DetailsTabs/TechnicalDetailsTab.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/DetailsTabs/TechnicalDetailsTab.cpp.o.d"
   "/home/aardvark/git/kydra/src/DetailsTabs/VersionTab.cpp" "src/CMakeFiles/kydra.dir/DetailsTabs/VersionTab.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/DetailsTabs/VersionTab.cpp.o.d"
   "/home/aardvark/git/kydra/src/DetailsWidget.cpp" "src/CMakeFiles/kydra.dir/DetailsWidget.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/DetailsWidget.cpp.o.d"
+  "/home/aardvark/git/kydra/src/DonateDialog.cpp" "src/CMakeFiles/kydra.dir/DonateDialog.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/DonateDialog.cpp.o.d"
   "/home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.cpp" "src/CMakeFiles/kydra.dir/DownloadModel/DownloadDelegate.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/DownloadModel/DownloadDelegate.cpp.o.d"
   "/home/aardvark/git/kydra/src/DownloadModel/DownloadModel.cpp" "src/CMakeFiles/kydra.dir/DownloadModel/DownloadModel.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/DownloadModel/DownloadModel.cpp.o.d"
   "/home/aardvark/git/kydra/src/FilterWidget/ArchitectureFilter.cpp" "src/CMakeFiles/kydra.dir/FilterWidget/ArchitectureFilter.cpp.o" "gcc" "src/CMakeFiles/kydra.dir/FilterWidget/ArchitectureFilter.cpp.o.d"

@@ -39,6 +39,10 @@
           <Separator />
           <Action name="software_properties" />
         </Menu>
+        <Menu name="help">
+          <Action name="help_about_app" />
+          <Action name="donate" />
+        </Menu>
     </MenuBar>
     <ToolBar name="mainToolBar">
         <Action name="preview" />

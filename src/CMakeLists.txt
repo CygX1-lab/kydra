@@ -27,6 +27,7 @@ set(kydra_SRCS
     PackageModel/PackageViewHeader.cpp
     PackageModel/PackageDelegate.cpp
     PackageModel/PackageWidget.cpp
+    PackageModel/PackageIconExtractor.cpp
     StatusWidget.cpp
     TransactionWidget.cpp
     config/ManagerSettingsDialog.cpp

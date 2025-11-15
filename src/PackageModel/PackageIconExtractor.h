@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright © 2010 Jonathan Thomas <echidnaman@kubuntu.org>             *
+ *   Copyright © 2025 Kydra Project                                          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU General Public License as        *
@@ -18,39 +18,40 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef PACKAGEDELEGATE_H
-#define PACKAGEDELEGATE_H
+#ifndef PACKAGEICONEXTRACTOR_H
+#define PACKAGEICONEXTRACTOR_H
 
-#include <QAbstractItemDelegate>
-
+#include <QObject>
 #include <QIcon>
-#include <KColorScheme>
+#include <QCache>
+#include <QMutex>
 
-class PackageDelegate: public QAbstractItemDelegate
+#include <QApt/Package>
+
+class PackageIconExtractor : public QObject
 {
     Q_OBJECT
+
 public:
-    explicit PackageDelegate(QObject *parent = 0);
-
-protected:
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    void paintBackground(QPainter *painter, const QStyleOptionViewItem &option) const;
-    void paintPackageName(QPainter *painter, const QStyleOptionViewItem &option , const QModelIndex &index) const;
-    void paintText(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    static PackageIconExtractor* instance();
+    
+    QIcon getPackageIcon(QApt::Package* package);
+    void clearCache();
 
 private:
-    int m_iconSize;
-    int m_spacing;
-
-    QPixmap m_supportedEmblem;
-    QPixmap m_lockedEmblem;
-
-    int calcItemHeight(const QStyleOptionViewItem &option) const;
-    QBrush getStatusColor(int packageState, const KColorScheme &colorScheme) const;
-    QBrush getActionColor(int packageState, const KColorScheme &colorScheme) const;
-    QHash<int, QColor> parseCustomColors() const;
+    explicit PackageIconExtractor(QObject* parent = nullptr);
+    ~PackageIconExtractor() override;
+    
+    QIcon extractIconFromPackage(QApt::Package* package);
+    QIcon extractIconFromDebFile(const QString& debFilePath);
+    QIcon extractIconFromControlFile(const QString& controlData);
+    QIcon getIconFromDesktopFile(const QString& desktopFileContent);
+    QString findIconPath(const QString& iconName);
+    
+    QCache<QString, QIcon> m_iconCache;
+    QMutex m_cacheMutex;
+    
+    static PackageIconExtractor* s_instance;
 };
 
-#endif
+#endif // PACKAGEICONEXTRACTOR_H

@@ -1,3 +1,25 @@
+Kydra Version 1.0.0
+====================
+
+- Features:
+  * Add package-specific icon extraction from deb packages. Instead of showing
+    the generic "application-x-deb" icon for all packages, Kydra now extracts
+    and displays the actual application icon from each package's desktop files.
+  * Implement intelligent icon caching system with thread-safe access for
+    optimal performance when displaying large package lists.
+  * Add fallback mechanism that gracefully degrades to generic deb icon when
+    package-specific icons are not available.
+  * Support icon extraction from installed desktop files in /usr/share/applications/
+  * Search for icons in system icon themes and common icon directories
+    (/usr/share/pixmaps, /usr/share/icons/hicolor/*/apps)
+  * Add singleton-based PackageIconExtractor class for efficient icon management
+
+- Technical Improvements:
+  * Modernize PackageModel and PackageDelegate to support dynamic icon loading
+  * Implement thread-safe icon caching with QCache for performance optimization
+  * Add comprehensive error handling for icon extraction failures
+  * Support both absolute icon paths and themed icon names from desktop files
+
 Kydra Version 0.9.1
 ====================
 

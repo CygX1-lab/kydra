@@ -5,7 +5,7 @@
 Precompiled .deb packages are available in the `releases/` folder. Simply download the latest package and install it using:
 
 ```bash
-sudo dpkg -i releases/kydra_0.9.1_amd64.deb
+sudo dpkg -i releases/kydra_1.0.0_amd64.deb
 ```
 
 ## Building and Installing Kydra .deb Package
@@ -55,7 +55,7 @@ sudo apt-get install -y \
    ```
 3. **Install the generated package:**
    ```bash
-   sudo dpkg -i ../releases/kydra_0.9.1_amd64.deb
+   sudo dpkg -i ../releases/kydra_1.0.0_amd64.deb
    ```
 
 ### Using the Build Script
@@ -122,8 +122,8 @@ If you prefer to build manually:
 6. **Create control file and package:**
    ```bash
    # Create control file (see build-deb.sh for details)
-   fakeroot dpkg-deb --build debian kydra_0.9.1_amd64.deb
-   ```
+   fakeroot dpkg-deb --build debian kydra_1.0.0_amd64.deb
+```
 
 ### Installation
 
@@ -131,7 +131,7 @@ After building the package:
 
 ```bash
 # Install the package
-sudo dpkg -i kydra_0.9.1_amd64.deb
+sudo dpkg -i kydra_1.0.0_amd64.deb
 
 # If there are dependency issues, fix them with:
 sudo apt-get install -f

@@ -1,3 +1,16 @@
+kydra (1.0.0-1) unstable; urgency=medium
+
+  * Add package-specific icon extraction from deb packages
+  * Implement intelligent icon caching system with thread-safe access
+  * Add fallback mechanism to generic deb icon when specific icons unavailable
+  * Support icon extraction from installed desktop files
+  * Search for icons in system icon themes and common directories
+  * Add singleton-based PackageIconExtractor class for efficient management
+  * Modernize PackageModel and PackageDelegate for dynamic icon loading
+  * Implement comprehensive error handling for icon extraction failures
+
+ -- Jonathan Thomas <echidnaman@kubuntu.org>  Mon, 15 Nov 2025 19:30:00 +0100
+
 kydra (0.9.1-1) unstable; urgency=medium
 
   * Fixed settings dialog functionality for version columns

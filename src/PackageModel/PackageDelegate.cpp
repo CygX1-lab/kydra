@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "PackageDelegate.h"
+#include "PackageIconExtractor.h"
 
 // Qt
 #include <QApplication>
@@ -39,7 +40,6 @@
 
 PackageDelegate::PackageDelegate(QObject *parent)
     : QAbstractItemDelegate(parent)
-    , m_icon(QIcon::fromTheme("application-x-deb"))
     , m_supportedEmblem(QIcon::fromTheme("emblem-ok-symbolic").pixmap(QSize(12,12)))
     , m_lockedEmblem(QIcon::fromTheme("object-locked-symbolic").pixmap(QSize(12,12)))
 {
@@ -98,13 +98,15 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
     QPainter p(&pixmap);
     p.translate(-option.rect.topLeft());
 
-    m_icon.paint(&p,
-                 leftToRight ? left + m_spacing : left + width - m_spacing - m_iconSize,
-                 top + m_spacing,
-                 m_iconSize,
-                 m_iconSize,
-                 Qt::AlignCenter,
-                 QIcon::Normal);
+    // Get package-specific icon
+    QIcon packageIcon = index.data(PackageModel::IconRole).value<QIcon>();
+    packageIcon.paint(&p,
+                      leftToRight ? left + m_spacing : left + width - m_spacing - m_iconSize,
+                      top + m_spacing,
+                      m_iconSize,
+                      m_iconSize,
+                      Qt::AlignCenter,
+                      QIcon::Normal);
 
     int state = index.data(PackageModel::StatusRole).toInt();
 

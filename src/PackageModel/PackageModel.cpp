@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "PackageModel.h"
+#include "PackageIconExtractor.h"
 
 #include <QStringBuilder>
 #include <QIcon>
@@ -55,7 +56,7 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
         }
         return package->name();
     case IconRole:
-        return QIcon::fromTheme("application-x-deb");
+        return PackageIconExtractor::instance()->getPackageIcon(package);
     case DescriptionRole:
         return package->shortDescription();
     case StatusRole:

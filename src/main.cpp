@@ -22,7 +22,7 @@
 
 #include <QApplication>
 #include <KAboutData>
-#include "../MuonVersion.h"
+#include "../KydraVersion.h"
 #include <KDBusService>
 #include <KLocalizedString>
 #include <QSessionManager>
@@ -31,13 +31,15 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    app.setWindowIcon(QIcon::fromTheme("muon"));
-    KLocalizedString::setApplicationDomain("muon");
-    KAboutData about("muon", i18n("Muon Package Manager"), version, i18n("A package manager"),
-                     KAboutLicense::GPL, i18n("© 2009-2013 Jonathan Thomas"));
-    about.addAuthor(i18n("Jonathan Thomas"), QString(), "echidnaman@kubuntu.org");
+    app.setWindowIcon(QIcon::fromTheme("kydra"));
+    KLocalizedString::setApplicationDomain("kydra");
+    KAboutData about("kydra", i18n("Kydra Package Manager"), version, i18n("A modern KDE-native package manager"),
+                     KAboutLicense::GPL, i18n("© 2024 CygX1"));
+    about.addAuthor(i18n("CygX1"), i18n("Current Maintainer"), "cygnx1@gmail.com");
+    about.addCredit(i18n("Jonathan Thomas"), i18n("Original Muon Author"), "echidnaman@kubuntu.org");
     about.addCredit(i18n("Harald Sitter"), i18n("Top Gardener"), "sitter@kde.org", QString(), QStringLiteral("apachelogger"));
-    about.setProductName("muon/muon");
+    about.setProductName("kydra/kydra");
+    about.setBugAddress("cygnx1@gmail.com");
     KAboutData::setApplicationData(about);
 
     {

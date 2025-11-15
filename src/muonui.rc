@@ -35,6 +35,7 @@
             <Action name="history" />
         </Menu>
         <Menu name="settings">
+          <Action name="configure_repositories" />
           <Separator />
           <Action name="software_properties" />
         </Menu>

@@ -38,7 +38,7 @@ protected:
 private slots:
     void modelLayoutChanged();
     void onSectionClicked();
-    void toggleColumn(bool visible);
+    void toggleColumn(bool visible, QAction *action);
 
 private:
     void createActions();

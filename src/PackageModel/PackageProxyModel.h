@@ -48,6 +48,7 @@ public:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     QApt::Package *packageAt(const QModelIndex &index) const;
     void reset();
+    QApt::PackageList performSlowSearch(const QString &searchText) const;
 
 protected:
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const;

@@ -30,6 +30,9 @@
 #include "PackageModel.h"
 #include "MuonSettings.h"
 
+// Qt includes
+#include <QRegularExpression>
+
 constexpr int status_sort_magic = (QApt::Package::Installed |
                                    QApt::Package::Upgradeable |
                                    QApt::Package::NowBroken |
@@ -74,7 +77,14 @@ void PackageProxyModel::search(const QString &searchText)
 {
     // 1-character searches are painfully slow. >= 2 chars are fine, though
     if (searchText.size() > 1) {
+        // First try xapian-based search
         m_searchPackages = m_backend->search(searchText);
+        
+        // If xapian search returns no results and slow search is enabled, try supplemental search
+        if (m_searchPackages.isEmpty() && MuonSettings::self()->useSlowSearch()) {
+            m_searchPackages = performSlowSearch(searchText);
+        }
+        
         if (!m_useSearchResults) {
             m_sortByRelevancy = true;
         }
@@ -220,4 +230,52 @@ bool PackageProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
     }
 
     return false;
+}
+
+QApt::PackageList PackageProxyModel::performSlowSearch(const QString &searchText) const
+{
+    QApt::PackageList results;
+    const QApt::PackageList allPackages = static_cast<PackageModel *>(sourceModel())->packages();
+    
+    if (searchText.isEmpty()) {
+        return results;
+    }
+    
+    // Convert search text to lowercase for case-insensitive matching
+    QString searchTextLower = searchText.toLower();
+    
+    for (QApt::Package *package : allPackages) {
+        bool matches = false;
+        
+        // Search in package name
+        if (QString(package->name()).toLower().contains(searchTextLower)) {
+            matches = true;
+        }
+        // Search in short description
+        else if (package->shortDescription().toLower().contains(searchTextLower)) {
+            matches = true;
+        }
+        // Search in long description
+        else if (package->longDescription().toLower().contains(searchTextLower)) {
+            matches = true;
+        }
+        // Search in maintainer
+        else if (package->maintainer().toLower().contains(searchTextLower)) {
+            matches = true;
+        }
+        // Search in section
+        else if (QString(package->section()).toLower().contains(searchTextLower)) {
+            matches = true;
+        }
+        // Search in origin
+        else if (package->origin().toLower().contains(searchTextLower)) {
+            matches = true;
+        }
+        
+        if (matches) {
+            results.append(package);
+        }
+    }
+    
+    return results;
 }

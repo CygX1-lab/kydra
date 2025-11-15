@@ -22,9 +22,13 @@
 
 #include <QCheckBox>
 #include <QHBoxLayout>
-#include <QtWidgets/QLabel>
+#include <QLabel>
 #include <QSpinBox>
 #include <QFormLayout>
+#include <QPushButton>
+#include <QInputDialog>
+#include <QGroupBox>
+#include <QVBoxLayout>
 
 #include <KLocalizedString>
 
@@ -43,6 +47,10 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
         , m_undoStackSpinbox(new QSpinBox(this))
         , m_autoCleanCheckBox(new QCheckBox(this))
         , m_autoCleanSpinbox(new QSpinBox(this))
+        , m_useSlowSearchCheckBox(new QCheckBox(this))
+        , m_confirmOnQuitCheckBox(new QCheckBox(this))
+        , m_showVersionColumnsCheckBox(new QCheckBox(this))
+        , m_statusColorsButton(new QPushButton(this))
 {
     QFormLayout *layout = new QFormLayout(this);
     layout->setMargin(0);
@@ -53,6 +61,10 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     m_recommendsCheckBox->setText(i18n("Treat recommended packages as dependencies"));
     m_suggestsCheckBox->setText(i18n("Treat suggested packages as dependencies"));
     m_untrustedCheckBox->setText(i18n("Allow the installation of untrusted packages"));
+    m_useSlowSearchCheckBox->setText(i18n("Use supplemental slow search when xapian search is not available"));
+    m_confirmOnQuitCheckBox->setText(i18n("Show confirmation dialog when quitting with pending changes"));
+    m_showVersionColumnsCheckBox->setText(i18n("Show installed and available version columns by default"));
+    m_statusColorsButton->setText(i18n("Configure Status Column Colors..."));
 
     m_multiArchDupesBox->setEnabled(aptConfig->architectures().size() > 1);
 
@@ -76,13 +88,26 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     QWidget *spacer = new QWidget(this);
     spacer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
-    layout->addRow(m_askChangesCheckBox);
-    layout->addRow(m_multiArchDupesBox);
-    layout->addRow(m_recommendsCheckBox);
-    layout->addRow(m_suggestsCheckBox);
-    layout->addRow(m_untrustedCheckBox);
-    layout->addRow(i18n("Number of undo operations:"), m_undoStackSpinbox);
-    layout->addRow(autoCleanWidget);
+    // Create group boxes for better organization
+    QGroupBox *behaviorGroup = new QGroupBox(i18n("Behavior"), this);
+    QFormLayout *behaviorLayout = new QFormLayout(behaviorGroup);
+    behaviorLayout->addRow(m_askChangesCheckBox);
+    behaviorLayout->addRow(m_multiArchDupesBox);
+    behaviorLayout->addRow(m_recommendsCheckBox);
+    behaviorLayout->addRow(m_suggestsCheckBox);
+    behaviorLayout->addRow(m_untrustedCheckBox);
+    behaviorLayout->addRow(i18n("Number of undo operations:"), m_undoStackSpinbox);
+    behaviorLayout->addRow(autoCleanWidget);
+    behaviorLayout->addRow(m_useSlowSearchCheckBox);
+    behaviorLayout->addRow(m_confirmOnQuitCheckBox);
+    
+    QGroupBox *appearanceGroup = new QGroupBox(i18n("Appearance"), this);
+    QFormLayout *appearanceLayout = new QFormLayout(appearanceGroup);
+    appearanceLayout->addRow(m_showVersionColumnsCheckBox);
+    appearanceLayout->addRow(m_statusColorsButton);
+    
+    layout->addRow(behaviorGroup);
+    layout->addRow(appearanceGroup);
     layout->addRow(spacer);
 
     connect(m_askChangesCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
@@ -93,6 +118,10 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     connect(m_undoStackSpinbox, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
     connect(m_autoCleanCheckBox, SIGNAL(clicked()), this, SLOT(emitAuthChanged()));
     connect(m_autoCleanSpinbox, SIGNAL(valueChanged(int)), this, SLOT(emitAuthChanged()));
+    connect(m_useSlowSearchCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(m_confirmOnQuitCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(m_showVersionColumnsCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(m_statusColorsButton, SIGNAL(clicked()), this, SLOT(editStatusColors()));
 
     connect(m_autoCleanSpinbox, SIGNAL(valueChanged(int)),
             this, SLOT(updateAutoCleanSpinboxSuffix()));
@@ -115,6 +144,9 @@ void GeneralSettingsPage::loadSettings()
     m_suggestsCheckBox->setChecked(m_aptConfig->readEntry("APT::Install-Suggests", false));
     m_untrustedCheckBox->setChecked(m_aptConfig->readEntry("APT::Get::AllowUnauthenticated", false));
     m_undoStackSpinbox->setValue(settings->undoStackSize());
+    m_useSlowSearchCheckBox->setChecked(settings->useSlowSearch());
+    m_confirmOnQuitCheckBox->setChecked(settings->confirmOnQuit());
+    m_showVersionColumnsCheckBox->setChecked(settings->showVersionColumns());
 
     int autoCleanValue = m_aptConfig->readEntry("APT::Periodic::AutocleanInterval", 0);
     m_autoCleanCheckBox->setChecked(autoCleanValue > 0);
@@ -128,6 +160,9 @@ void GeneralSettingsPage::applySettings()
     settings->setAskChanges(m_askChangesCheckBox->isChecked());
     settings->setShowMultiArchDupes(m_multiArchDupesBox->isChecked());
     settings->setUndoStackSize(m_undoStackSpinbox->value());
+    settings->setUseSlowSearch(m_useSlowSearchCheckBox->isChecked());
+    settings->setConfirmOnQuit(m_confirmOnQuitCheckBox->isChecked());
+    settings->setShowVersionColumns(m_showVersionColumnsCheckBox->isChecked());
     settings->save();
 
     // Only write if changed. Unnecessary password dialogs ftl
@@ -188,6 +223,25 @@ void GeneralSettingsPage::emitAuthChanged()
     if (recChanged || sugChanged || cleanIntChanged || trustChanged) {
         emit authChanged();
     } else {
+        emit changed();
+    }
+}
+
+void GeneralSettingsPage::editStatusColors()
+{
+    QString currentColors = MuonSettings::self()->statusColumnColors();
+    QString exampleFormat = "Installed:#00FF00;Upgradeable:#FFAA00;ToRemove:#FF0000";
+    
+    QString newColors = QInputDialog::getText(this,
+                                             i18nc("@title:window", "Configure Status Column Colors"),
+                                             i18nc("@label", "Enter custom colors for package states (format: Status:#RRGGBB;Status:#RRGGBB):\n"
+                                                   "Available statuses: NowBroken, Installed, Upgradeable, NotInstalled,\n"
+                                                   "ToKeep, ToInstall, ToUpgrade, ToRemove, ToPurge, ToReInstall, ToDowngrade\n\n"
+                                                   "Example: %1", exampleFormat),
+                                             QLineEdit::Normal, currentColors);
+    
+    if (!newColors.isEmpty() && newColors != currentColors) {
+        MuonSettings::self()->setStatusColumnColors(newColors);
         emit changed();
     }
 }

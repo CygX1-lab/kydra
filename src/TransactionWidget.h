@@ -34,10 +34,12 @@ namespace QApt {
     class Transaction;
 }
 
+#ifdef HAVE_DEBCONFKDE
 namespace DebconfKde
 {
     class DebconfGui;
 }
+#endif
 
 class DownloadModel;
 class DownloadDelegate;
@@ -61,7 +63,9 @@ private:
     QTreeView *m_downloadView;
     DownloadModel *m_downloadModel;
     DownloadDelegate *m_downloadDelegate;
+#ifdef HAVE_DEBCONFKDE
     DebconfKde::DebconfGui *m_debconfGui;
+#endif
     QProgressBar *m_totalProgress;
     QLabel *m_statusLabel;
     QPushButton *m_cancelButton;

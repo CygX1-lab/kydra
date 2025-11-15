@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+# Clean up KDE menu cache
+if command -v kbuildsycoca5 >/dev/null 2>&1; then
+    kbuildsycoca5 --noincremental
+fi
+
+# Update desktop database
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications
+fi

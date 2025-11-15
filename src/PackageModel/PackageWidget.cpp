@@ -22,12 +22,12 @@
 #include "PackageWidget.h"
 
 // Qt includes
-#include <QtConcurrentRun>
+#include <QtConcurrent>
 #include <QApplication>
-#include <QtCore/QTimer>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QLabel>
+#include <QTimer>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMenu>
 #include <QSplitter>
@@ -75,7 +75,7 @@ PackageWidget::PackageWidget(QWidget *parent)
         , m_stop(false)
 {
     m_watcher = new QFutureWatcher<QList<QApt::Package*> >(this);
-    connect(m_watcher, SIGNAL(finished()), this, SLOT(setSortedPackages()));
+    connect(m_watcher, &QFutureWatcher<QList<QApt::Package*> >::finished, this, &PackageWidget::setSortedPackages);
 
     m_model = new PackageModel(this);
     PackageDelegate *delegate = new PackageDelegate(this);
@@ -93,7 +93,7 @@ PackageWidget::PackageWidget(QWidget *parent)
     m_searchTimer = new QTimer(this);
     m_searchTimer->setInterval(300);
     m_searchTimer->setSingleShot(true);
-    connect(m_searchTimer, SIGNAL(timeout()), this, SLOT(startSearch()));
+    connect(m_searchTimer, &QTimer::timeout, this, &PackageWidget::startSearch);
 
     setupActions();
 
@@ -112,6 +112,12 @@ PackageWidget::PackageWidget(QWidget *parent)
     Q_ASSERT(numColumns >= 3);
     for (int i = 3; i < numColumns; ++i) {
         m_packageView->header()->setSectionHidden(i, true);
+    }
+    
+    // Show version columns if configured
+    if (MuonSettings::self()->showVersionColumns()) {
+        m_packageView->header()->setSectionHidden(4, false); // Installed Version
+        m_packageView->header()->setSectionHidden(5, false); // Available Version
     }
     topVBox->addWidget(m_packageView);
 
@@ -144,7 +150,7 @@ PackageWidget::PackageWidget(QWidget *parent)
             this, SLOT(packageActivated(QModelIndex)));
     connect(m_packageView, SIGNAL(selectionEmpty()), m_detailsWidget, SLOT(hide()));
     connect(m_packageView, SIGNAL(selectionMulti()), m_detailsWidget, SLOT(emitHideButtons()));
-    connect(m_searchEdit, SIGNAL(textChanged(QString)), m_searchTimer, SLOT(start()));
+    connect(m_searchEdit, &QLineEdit::textChanged, m_searchTimer, QOverload<>::of(&QTimer::start));
 
     QWidget* topWidget = new QWidget;
     topWidget->setLayout(topVBox);
@@ -260,7 +266,9 @@ void PackageWidget::setBackend(QApt::Backend *backend)
     m_packageView->setSortingEnabled(true);
     QApt::PackageList packageList = m_backend->availablePackages();
 
-    QFuture<QList<QApt::Package*> > future = QtConcurrent::run(sortPackages, packageList);
+    QFuture<QList<QApt::Package*> > future = QtConcurrent::run([packageList]() {
+        return sortPackages(packageList);
+    });
     m_watcher->setFuture(future);
     m_packageView->updateView();
 }
@@ -281,11 +289,13 @@ void PackageWidget::cacheReloadStarted()
 
 void PackageWidget::cacheReloadFinished()
 {
-    QApt::PackageList packageList = m_backend->availablePackages();
-    QFuture<QList<QApt::Package*> > future = QtConcurrent::run(sortPackages, packageList);
-    m_watcher->setFuture(future);
-    m_packageView->header()->setSectionResizeMode(0, QHeaderView::Stretch);
-    startSearch();
+QApt::PackageList packageList = m_backend->availablePackages();
+QFuture<QList<QApt::Package*> > future = QtConcurrent::run([packageList]() {
+    return sortPackages(packageList);
+});
+m_watcher->setFuture(future);
+m_packageView->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+startSearch();
 }
 
 void PackageWidget::packageActivated(const QModelIndex &index)

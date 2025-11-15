@@ -1,14 +1,20 @@
-project(muon)
-set(PROJECT_VERSION "5.8.0")
+cmake_minimum_required(VERSION 3.16)
+project(kydra)
+set(PROJECT_VERSION "0.9.0")
 set(PROJECT_VERSION_MAJOR 5)
-
-cmake_minimum_required(VERSION 2.8.12)
 
 find_package(ECM REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
-find_package(Qt5 5.7.0 REQUIRED CONFIG COMPONENTS Widgets Concurrent)
+# Prefer Qt5 but allow Qt6 if needed
+set(QT_MAJOR_VERSION 5)
+
+find_package(Qt5 5.15.0 REQUIRED CONFIG COMPONENTS Widgets Concurrent)
+message(STATUS "Building with Qt5 - Qt6 features will be compiled but may have limited functionality")
+set(QT_VERSION_MAJOR 5)
+set(KF_VERSION "KF5")
+
 include(KDEInstallDirs)
 include(KDECMakeSettings NO_POLICY_SCOPE)
 include(KDECompilerSettings NO_POLICY_SCOPE)
@@ -16,15 +22,17 @@ include(ECMInstallIcons)
 include(ECMMarkAsTest)
 include(GenerateExportHeader)
 
-find_package(KF5 REQUIRED KIO DBusAddons I18n IconThemes XmlGui)
+find_package(${KF_VERSION} REQUIRED KIO DBusAddons I18n IconThemes XmlGui)
 
 find_package(QApt 3.0.2 REQUIRED)
-find_package(DebconfKDE 1.0.0 REQUIRED)
+# Skip DebconfKDE to avoid Qt6 dependency conflicts
+# find_package(DebconfKDE 1.0.0)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MUON_VERSION ${PROJECT_VERSION})
-configure_file(MuonVersion.h.in MuonVersion.h)
+configure_file(KydraVersion.h.in KydraVersion.h)
 
 add_subdirectory(src)
 

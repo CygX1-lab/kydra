@@ -1,0 +1,1 @@
+?package(kydra):needs="X11" section="Applications/System" title="Kydra" command="/usr/bin/kydra" icon="/usr/share/icons/hicolor/48x48/apps/org.kydra.app.png"

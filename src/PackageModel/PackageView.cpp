@@ -21,6 +21,8 @@
 #include "PackageView.h"
 
 #include "PackageViewHeader.h"
+#include <QPropertyAnimation>
+#include <QEasingCurve>
 
 PackageView::PackageView(QWidget *parent)
     : QTreeView(parent)
@@ -33,6 +35,10 @@ PackageView::PackageView(QWidget *parent)
     setUniformRowHeights(true);
     header()->setStretchLastSection(false);
     header()->setDefaultAlignment(Qt::AlignLeft);
+    
+    // Enable smooth animations
+    setAnimated(true);
+    setAllColumnsShowFocus(true);
 }
 
 int PackageView::selectionCount() const

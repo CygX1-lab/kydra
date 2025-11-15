@@ -1,0 +1,8 @@
+# Install files for Kydra package
+usr/bin/kydra
+usr/share/applications/org.kydra.app.desktop
+usr/share/metainfo/org.kydra.app.metainfo.xml
+usr/share/icons/hicolor/*/apps/org.kydra.app.*
+usr/share/kxmlgui5/kydra/kydraui.rc
+usr/share/kconf_update/kydra.upd
+usr/share/doc/kydra/*

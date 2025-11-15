@@ -1,0 +1,27 @@
+Package: kydra
+Version: 0.9.0
+Section: admin
+Priority: optional
+Architecture: amd64
+Maintainer: CygX1 <cygnx1@gmail.com>
+Depends: qapt, libqt5core5a, libqt5gui5, libqt5widgets5, libkf5config5, libkf5xmlgui5, libkf5i18n5, libkf5widgetsaddons5, libkf5auth5, libkf5coreaddons5, libkf5dbusaddons5, libkf5iconthemes5, libkf5service5, libqt5svg5
+Recommends: plasma-desktop
+Suggests: software-properties-kde
+Description: KDE-native package manager for Debian systems
+ Kydra is a KDE/Qt application for managing Debian packages, providing
+ a powerful, fast, and Plasma-integrated interface built on top of Muon's
+ architecture.
+ .
+ Kydra brings a refreshed interface, streamlined workflows, and enhanced
+ integration with KDE technologies. With its multi-headed architecture,
+ it offers fast search, clear dependency insights, repository control,
+ and update management for Debian-based systems.
+ .
+ Features:
+  - Modern KDE/Qt UI with Breeze styling
+  - Fast package search and filtering
+  - Repository configuration management
+  - Local .deb folder support
+  - Dependency visualization
+  - Update management
+  - Plasma desktop integration

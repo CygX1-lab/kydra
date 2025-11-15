@@ -1,0 +1,4 @@
+/usr/share/config.kcfg/muon.kcfg
+/usr/bin/kydra
+/usr/share/applications/org.kydra.app.desktop
+/usr/share/metainfo/org.kydra.app.metainfo.xml

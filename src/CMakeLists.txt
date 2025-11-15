@@ -1,6 +1,6 @@
 add_subdirectory(icons)
 
-set(muon_SRCS
+set(kydra_SRCS
     main.cpp
     MainWindow.cpp
     ManagerWidget.cpp
@@ -31,6 +31,7 @@ set(muon_SRCS
     TransactionWidget.cpp
     config/ManagerSettingsDialog.cpp
     config/GeneralSettingsPage.cpp
+    config/RepositorySettingsPage.cpp
     settings/SettingsPageBase.cpp
     
     muonapt/ChangesDialog.cpp
@@ -43,15 +44,17 @@ set(muon_SRCS
 
 )
 
-kconfig_add_kcfg_files(muon_SRCS GENERATE_MOC config/MuonSettings.kcfgc)
-install(FILES config/muon.kcfg DESTINATION ${KCFG_INSTALL_DIR})
+kconfig_add_kcfg_files(kydra_SRCS GENERATE_MOC config/MuonSettings.kcfgc)
+install(FILES config/muon.kcfg DESTINATION ${KDE_INSTALL_KCFGDIR})
 
-add_executable(muon ${muon_SRCS})
+add_executable(kydra ${kydra_SRCS})
 
-target_compile_definitions(muon PRIVATE -DCMAKE_INSTALL_FULL_LIBEXECDIR_KF5=\"${CMAKE_INSTALL_FULL_LIBEXECDIR_KF5}\")
-
-target_link_libraries(muon DebconfKDE::Main
-                           KF5::KIOWidgets
+target_compile_definitions(kydra PRIVATE -DCMAKE_INSTALL_FULL_LIBEXECDIR_KF5=\"${CMAKE_INSTALL_FULL_LIBEXECDIR_KF5}\")
+if(DebconfKDE_FOUND)
+    target_compile_definitions(kydra PRIVATE -DHAVE_DEBCONFKDE)
+    target_link_libraries(kydra DebconfKDE::Main)
+endif()
+target_link_libraries(kydra KF5::KIOWidgets
                            KF5::DBusAddons
                            KF5::I18n
                            KF5::IconThemes
@@ -59,11 +62,10 @@ target_link_libraries(muon DebconfKDE::Main
                            Qt5::Concurrent
                            QApt::Main)
 
-install(TARGETS muon ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install(TARGETS kydra ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 ########### install files ###############
 
-install( PROGRAMS org.kde.muon.desktop  DESTINATION ${XDG_APPS_INSTALL_DIR} )
-install( FILES muonui.rc  DESTINATION  ${KXMLGUI_INSTALL_DIR}/muon )
-install( FILES org.kde.muon.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR} )
+install( PROGRAMS ../data/org.kydra.app.desktop  DESTINATION ${KDE_INSTALL_APPDIR} )
+install( FILES ../data/org.kydra.app.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR} )

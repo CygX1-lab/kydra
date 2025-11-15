@@ -38,7 +38,9 @@
 
 // QApt includes
 #include <QApt/Transaction>
+#ifdef HAVE_DEBCONFKDE
 #include <DebconfGui.h>
+#endif
 
 // Own includes
 #include "muonapt/MuonStrings.h"
@@ -82,11 +84,15 @@ TransactionWidget::TransactionWidget(QWidget *parent)
     uuid.remove('{').remove('}').remove('-');
     m_pipe = QDir::tempPath() % QLatin1String("/qapt-sock-") % uuid;
 
+#ifdef HAVE_DEBCONFKDE
     m_debconfGui = new DebconfKde::DebconfGui(m_pipe, this);
     layout->addWidget(m_debconfGui);
     m_debconfGui->connect(m_debconfGui, SIGNAL(activated()), m_debconfGui, SLOT(show()));
     m_debconfGui->connect(m_debconfGui, SIGNAL(deactivated()), m_debconfGui, SLOT(hide()));
     m_debconfGui->hide();
+#else
+    // No DebconfKDE support, so no GUI element needed
+#endif
 
     m_statusLabel = new QLabel(this);
     layout->addWidget(m_statusLabel);

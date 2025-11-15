@@ -54,7 +54,7 @@ void PackageViewHeader::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
     createActions();
-    foreach (QAction *action, m_columnActions) {
+    for (QAction *action : m_columnActions) {
         menu.addAction(action);
     }
     menu.exec(event->globalPos());
@@ -70,7 +70,9 @@ void PackageViewHeader::createActions()
         action->setCheckable(true);
         action->setChecked(!isSectionHidden(i));
         action->setData(i);
-        connect(action, SIGNAL(toggled(bool)), this, SLOT(toggleColumn(bool)));
+        connect(action, &QAction::toggled, this, [this, action](bool checked) {
+            toggleColumn(checked, action);
+        });
         m_columnActions.append(action);
     }
 }
@@ -79,7 +81,7 @@ void PackageViewHeader::deleteActions()
 {
     while (!m_columnActions.isEmpty()) {
         QAction *action = m_columnActions.takeFirst();
-        disconnect(action, SIGNAL(toggled(bool)), this, SLOT(toggleColumn(bool)));
+        // No need to disconnect lambda connections
         delete action;
     }
 }
@@ -98,9 +100,8 @@ void PackageViewHeader::onSectionClicked()
     }
 }
 
-void PackageViewHeader::toggleColumn(bool visible)
+void PackageViewHeader::toggleColumn(bool visible, QAction *action)
 {
-    QAction *action = qobject_cast<QAction *>(sender());
     if (action) {
         int column = action->data().toInt();
         setSectionHidden(column, !visible);

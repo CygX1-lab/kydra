@@ -27,6 +27,7 @@
 
 #include "../settings/SettingsPageBase.h"
 #include "GeneralSettingsPage.h"
+#include "RepositorySettingsPage.h"
 
 ManagerSettingsDialog::ManagerSettingsDialog(QWidget* parent, QApt::Config *aptConfig) :
     KPageDialog(parent),
@@ -50,6 +51,16 @@ ManagerSettingsDialog::ManagerSettingsDialog(QWidget* parent, QApt::Config *aptC
     connect(generalPage, SIGNAL(authChanged()), this, SLOT(authChanged()));
 
     m_pages.insert(generalPage);
+
+    // Repository settings
+    RepositorySettingsPage *repositoryPage = new RepositorySettingsPage(this, m_aptConfig);
+    KPageWidgetItem *repositorySettingsFrame = addPage(repositoryPage,
+                                                       i18nc("@title:group Title of the repository group", "Repositories"));
+    repositorySettingsFrame->setIcon(QIcon::fromTheme("network-server"));
+    connect(repositoryPage, SIGNAL(changed()), this, SLOT(changed()));
+    connect(repositoryPage, SIGNAL(authChanged()), this, SLOT(authChanged()));
+
+    m_pages.insert(repositoryPage);
 }
 
 ManagerSettingsDialog::~ManagerSettingsDialog()

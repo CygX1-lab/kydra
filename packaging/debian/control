@@ -1,0 +1,43 @@
+Source: kydra
+Section: admin
+Priority: optional
+Maintainer: CygX1 <cygnx1@gmail.com>
+Build-Depends: debhelper-compat (= 13),
+               cmake,
+               extra-cmake-modules,
+               qtbase5-dev,
+               libkf5config-dev,
+               libkf5xmlgui-dev,
+               libkf5i18n-dev,
+               libkf5widgetsaddons-dev,
+               libkf5auth-dev,
+               libkf5bookmarks-dev,
+               libkf5codecs-dev,
+               libkf5configwidgets-dev,
+               libkf5coreaddons-dev,
+               libkf5dbusaddons-dev,
+               libkf5iconthemes-dev,
+               libkf5service-dev,
+               libkf5solid-dev,
+               libkf5windowsystem-dev,
+               libkf5xmlgui-dev,
+               libqt5svg5-dev,
+               libqapt-dev,
+               pkg-kde-tools
+Standards-Version: 4.7.0
+Homepage: https://github.com/CygX1/kydra
+Vcs-Browser: https://github.com/CygX1/kydra
+Vcs-Git: https://github.com/CygX1/kydra.git
+
+Package: kydra
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, qapt
+Description: KDE-native package manager for Debian systems
+ Kydra is a KDE/Qt application for managing Debian packages, providing
+ a powerful, fast, and Plasma-integrated interface built on top of Muon's
+ architecture.
+ .
+ Kydra brings a refreshed interface, streamlined workflows, and enhanced
+ integration with KDE technologies. With its multi-headed architecture,
+ it offers fast search, clear dependency insights, repository control,
+ and update management for Debian-based systems.

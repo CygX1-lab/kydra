@@ -24,6 +24,7 @@
 #include <QAbstractItemDelegate>
 
 #include <QIcon>
+#include <KColorScheme>
 
 class PackageDelegate: public QAbstractItemDelegate
 {
@@ -48,6 +49,9 @@ private:
     QPixmap m_lockedEmblem;
 
     int calcItemHeight(const QStyleOptionViewItem &option) const;
+    QBrush getStatusColor(int packageState, const KColorScheme &colorScheme) const;
+    QBrush getActionColor(int packageState, const KColorScheme &colorScheme) const;
+    QHash<int, QColor> parseCustomColors() const;
 };
 
 #endif

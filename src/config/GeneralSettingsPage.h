@@ -26,6 +26,7 @@
 #include "../settings/SettingsPageBase.h"
 
 class QCheckBox;
+class QPushButton;
 class QSpinBox;
 
 namespace QApt {
@@ -47,6 +48,7 @@ public:
 private Q_SLOTS:
     void emitAuthChanged();
     void updateAutoCleanSpinboxSuffix();
+    void editStatusColors();
 
 private:
     QApt::Config *m_aptConfig;
@@ -58,6 +60,10 @@ private:
     QSpinBox *m_undoStackSpinbox;
     QCheckBox *m_autoCleanCheckBox;
     QSpinBox *m_autoCleanSpinbox;
+    QCheckBox *m_useSlowSearchCheckBox;
+    QCheckBox *m_confirmOnQuitCheckBox;
+    QCheckBox *m_showVersionColumnsCheckBox;
+    QPushButton *m_statusColorsButton;
 
     int autoCleanValue() const;
 };

@@ -106,13 +106,18 @@ private Q_SLOTS:
     void reload();
     void setActionsEnabled(bool enabled = true);
     void downloadArchives(QApt::Transaction *trans);
+    void applyKDEColorScheme();
 
 public Q_SLOTS:
     void revertChanges();
     void editSettings();
     void closeSettingsDialog();
+    void configureRepositories();
 
     void setupTransaction(QApt::Transaction *trans);
+    bool useKAuthForPrivileges() const;
+    void executeKAuthAction(const QString &actionId);
+    void setupModernProcessHandling(QApt::Transaction *trans);
 
 signals:
     void backendReady(QApt::Backend *backend);

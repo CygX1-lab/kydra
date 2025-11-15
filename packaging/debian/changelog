@@ -1,0 +1,12 @@
+kydra (0.9.0-1) unstable; urgency=medium
+
+  * Initial release of Kydra
+  * Modern KDE/Qt UI built on Muon foundations
+  * Improved repository control and filtering
+  * Faster parallel operations and metadata caching
+  * Refined dependency viewer with clearer tree layout
+  * Enhanced integration with KDE technologies
+  * Multi-headed architecture for fast search and operations
+  * Breeze-styled interface with Plasma integration
+
+ -- CygX1 <cygnx1@gmail.com>  Wed, 15 Jan 2025 12:00:00 +0000

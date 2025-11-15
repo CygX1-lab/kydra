@@ -1,0 +1,485 @@
+{
+	"BUILD_DIR" : "/home/aardvark/git/kydra/build-deb/src/kydra_autogen",
+	"CMAKE_BINARY_DIR" : "/home/aardvark/git/kydra/build-deb",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/aardvark/git/kydra/build-deb/src",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/aardvark/git/kydra/src",
+	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/home/aardvark/git/kydra/src/CMakeLists.txt",
+		"/home/aardvark/git/kydra/src/config/MuonSettings.kcfgc"
+	],
+	"CMAKE_SOURCE_DIR" : "/home/aardvark/git/kydra",
+	"CROSS_CONFIG" : false,
+	"DEP_FILE" : "/home/aardvark/git/kydra/build-deb/src/kydra_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "kydra_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/ChangelogTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_ChangelogTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/DependsTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_DependsTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/DetailsTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_DetailsTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/InstalledFilesTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_InstalledFilesTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/MainTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_MainTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/TechnicalDetailsTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_TechnicalDetailsTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/VersionTab.h",
+			"Mu",
+			"2PTLJEAFFY/moc_VersionTab.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DetailsWidget.h",
+			"Mu",
+			"EWIEGA46WW/moc_DetailsWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.h",
+			"Mu",
+			"4H5P23O3AD/moc_DownloadDelegate.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DownloadModel/DownloadModel.h",
+			"Mu",
+			"4H5P23O3AD/moc_DownloadModel.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/ArchitectureFilter.h",
+			"Mu",
+			"U6IX2FV6TI/moc_ArchitectureFilter.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/CategoryFilter.h",
+			"Mu",
+			"U6IX2FV6TI/moc_CategoryFilter.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/FilterModel.h",
+			"Mu",
+			"U6IX2FV6TI/moc_FilterModel.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/FilterWidget.h",
+			"Mu",
+			"U6IX2FV6TI/moc_FilterWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/OriginFilter.h",
+			"Mu",
+			"U6IX2FV6TI/moc_OriginFilter.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/StatusFilter.h",
+			"Mu",
+			"U6IX2FV6TI/moc_StatusFilter.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/MainWindow.h",
+			"Mu",
+			"EWIEGA46WW/moc_MainWindow.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/ManagerWidget.h",
+			"Mu",
+			"EWIEGA46WW/moc_ManagerWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageDelegate.h",
+			"Mu",
+			"XJAMFALVOG/moc_PackageDelegate.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageModel.h",
+			"Mu",
+			"XJAMFALVOG/moc_PackageModel.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageProxyModel.h",
+			"Mu",
+			"XJAMFALVOG/moc_PackageProxyModel.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageView.h",
+			"Mu",
+			"XJAMFALVOG/moc_PackageView.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageViewHeader.h",
+			"Mu",
+			"XJAMFALVOG/moc_PackageViewHeader.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageWidget.h",
+			"Mu",
+			"XJAMFALVOG/moc_PackageWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/ReviewWidget.h",
+			"Mu",
+			"EWIEGA46WW/moc_ReviewWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/StatusWidget.h",
+			"Mu",
+			"EWIEGA46WW/moc_StatusWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/TransactionWidget.h",
+			"Mu",
+			"EWIEGA46WW/moc_TransactionWidget.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/config/GeneralSettingsPage.h",
+			"Mu",
+			"IJHAR2IVER/moc_GeneralSettingsPage.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/config/ManagerSettingsDialog.h",
+			"Mu",
+			"IJHAR2IVER/moc_ManagerSettingsDialog.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/config/RepositorySettingsPage.h",
+			"Mu",
+			"IJHAR2IVER/moc_RepositorySettingsPage.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/ChangesDialog.h",
+			"Mu",
+			"PPMDID7VGQ/moc_ChangesDialog.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryProxyModel.h",
+			"Mu",
+			"4ADVZMRJNH/moc_HistoryProxyModel.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryView.h",
+			"Mu",
+			"4ADVZMRJNH/moc_HistoryView.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/MuonStrings.h",
+			"Mu",
+			"PPMDID7VGQ/moc_MuonStrings.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/QAptActions.h",
+			"Mu",
+			"PPMDID7VGQ/moc_QAptActions.cpp",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/settings/SettingsPageBase.h",
+			"Mu",
+			"YPB6MEUM2W/moc_SettingsPageBase.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/home/aardvark/git/kydra/build-deb/src/kydra_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/aardvark/git/kydra/build-deb/src/kydra_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : 
+	[
+		"CMAKE_INSTALL_FULL_LIBEXECDIR_KF5=\"/usr/lib/x86_64-linux-gnu/libexec/kf5\"",
+		"KCOREADDONS_LIB",
+		"QT_CONCURRENT_LIB",
+		"QT_CORE_LIB",
+		"QT_DBUS_LIB",
+		"QT_GUI_LIB",
+		"QT_NETWORK_LIB",
+		"QT_NO_DEBUG",
+		"QT_WIDGETS_LIB",
+		"QT_XML_LIB",
+		"_GNU_SOURCE",
+		"_LARGEFILE64_SOURCE"
+	],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		],
+		[
+			"K_PLUGIN_FACTORY_WITH_JSON",
+			"[\n^][ \t]*K_PLUGIN_FACTORY_WITH_JSON[ \t\n]*\\([^,]*,[ \t\n]*\"([^\"]+)\""
+		],
+		[
+			"K_PLUGIN_CLASS_WITH_JSON",
+			"[\n^][ \t]*K_PLUGIN_CLASS_WITH_JSON[ \t\n]*\\([^,]*,[ \t\n]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/home/aardvark/git/kydra/build-deb/src",
+		"/home/aardvark/git/kydra/src",
+		"/usr/include/KF5/KIOWidgets",
+		"/usr/include/KF5",
+		"/usr/include/KF5/KIOGui",
+		"/usr/include/KF5/KIOCore",
+		"/usr/include/KF5/KIO",
+		"/usr/include/KF5/KCoreAddons",
+		"/usr/include/x86_64-linux-gnu/qt5",
+		"/usr/include/x86_64-linux-gnu/qt5/QtCore",
+		"/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++",
+		"/usr/include/KF5/KService",
+		"/usr/include/KF5/KConfig",
+		"/usr/include/KF5/KConfigCore",
+		"/usr/include/x86_64-linux-gnu/qt5/QtNetwork",
+		"/usr/include/x86_64-linux-gnu/qt5/QtDBus",
+		"/usr/include/x86_64-linux-gnu/qt5/QtConcurrent",
+		"/usr/include/x86_64-linux-gnu/qt5/QtGui",
+		"/usr/include/KF5/KWindowSystem",
+		"/usr/include/x86_64-linux-gnu/qt5/QtWidgets",
+		"/usr/include/KF5/KJobWidgets",
+		"/usr/include/KF5/Solid",
+		"/usr/include/KF5/KCompletion",
+		"/usr/include/KF5/KWidgetsAddons",
+		"/usr/include/KF5/KDBusAddons",
+		"/usr/include/KF5/KI18n",
+		"/usr/include/KF5/KIconThemes",
+		"/usr/include/KF5/KXmlGui",
+		"/usr/include/x86_64-linux-gnu/qt5/QtXml",
+		"/usr/include/KF5/KConfigWidgets",
+		"/usr/include/KF5/KConfigGui",
+		"/usr/include/KF5/KCodecs",
+		"/usr/include/KF5/KAuthWidgets",
+		"/usr/include/KF5/KAuthCore",
+		"/usr/include/KF5/KAuth",
+		"/usr/include/QApt",
+		"/usr/include",
+		"/usr/include/c++/15",
+		"/usr/include/x86_64-linux-gnu/c++/15",
+		"/usr/include/c++/15/backward",
+		"/usr/lib/gcc/x86_64-linux-gnu/15/include",
+		"/usr/local/include",
+		"/usr/include/x86_64-linux-gnu"
+	],
+	"MOC_MACRO_NAMES" : 
+	[
+		"Q_OBJECT",
+		"Q_GADGET",
+		"Q_NAMESPACE",
+		"Q_NAMESPACE_EXPORT",
+		"K_PLUGIN_FACTORY",
+		"K_PLUGIN_CLASS",
+		"K_PLUGIN_FACTORY_WITH_JSON",
+		"K_PLUGIN_CLASS_WITH_JSON"
+	],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/c++",
+		"-std=gnu++20",
+		"-dM",
+		"-E",
+		"-c",
+		"/usr/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/home/aardvark/git/kydra/build-deb/src/kydra_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : 
+	[
+		"/home/aardvark/git/kydra/build-deb/src/MuonSettings.cpp",
+		"/home/aardvark/git/kydra/build-deb/src/MuonSettings.h"
+	],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 14,
+	"PARSE_CACHE_FILE" : "/home/aardvark/git/kydra/build-deb/src/CMakeFiles/kydra_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/usr/lib/qt5/bin/moc",
+	"QT_UIC_EXECUTABLE" : "",
+	"QT_VERSION_MAJOR" : 5,
+	"QT_VERSION_MINOR" : 15,
+	"SETTINGS_FILE" : "/home/aardvark/git/kydra/build-deb/src/CMakeFiles/kydra_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/ChangelogTab.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/DetailsTabs/DependsTab.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/DetailsTabs/DetailsTab.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/InstalledFilesTab.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/DetailsTabs/MainTab.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/DetailsTabs/TechnicalDetailsTab.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/DetailsTabs/VersionTab.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/DetailsWidget.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/DownloadModel/DownloadDelegate.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/DownloadModel/DownloadModel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/ArchitectureFilter.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/CategoryFilter.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/FilterModel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/FilterWidget.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/OriginFilter.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/FilterWidget/StatusFilter.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/MainWindow.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/ManagerWidget.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageDelegate.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageModel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageProxyModel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageView.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageViewHeader.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/PackageModel/PackageWidget.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/ReviewWidget.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/StatusWidget.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/TransactionWidget.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/config/GeneralSettingsPage.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/config/ManagerSettingsDialog.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/config/RepositorySettingsPage.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/main.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/muonapt/ChangesDialog.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryProxyModel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/aardvark/git/kydra/src/muonapt/HistoryView/HistoryView.cpp",
+			"Mu",
+			null
+		],
+		[ "/home/aardvark/git/kydra/src/muonapt/MuonStrings.cpp", "Mu", null ],
+		[ "/home/aardvark/git/kydra/src/muonapt/QAptActions.cpp", "Mu", null ],
+		[
+			"/home/aardvark/git/kydra/src/settings/SettingsPageBase.cpp",
+			"Mu",
+			null
+		]
+	],
+	"USE_BETTER_GRAPH" : false,
+	"VERBOSITY" : 0
+}

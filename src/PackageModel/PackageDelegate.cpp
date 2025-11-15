@@ -31,12 +31,17 @@
 // Own
 #include "muonapt/MuonStrings.h"
 #include "PackageModel.h"
+#include "MuonSettings.h"
+
+// Qt includes for color parsing
+#include <QRegularExpression>
+#include <QStringList>
 
 PackageDelegate::PackageDelegate(QObject *parent)
     : QAbstractItemDelegate(parent)
-    , m_icon(QIcon::fromTheme("muon"))
-    , m_supportedEmblem(QIcon::fromTheme("ubuntu-logo").pixmap(QSize(12,12)))
-    , m_lockedEmblem(QIcon::fromTheme("object-locked").pixmap(QSize(12,12)))
+    , m_icon(QIcon::fromTheme("application-x-deb"))
+    , m_supportedEmblem(QIcon::fromTheme("emblem-ok-symbolic").pixmap(QSize(12,12)))
+    , m_lockedEmblem(QIcon::fromTheme("object-locked-symbolic").pixmap(QSize(12,12)))
 {
     m_spacing  = 4;
 
@@ -177,21 +182,21 @@ void PackageDelegate::paintText(QPainter *painter, const QStyleOptionViewItem &o
 
         if (state & QApt::Package::NowBroken) {
             text = MuonStrings::global()->packageStateName(QApt::Package::NowBroken);
-            pen.setBrush(color.foreground(KColorScheme::NegativeText));
+            pen.setBrush(getStatusColor(QApt::Package::NowBroken, color));
             break;
         }
 
         if (state & QApt::Package::Installed) {
-            text = MuonStrings::global()->packageStateName(QApt::Package::Installed);
-            pen.setBrush(color.foreground(KColorScheme::PositiveText));
-
             if (state & QApt::Package::Upgradeable) {
                 text = MuonStrings::global()->packageStateName(QApt::Package::Upgradeable);
-                pen.setBrush(color.foreground(KColorScheme::LinkText));
+                pen.setBrush(getStatusColor(QApt::Package::Upgradeable, color));
+            } else {
+                text = MuonStrings::global()->packageStateName(QApt::Package::Installed);
+                pen.setBrush(getStatusColor(QApt::Package::Installed, color));
             }
         } else {
             text = MuonStrings::global()->packageStateName(QApt::Package::NotInstalled);
-            pen.setBrush(color.foreground(KColorScheme::NeutralText));
+            pen.setBrush(getStatusColor(QApt::Package::NotInstalled, color));
         }
         break;
     case 2:
@@ -199,42 +204,42 @@ void PackageDelegate::paintText(QPainter *painter, const QStyleOptionViewItem &o
 
         if (state & QApt::Package::ToKeep) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToKeep);
-            pen.setBrush(color.foreground(KColorScheme::NeutralText));
+            pen.setBrush(getActionColor(QApt::Package::ToKeep, color));
             // No other "To" flag will be set if we are keeping
             break;
         }
 
         if (state & QApt::Package::ToInstall) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToInstall);
-            pen.setBrush(color.foreground(KColorScheme::PositiveText));
+            pen.setBrush(getActionColor(QApt::Package::ToInstall, color));
         }
 
         if (state & QApt::Package::ToUpgrade) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToUpgrade);
-            pen.setBrush(color.foreground(KColorScheme::LinkText));
+            pen.setBrush(getActionColor(QApt::Package::ToUpgrade, color));
             break;
         }
 
         if (state & QApt::Package::ToRemove) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToRemove);
-            pen.setBrush(color.foreground(KColorScheme::NegativeText));
+            pen.setBrush(getActionColor(QApt::Package::ToRemove, color));
         }
 
         if (state & QApt::Package::ToPurge) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToPurge);
-            pen.setBrush(color.foreground(KColorScheme::NegativeText));
+            pen.setBrush(getActionColor(QApt::Package::ToPurge, color));
             break;
         }
 
         if (state & QApt::Package::ToReInstall) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToReInstall);
-            pen.setBrush(color.foreground(KColorScheme::PositiveText));
+            pen.setBrush(getActionColor(QApt::Package::ToReInstall, color));
             break;
         }
 
         if (state & QApt::Package::ToDowngrade) {
             text = MuonStrings::global()->packageStateName(QApt::Package::ToDowngrade);
-            pen.setBrush(color.foreground(KColorScheme::LinkText));
+            pen.setBrush(getActionColor(QApt::Package::ToDowngrade, color));
             break;
         }
         break;
@@ -307,4 +312,138 @@ int PackageDelegate::calcItemHeight(const QStyleOptionViewItem &option) const
 
     int textHeight = QFontInfo(name_item.font).pixelSize() + QFontInfo(description_item.font).pixelSize();
     return qMax(textHeight, m_iconSize) + 2 * m_spacing;
+}
+
+QBrush PackageDelegate::getStatusColor(int packageState, const KColorScheme &colorScheme) const
+{
+    // Check if custom colors are configured
+    QHash<int, QColor> customColors = parseCustomColors();
+    
+    // For status column (column 1)
+    if (packageState & QApt::Package::NowBroken) {
+        if (customColors.contains(QApt::Package::NowBroken)) {
+            return QBrush(customColors[QApt::Package::NowBroken]);
+        }
+        return colorScheme.foreground(KColorScheme::NegativeText);
+    }
+    
+    if (packageState & QApt::Package::Installed) {
+        if (packageState & QApt::Package::Upgradeable) {
+            if (customColors.contains(QApt::Package::Upgradeable)) {
+                return QBrush(customColors[QApt::Package::Upgradeable]);
+            }
+            return colorScheme.foreground(KColorScheme::LinkText);
+        }
+        if (customColors.contains(QApt::Package::Installed)) {
+            return QBrush(customColors[QApt::Package::Installed]);
+        }
+        return colorScheme.foreground(KColorScheme::PositiveText);
+    }
+    
+    if (customColors.contains(QApt::Package::NotInstalled)) {
+        return QBrush(customColors[QApt::Package::NotInstalled]);
+    }
+    return colorScheme.foreground(KColorScheme::NeutralText);
+}
+
+QBrush PackageDelegate::getActionColor(int packageState, const KColorScheme &colorScheme) const
+{
+    // Check if custom colors are configured
+    QHash<int, QColor> customColors = parseCustomColors();
+    
+    // For action column (column 2)
+    if (packageState & QApt::Package::ToKeep) {
+        if (customColors.contains(QApt::Package::ToKeep)) {
+            return QBrush(customColors[QApt::Package::ToKeep]);
+        }
+        return colorScheme.foreground(KColorScheme::NeutralText);
+    }
+    
+    if (packageState & QApt::Package::ToInstall) {
+        if (customColors.contains(QApt::Package::ToInstall)) {
+            return QBrush(customColors[QApt::Package::ToInstall]);
+        }
+        return colorScheme.foreground(KColorScheme::PositiveText);
+    }
+    
+    if (packageState & QApt::Package::ToUpgrade) {
+        if (customColors.contains(QApt::Package::ToUpgrade)) {
+            return QBrush(customColors[QApt::Package::ToUpgrade]);
+        }
+        return colorScheme.foreground(KColorScheme::LinkText);
+    }
+    
+    if (packageState & QApt::Package::ToRemove) {
+        if (customColors.contains(QApt::Package::ToRemove)) {
+            return QBrush(customColors[QApt::Package::ToRemove]);
+        }
+        return colorScheme.foreground(KColorScheme::NegativeText);
+    }
+    
+    if (packageState & QApt::Package::ToPurge) {
+        if (customColors.contains(QApt::Package::ToPurge)) {
+            return QBrush(customColors[QApt::Package::ToPurge]);
+        }
+        return colorScheme.foreground(KColorScheme::NegativeText);
+    }
+    
+    if (packageState & QApt::Package::ToReInstall) {
+        if (customColors.contains(QApt::Package::ToReInstall)) {
+            return QBrush(customColors[QApt::Package::ToReInstall]);
+        }
+        return colorScheme.foreground(KColorScheme::PositiveText);
+    }
+    
+    if (packageState & QApt::Package::ToDowngrade) {
+        if (customColors.contains(QApt::Package::ToDowngrade)) {
+            return QBrush(customColors[QApt::Package::ToDowngrade]);
+        }
+        return colorScheme.foreground(KColorScheme::LinkText);
+    }
+    
+    return colorScheme.foreground(KColorScheme::NeutralText);
+}
+
+QHash<int, QColor> PackageDelegate::parseCustomColors() const
+{
+    QHash<int, QColor> customColors;
+    QString colorConfig = MuonSettings::self()->statusColumnColors();
+    
+    if (colorConfig.isEmpty()) {
+        return customColors;
+    }
+    
+    // Parse format: "status:color;status:color"
+    // Example: "Installed:#00FF00;Upgradeable:#FFAA00;ToRemove:#FF0000"
+    QRegularExpression regex("(\\w+):(#?[0-9A-Fa-f]{6})");
+    QRegularExpressionMatchIterator i = regex.globalMatch(colorConfig);
+    
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString statusName = match.captured(1);
+        QString colorString = match.captured(2);
+        
+        // Map status names to QApt::Package enum values
+        int statusFlag = 0;
+        if (statusName == "NowBroken") statusFlag = QApt::Package::NowBroken;
+        else if (statusName == "Installed") statusFlag = QApt::Package::Installed;
+        else if (statusName == "Upgradeable") statusFlag = QApt::Package::Upgradeable;
+        else if (statusName == "NotInstalled") statusFlag = QApt::Package::NotInstalled;
+        else if (statusName == "ToKeep") statusFlag = QApt::Package::ToKeep;
+        else if (statusName == "ToInstall") statusFlag = QApt::Package::ToInstall;
+        else if (statusName == "ToUpgrade") statusFlag = QApt::Package::ToUpgrade;
+        else if (statusName == "ToRemove") statusFlag = QApt::Package::ToRemove;
+        else if (statusName == "ToPurge") statusFlag = QApt::Package::ToPurge;
+        else if (statusName == "ToReInstall") statusFlag = QApt::Package::ToReInstall;
+        else if (statusName == "ToDowngrade") statusFlag = QApt::Package::ToDowngrade;
+        
+        if (statusFlag != 0) {
+            QColor color(colorString);
+            if (color.isValid()) {
+                customColors[statusFlag] = color;
+            }
+        }
+    }
+    
+    return customColors;
 }

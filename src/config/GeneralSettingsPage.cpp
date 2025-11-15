@@ -120,7 +120,7 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     connect(m_autoCleanSpinbox, SIGNAL(valueChanged(int)), this, SLOT(emitAuthChanged()));
     connect(m_useSlowSearchCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
     connect(m_confirmOnQuitCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
-    connect(m_showVersionColumnsCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(m_showVersionColumnsCheckBox, SIGNAL(clicked()), this, SLOT(applyVersionColumnsSetting()));
     connect(m_statusColorsButton, SIGNAL(clicked()), this, SLOT(editStatusColors()));
 
     connect(m_autoCleanSpinbox, SIGNAL(valueChanged(int)),
@@ -225,6 +225,20 @@ void GeneralSettingsPage::emitAuthChanged()
     } else {
         emit changed();
     }
+}
+
+void GeneralSettingsPage::applyVersionColumnsSetting()
+{
+    // Apply the version columns setting immediately
+    MuonSettings *settings = MuonSettings::self();
+    settings->setShowVersionColumns(m_showVersionColumnsCheckBox->isChecked());
+    settings->save();
+    
+    // Emit signal to notify that column visibility should change
+    emit versionColumnsVisibilityChanged(m_showVersionColumnsCheckBox->isChecked());
+    
+    // Emit changed signal to enable Apply button
+    emit changed();
 }
 
 void GeneralSettingsPage::editStatusColors()

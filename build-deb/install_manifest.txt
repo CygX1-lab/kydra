@@ -1,4 +1,11 @@
+/usr/share/icons/hicolor/scalable/apps/org.kydra.app.svg
+/usr/share/icons/hicolor/scalable/apps/64-kydra.svg
+/usr/share/icons/hicolor/scalable/apps/128-kydra.svg
+/usr/share/icons/hicolor/scalable/apps/256-kydra.svg
+/usr/share/icons/hicolor/scalable/apps/kydra-symbolic.svg
+/usr/share/icons/hicolor/scalable/apps/kydra-symbolic-light.svg
 /usr/share/config.kcfg/muon.kcfg
 /usr/bin/kydra
 /usr/share/applications/org.kydra.app.desktop
 /usr/share/metainfo/org.kydra.app.metainfo.xml
+/usr/share/kxmlgui5/kydra/kydraui.rc

@@ -45,10 +45,14 @@ public:
     virtual void applySettings();
     virtual void restoreDefaults();
 
+Q_SIGNALS:
+    void versionColumnsVisibilityChanged(bool visible);
+
 private Q_SLOTS:
     void emitAuthChanged();
     void updateAutoCleanSpinboxSuffix();
     void editStatusColors();
+    void applyVersionColumnsSetting();
 
 private:
     QApt::Config *m_aptConfig;

@@ -243,9 +243,6 @@ GETTEXT_MSGFMT_EXECUTABLE:FILEPATH=/usr/bin/msgfmt
 //Path to a program.
 GETTEXT_MSGMERGE_EXECUTABLE:FILEPATH=/usr/bin/msgmerge
 
-//Path to a program.
-GTK_UPDATE_ICON_CACHE_EXECUTABLE:FILEPATH=/usr/bin/gtk-update-icon-cache
-
 //application desktop files (DATAROOTDIR/applications)
 KDE_INSTALL_APPDIR:PATH=
 

@@ -170,6 +170,13 @@ void MainWindow::loadSettings()
 {
     m_backend->setUndoRedoCacheSize(MuonSettings::self()->undoStackSize());
     m_managerWidget->invalidateFilter();
+    
+    // Update column visibility based on settings
+    if (MuonSettings::self()->showVersionColumns()) {
+        m_managerWidget->showVersionColumns();
+    } else {
+        m_managerWidget->hideVersionColumns();
+    }
 }
 
 void MainWindow::loadSplitterSizes()

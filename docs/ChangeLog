@@ -1,3 +1,18 @@
+Kydra Version 0.9.1
+====================
+
+- Bugfixes:
+  * Fix dependency installation issues with incorrect package names (qapt → libqapt3,
+    libkf5config5 → libkf5configcore5) that prevented successful package installation.
+  * Resolve icon theme installation problems by properly installing icon files with
+    correct ECM naming convention and CMake configuration.
+  * Fix missing UI resource file installation by adding proper installation of
+    kydraui.rc file to the Debian package.
+  * Fix settings persistence for version column visibility by correcting filename
+    from muonrc to kydrarc and ensuring proper initialization order.
+  * Ensure immediate feedback when toggling version column visibility settings with
+    proper signal/slot connections.
+
 Kydra Version 0.9.0
 ====================
 

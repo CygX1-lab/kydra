@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 PACKAGE_NAME="kydra"
-VERSION="0.9.0"
+VERSION="0.9.1"
 ARCHITECTURE="amd64"
 MAINTAINER="CygX1 <cygnx1@gmail.com>"
 DESCRIPTION="KDE-native package manager for Debian systems"
@@ -85,7 +85,7 @@ Section: admin
 Priority: optional
 Architecture: ${ARCHITECTURE}
 Maintainer: ${MAINTAINER}
-Depends: qapt, libqt5core5a, libqt5gui5, libqt5widgets5, libkf5config5, libkf5xmlgui5, libkf5i18n5, libkf5widgetsaddons5, libkf5auth5, libkf5coreaddons5, libkf5dbusaddons5, libkf5iconthemes5, libkf5service5, libqt5svg5
+Depends: libqapt3, libqt5core5a, libqt5gui5, libqt5widgets5, libkf5configcore5, libkf5xmlgui5, libkf5i18n5, libkf5widgetsaddons5, libkf5auth5, libkf5coreaddons5, libkf5dbusaddons5, libkf5iconthemes5, libkf5service5, libqt5svg5
 Recommends: plasma-desktop
 Suggests: software-properties-kde
 Description: ${DESCRIPTION}

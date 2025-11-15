@@ -67,11 +67,11 @@ include CMakeFiles/fetch-translations.dir/compiler_depend.make
 include CMakeFiles/fetch-translations.dir/progress.make
 
 CMakeFiles/fetch-translations: releaseme
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Downloading translations for system/muon branch trunk..."
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Downloading translations for kydra branch trunk..."
 	git -C /home/aardvark/git/kydra/build-deb/releaseme pull
 	cmake -E remove_directory /home/aardvark/git/kydra/build-deb/po
 	cmake -E remove_directory /home/aardvark/git/kydra/build-deb/poqm
-	ruby /home/aardvark/git/kydra/build-deb/releaseme/fetchpo.rb --origin trunk --project system/muon --output-dir /home/aardvark/git/kydra/build-deb/po --output-poqm-dir /home/aardvark/git/kydra/build-deb/poqm /home/aardvark/git/kydra
+	ruby /home/aardvark/git/kydra/build-deb/releaseme/fetchpo.rb --origin trunk --project kydra --output-dir /home/aardvark/git/kydra/build-deb/po --output-poqm-dir /home/aardvark/git/kydra/build-deb/poqm /home/aardvark/git/kydra
 
 releaseme:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/aardvark/git/kydra/build-deb/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Fetching releaseme scripts to download translations..."

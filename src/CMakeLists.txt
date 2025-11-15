@@ -69,3 +69,4 @@ install(TARGETS kydra ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 install( PROGRAMS ../data/org.kydra.app.desktop  DESTINATION ${KDE_INSTALL_APPDIR} )
 install( FILES ../data/org.kydra.app.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR} )
+install( FILES muonui.rc DESTINATION ${KDE_INSTALL_KXMLGUI5DIR}/kydra RENAME kydraui.rc )

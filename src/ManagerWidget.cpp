@@ -47,14 +47,41 @@ ManagerWidget::ManagerWidget(QWidget *parent)
     setPackagesType(PackageWidget::AvailablePackages);
 
     hideHeaderLabel();
-    restoreColumnsState(QByteArray::fromBase64(MuonSettings::self()->managerListColumns().toLatin1()));
+    
+    // Restore saved column state first
+    QByteArray savedState = QByteArray::fromBase64(MuonSettings::self()->managerListColumns().toLatin1());
+    if (!savedState.isEmpty()) {
+        restoreColumnsState(savedState);
+    }
+    
+    // Then apply the version column setting to override the saved state
+    if (MuonSettings::self()->showVersionColumns()) {
+        // Show installed and available version columns (indices 4 and 5)
+        m_packageView->header()->setSectionHidden(4, false); // Installed Version
+        m_packageView->header()->setSectionHidden(5, false); // Available Version
+    } else {
+        // Hide version columns if setting is false
+        m_packageView->header()->setSectionHidden(4, true);  // Installed Version
+        m_packageView->header()->setSectionHidden(5, true);  // Available Version
+    }
+    
     showSearchEdit();
 }
 
 ManagerWidget::~ManagerWidget()
 {
+    // Save current column state
     MuonSettings::self()->setManagerListColumns(saveColumnsState().toBase64());
-    MuonSettings::self()->save();
+    
+    // Save the version columns setting based on current visibility
+    // Only update this if there's actual column state to save
+    QByteArray currentState = saveColumnsState();
+    if (!currentState.isEmpty()) {
+        MuonSettings *settings = MuonSettings::self();
+        bool versionColumnsVisible = !m_packageView->header()->isSectionHidden(4) && !m_packageView->header()->isSectionHidden(5);
+        settings->setShowVersionColumns(versionColumnsVisible);
+        settings->save();
+    }
 }
 
 void ManagerWidget::reload()
@@ -86,6 +113,22 @@ void ManagerWidget::filterByOrigin(const QString &originName)
 void ManagerWidget::filterByArchitecture(const QString &arch)
 {
     m_proxyModel->setArchFilter(arch);
+}
+
+void ManagerWidget::showVersionColumns()
+{
+    if (m_packageView && m_packageView->header()) {
+        m_packageView->header()->setSectionHidden(4, false); // Installed Version
+        m_packageView->header()->setSectionHidden(5, false); // Available Version
+    }
+}
+
+void ManagerWidget::hideVersionColumns()
+{
+    if (m_packageView && m_packageView->header()) {
+        m_packageView->header()->setSectionHidden(4, true);  // Installed Version
+        m_packageView->header()->setSectionHidden(5, true);  // Available Version
+    }
 }
 
 #include "ManagerWidget.moc"

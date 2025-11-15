@@ -20,6 +20,6 @@
 #ifndef KYDRAVERSION_H
 #define KYDRAVERSION_H
 
-static const char version[] = "0.9.0";
+static const char version[] = "0.9.1";
 
 #endif

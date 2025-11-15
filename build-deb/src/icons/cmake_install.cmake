@@ -43,16 +43,14 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "kydra" OR NOT CMAKE_INSTALL_COMPONENT)
-  
-    set(DESTDIR_VALUE "$ENV{DESTDIR}")
-    if (NOT DESTDIR_VALUE)
-        execute_process(COMMAND "/usr/bin/cmake" -E touch "/usr/share/icons/hicolor")
-        set(HAVE_GTK_UPDATE_ICON_CACHE_EXEC /usr/bin/gtk-update-icon-cache)
-        if (HAVE_GTK_UPDATE_ICON_CACHE_EXEC)
-            execute_process(COMMAND /usr/bin/gtk-update-icon-cache -q -t -i . WORKING_DIRECTORY "/usr/share/icons/hicolor")
-        endif ()
-    endif (NOT DESTDIR_VALUE)
-    
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps" TYPE FILE FILES
+    "/home/aardvark/git/kydra/src/icons/org.kydra.app.svg"
+    "/home/aardvark/git/kydra/src/icons/64-kydra.svg"
+    "/home/aardvark/git/kydra/src/icons/128-kydra.svg"
+    "/home/aardvark/git/kydra/src/icons/256-kydra.svg"
+    "/home/aardvark/git/kydra/src/icons/kydra-symbolic.svg"
+    "/home/aardvark/git/kydra/src/icons/kydra-symbolic-light.svg"
+    )
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT

@@ -44,6 +44,9 @@ public Q_SLOTS:
     void filterByStatus(const QApt::Package::State state);
     void filterByOrigin(const QString &originName);
     void filterByArchitecture(const QString &arch);
+    
+    void showVersionColumns();
+    void hideVersionColumns();
 };
 
 #endif

@@ -49,6 +49,7 @@ ManagerSettingsDialog::ManagerSettingsDialog(QWidget* parent, QApt::Config *aptC
     generalSettingsFrame->setIcon(QIcon::fromTheme("system-run"));
     connect(generalPage, SIGNAL(changed()), this, SLOT(changed()));
     connect(generalPage, SIGNAL(authChanged()), this, SLOT(authChanged()));
+    connect(generalPage, SIGNAL(versionColumnsVisibilityChanged(bool)), this, SIGNAL(settingsChanged()));
 
     m_pages.insert(generalPage);
 

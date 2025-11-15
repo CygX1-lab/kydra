@@ -75,6 +75,10 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "kydra" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/metainfo" TYPE FILE FILES "/home/aardvark/git/kydra/src/../data/org.kydra.app.metainfo.xml")
 endif()
 
+if(CMAKE_INSTALL_COMPONENT STREQUAL "kydra" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/kxmlgui5/kydra" TYPE FILE RENAME "kydraui.rc" FILES "/home/aardvark/git/kydra/src/muonui.rc")
+endif()
+
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)

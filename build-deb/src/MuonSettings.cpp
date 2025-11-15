@@ -27,7 +27,7 @@ MuonSettings *MuonSettings::self()
 }
 
 MuonSettings::MuonSettings( )
-  : KConfigSkeleton( QStringLiteral( "muonrc" ) )
+  : KConfigSkeleton( QStringLiteral( "kydrarc" ) )
 {
   Q_ASSERT(!s_globalMuonSettings()->q);
   s_globalMuonSettings()->q = this;

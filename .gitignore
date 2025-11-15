@@ -47,3 +47,7 @@ buid-deb/
 # debug information files
 *.dwo
 >>>>>>> a80fafd258716893d6e6f8a8c30c87e2ee239c12
+
+build/
+build-deb/
+build-test/

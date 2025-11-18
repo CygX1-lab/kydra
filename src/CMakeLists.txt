@@ -1,5 +1,11 @@
 add_subdirectory(icons)
 
+# QML files for Kirigami UI
+set(kydra_QML_SRCS
+    qml/KydraKirigami.qml
+    qml/PackageDetailsPanel.qml
+)
+
 set(kydra_SRCS
     main.cpp
     MainWindow.cpp
@@ -13,6 +19,7 @@ set(kydra_SRCS
     DetailsTabs/TechnicalDetailsTab.cpp
     DetailsTabs/VersionTab.cpp
     DetailsWidget.cpp
+    EnhancedDetailsWidget.cpp
     DownloadModel/DownloadModel.cpp
     DownloadModel/DownloadDelegate.cpp
     FilterWidget/ArchitectureFilter.cpp
@@ -35,6 +42,7 @@ set(kydra_SRCS
     config/RepositorySettingsPage.cpp
     settings/SettingsPageBase.cpp
     DonateDialog.cpp
+    KirigamiBackend.cpp
     
     muonapt/ChangesDialog.cpp
     muonapt/MuonStrings.cpp
@@ -64,6 +72,11 @@ target_link_libraries(kydra KF5::KIOWidgets
                            Qt5::Concurrent
                            QApt::Main)
 
+if(WITH_KIRIGAMI)
+    target_link_libraries(kydra KF5::Kirigami2 Qt5::Qml Qt5::Quick)
+    target_compile_definitions(kydra PRIVATE -DHAVE_KIRIGAMI)
+endif()
+
 install(TARGETS kydra ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
@@ -72,3 +85,6 @@ install(TARGETS kydra ${INSTALL_TARGETS_DEFAULT_ARGS} )
 install( PROGRAMS ../data/org.kydra.app.desktop  DESTINATION ${KDE_INSTALL_APPDIR} )
 install( FILES ../data/org.kydra.app.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR} )
 install( FILES muonui.rc DESTINATION ${KDE_INSTALL_KXMLGUI5DIR}/kydra RENAME kydraui.rc )
+
+# Install QML files
+install(FILES ${kydra_QML_SRCS} DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/kydra)

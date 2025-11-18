@@ -56,7 +56,7 @@ PackageIconExtractor::~PackageIconExtractor()
 QIcon PackageIconExtractor::getPackageIcon(QApt::Package* package)
 {
     if (!package) {
-        return QIcon::fromTheme("application-x-deb");
+        return QIcon::fromTheme("package-x-generic");
     }
 
     const QString packageName = package->name();
@@ -72,9 +72,33 @@ QIcon PackageIconExtractor::getPackageIcon(QApt::Package* package)
     // Try to extract icon from package
     QIcon packageIcon = extractIconFromPackage(package);
     
-    // If no specific icon found, fall back to generic deb icon
+    // If no specific icon found, fall back to appropriate KDE icons based on package type
     if (packageIcon.isNull()) {
-        packageIcon = QIcon::fromTheme("application-x-deb");
+        // Use different icons based on package category/section
+        QString section = QString(package->section()).toLower();
+        
+        if (section.contains("games") || section.contains("game")) {
+            packageIcon = QIcon::fromTheme("applications-games");
+        } else if (section.contains("devel") || section.contains("development")) {
+            packageIcon = QIcon::fromTheme("applications-development");
+        } else if (section.contains("graphics") || section.contains("image")) {
+            packageIcon = QIcon::fromTheme("applications-graphics");
+        } else if (section.contains("multimedia") || section.contains("sound") || section.contains("video")) {
+            packageIcon = QIcon::fromTheme("applications-multimedia");
+        } else if (section.contains("network") || section.contains("web") || section.contains("internet")) {
+            packageIcon = QIcon::fromTheme("applications-internet");
+        } else if (section.contains("office") || section.contains("text")) {
+            packageIcon = QIcon::fromTheme("applications-office");
+        } else if (section.contains("system") || section.contains("admin")) {
+            packageIcon = QIcon::fromTheme("applications-system");
+        } else if (section.contains("education") || section.contains("science")) {
+            packageIcon = QIcon::fromTheme("applications-science");
+        } else if (section.contains("utilities") || section.contains("tools")) {
+            packageIcon = QIcon::fromTheme("applications-utilities");
+        } else {
+            // Default to generic package icon
+            packageIcon = QIcon::fromTheme("package-x-generic");
+        }
     }
 
     // Cache the result

@@ -29,6 +29,8 @@ class QSplitter;
 class QStackedWidget;
 class QToolBox;
 class KDialog;
+class QQmlApplicationEngine;
+class KirigamiBackend;
 
 class ManagerSettingsDialog;
 class FilterWidget;
@@ -87,9 +89,16 @@ private:
     StatusWidget *m_statusWidget;
     bool m_reloading;
 
+    // Kirigami UI support
+    QQmlApplicationEngine *m_qmlEngine;
+    KirigamiBackend *m_kirigamiBackend;
+    bool m_useKirigamiUI;
+
 private Q_SLOTS:
     void initGUI();
     void initObject();
+    void initTraditionalUI();
+    void initKirigamiUI();
     void loadSplitterSizes();
     void loadSettings();
     void saveSplitterSizes();

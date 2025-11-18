@@ -44,13 +44,13 @@ void StatusFilter::populate()
 
     QStandardItem *installedItem = new QStandardItem;
     items.append(installedItem);
-    installedItem->setIcon(QIcon::fromTheme("download"));
+    installedItem->setIcon(QIcon::fromTheme("emblem-ok"));
     installedItem->setText(MuonStrings::global()->packageStateName(QApt::Package::Installed));
     installedItem->setData(QApt::Package::Installed);
 
     QStandardItem *notInstalledItem = new QStandardItem;
     items.append(notInstalledItem);
-    notInstalledItem->setIcon(QIcon::fromTheme("application-x-deb"));
+    notInstalledItem->setIcon(QIcon::fromTheme("package-x-generic"));
     notInstalledItem->setText(MuonStrings::global()->packageStateName(QApt::Package::NotInstalled));
     notInstalledItem->setData(QApt::Package::NotInstalled);
 

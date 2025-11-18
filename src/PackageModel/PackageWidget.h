@@ -36,6 +36,7 @@ class QVBoxLayout;
 class KPixmapSequenceOverlayPainter;
 
 class DetailsWidget;
+class EnhancedDetailsWidget;
 class PackageModel;
 class PackageProxyModel;
 class PackageView;
@@ -71,7 +72,7 @@ public:
 protected:
     QApt::Backend *m_backend;
     PackageView *m_packageView;
-    DetailsWidget *m_detailsWidget;
+    EnhancedDetailsWidget *m_detailsWidget;
     PackageModel *m_model;
     PackageProxyModel *m_proxyModel;
     KPixmapSequenceOverlayPainter *m_busyWidget;

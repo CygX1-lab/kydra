@@ -1,3 +1,32 @@
+kydra (1.1.0-1) unstable; urgency=medium
+
+  * Full Kirigami framework integration for modern Plasma-native UI
+  * Kirigami.ApplicationWindow with global drawer navigation
+  * Card-based layout with Kirigami.Card for package entries
+  * Built-in animations and transitions using Kirigami behaviors
+  * Adaptive layouts that work across different screen sizes
+  * Standard KDE action buttons with proper icon theming
+  * Enhanced Search & Filtering Experience:
+    * Floating search bar with subtle drop shadow for modern visual appeal
+    * Smart category filter chips (All, Applications, Development, Graphics, Multimedia, System)
+    * Real-time search result highlighting with bold text for matched terms
+    * Search results summary showing package count
+    * Category-based filtering with intelligent package section mapping
+    * Instant visual feedback during search operations
+  * Footer toolbar with Kirigami.ActionToolBar
+  * System theme integration with Kirigami.Theme.inherit
+  * Context drawer for additional actions
+  * Hover effects and smooth transitions throughout UI
+  * Created KirigamiBackend bridge class for QML/C++ integration
+  * PackageListModel for QML-accessible package data
+  * Support for both traditional widget-based and Kirigami QML UI modes
+  * Backend infrastructure for runtime UI mode switching
+  * CMake integration for Kirigami framework dependencies
+  * Added category filtering functionality with section-to-category mapping
+  * Implemented search term highlighting in QML frontend
+
+ -- Jonathan Thomas <echidnaman@kubuntu.org>  Mon, 18 Nov 2025 08:15:00 +0100
+
 kydra (1.0.0-1) unstable; urgency=medium
 
   * Add package-specific icon extraction from deb packages

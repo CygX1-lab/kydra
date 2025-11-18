@@ -49,6 +49,7 @@
 // Own includes
 #include "muonapt/ChangesDialog.h"
 #include "DetailsWidget.h"
+#include "EnhancedDetailsWidget.h"
 #include "MuonSettings.h"
 #include "PackageModel.h"
 #include "PackageProxyModel.h"
@@ -121,7 +122,7 @@ PackageWidget::PackageWidget(QWidget *parent)
     }
     topVBox->addWidget(m_packageView);
 
-    m_detailsWidget = new DetailsWidget;
+    m_detailsWidget = new EnhancedDetailsWidget;
     connect(m_detailsWidget, SIGNAL(setInstall(QApt::Package*)),
             this, SLOT(setInstall(QApt::Package*)));
     connect(m_detailsWidget, SIGNAL(setRemove(QApt::Package*)),
@@ -168,7 +169,7 @@ PackageWidget::PackageWidget(QWidget *parent)
 void PackageWidget::setupActions()
 {
     m_installAction = new QAction(this);
-    m_installAction->setIcon(QIcon::fromTheme("download"));
+    m_installAction->setIcon(QIcon::fromTheme("list-add"));
     m_installAction->setText(i18nc("@action:inmenu", "Mark for Installation"));
     connect(m_installAction, SIGNAL(triggered()), this, SLOT(setPackagesInstall()));
 

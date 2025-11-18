@@ -31,9 +31,15 @@
 #include <QAction>
 #include <QStyle>
 #include <QProcess>
+#ifdef HAVE_KIRIGAMI
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QQuickWindow>
+#endif
 
 // Own includes
 #include "DonateDialog.h"
+#include "KirigamiBackend.h"
 
 // KDE includes
 #include <KActionCollection>
@@ -68,15 +74,104 @@ MainWindow::MainWindow()
     , m_reviewWidget(nullptr)
     , m_transWidget(nullptr)
     , m_reloading(false)
-
+    , m_qmlEngine(nullptr)
+    , m_kirigamiBackend(nullptr)
+    , m_useKirigamiUI(false)
 {
-    initGUI();
-    QTimer::singleShot(10, this, [this]() { initObject(); });
+    // Check if Kirigami is available and user wants to use it
+#ifdef HAVE_KIRIGAMI
+    m_useKirigamiUI = MuonSettings::self()->useKirigamiUI();
+#endif
+    
+    if (m_useKirigamiUI) {
+        initKirigamiUI();
+    } else {
+        initTraditionalUI();
+    }
 }
 
 MainWindow::~MainWindow()
 {
     MuonSettings::self()->save();
+    
+#ifdef HAVE_KIRIGAMI
+    if (m_qmlEngine) {
+        delete m_qmlEngine;
+    }
+    if (m_kirigamiBackend) {
+        delete m_kirigamiBackend;
+    }
+#endif
+}
+
+void MainWindow::initTraditionalUI()
+{
+    initGUI();
+    QTimer::singleShot(10, this, [this]() { initObject(); });
+}
+
+void MainWindow::initKirigamiUI()
+{
+#ifdef HAVE_KIRIGAMI
+    // Initialize QML engine
+    m_qmlEngine = new QQmlApplicationEngine(this);
+    
+    // Create Kirigami backend bridge
+    m_kirigamiBackend = new KirigamiBackend(this);
+    
+    // Set up backend first
+    m_backend = new QApt::Backend(this);
+    QApt::FrontendCaps caps = (QApt::FrontendCaps)(QApt::DebconfCap | QApt::MediumPromptCap |
+                               QApt::ConfigPromptCap | QApt::UntrustedPromptCap);
+    m_backend->setFrontendCaps(caps);
+    m_kirigamiBackend->setBackend(m_backend);
+    
+    // Expose backend to QML
+    m_qmlEngine->rootContext()->setContextProperty("kydraBackend", m_kirigamiBackend);
+    m_qmlEngine->rootContext()->setContextProperty("qaBackend", m_backend);
+    
+    // Load main QML file
+    m_qmlEngine->load(QUrl(QStringLiteral("qrc:/qml/KydraKirigami.qml")));
+    
+    // Connect backend signals
+    connect(m_kirigamiBackend, &KirigamiBackend::showPreviewDialog,
+            this, &MainWindow::previewChanges);
+    connect(m_kirigamiBackend, &KirigamiBackend::showTransactionDialog,
+            this, [this]() {
+        // Handle transaction dialog
+        if (m_trans) {
+            m_stack->setCurrentWidget(m_transWidget);
+        }
+    });
+    
+    // Initialize backend
+    QAptActions* actions = QAptActions::self();
+    actions->setMainWindow(this);
+    connect(actions, &QAptActions::changesReverted, this, &MainWindow::revertChanges);
+    
+    // Set up window properties
+    if (!m_qmlEngine->rootObjects().isEmpty()) {
+        QQuickWindow *window = qobject_cast<QQuickWindow*>(m_qmlEngine->rootObjects().first());
+        if (window) {
+            // Set window properties
+            window->setTitle(i18n("Kydra Package Manager"));
+            window->setMinimumSize(QSize(800, 600));
+            
+            // Connect window signals
+            connect(window, &QQuickWindow::closing, this, [this](QQuickCloseEvent *event) {
+                if (!queryClose()) {
+                    event->setAccepted(false);
+                }
+            });
+        }
+    }
+    
+    // Emit backend ready signal
+    QTimer::singleShot(10, this, [this]() {
+        emit backendReady(m_backend);
+        setActionsEnabled(true);
+    });
+#endif
 }
 
 void MainWindow::initGUI()

@@ -58,7 +58,7 @@ MainTab::MainTab(QWidget *parent)
     buttonBoxLayout->addWidget(m_buttonLabel);
 
     m_installButton = new QPushButton(buttonBox);
-    m_installButton->setIcon(QIcon::fromTheme("download"));
+    m_installButton->setIcon(QIcon::fromTheme("list-add"));
     m_installButton->setText(i18nc("@action:button", "Installation"));
     connect(m_installButton, SIGNAL(clicked()), this, SLOT(emitSetInstall()));
     buttonBoxLayout->addWidget(m_installButton);

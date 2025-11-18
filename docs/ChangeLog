@@ -1,3 +1,62 @@
+Kydra Version 1.1.0
+====================
+
+- Features:
+  * Full Kirigami framework integration for modern Plasma-native UI
+  * Kirigami.ApplicationWindow with global drawer navigation
+  * Card-based layout with Kirigami.Card for package entries
+  * Built-in animations and transitions using Kirigami behaviors
+  * Adaptive layouts that work across different screen sizes
+  * Standard KDE action buttons with proper icon theming
+  * **Enhanced Search & Filtering Experience**:
+    * Floating search bar with subtle drop shadow for modern visual appeal
+    * Smart category filter chips (All, Applications, Development, Graphics, Multimedia, System)
+    * Real-time search result highlighting with bold text for matched terms
+    * Search results summary showing package count
+    * Category-based filtering with intelligent package section mapping
+    * Instant visual feedback during search operations
+  * **Polished Metadata Panels**:
+    * **Gradient header with icon + name**: Beautiful gradient background with package icon and name
+    * **Long descriptions with improved typography**: Enhanced text rendering with Noto Sans font, 11pt size, and 1.6 line height
+    * **Tabbed interface**: Clean Overview | Files | Dependencies | Versions tabs with modern styling
+    * **Animated transitions between tabs**: Smooth fade animations (200ms duration) for tab switching
+    * **Enhanced action buttons**: Modern Install/Update/Remove buttons with proper KDE icons
+    * **Improved visual hierarchy**: Better spacing, rounded corners, and drop shadows
+    * **Better typography**: Consistent font sizing, improved readability, and proper text formatting
+    * **Modern card-based layout**: Clean card design for content sections with proper margins
+    * **Support information display**: Shows package support status and end-of-life dates
+    * **Technical details organization**: Well-structured maintainer, origin, and section information
+  * Footer toolbar with Kirigami.ActionToolBar
+  * System theme integration with Kirigami.Theme.inherit
+  * Context drawer for additional actions
+  * Hover effects and smooth transitions throughout UI
+  * **Use KDE Icons Everywhere**: Consistent iconography with proper Plasma icon set
+    * Enhanced PackageIconExtractor to use category-specific KDE icons (applications-games,
+      applications-development, applications-graphics, applications-multimedia, etc.)
+    * Updated QML UI to use proper KDE icons: package-x-generic, system-software-update,
+      applications-utilities, configure, document-preview-archive, dialog-ok-apply
+    * Replaced generic icons with appropriate KDE icons in status filters and action buttons
+    * Improved package fallback icons based on package sections for better visual hierarchy
+    * Consistent icon theming across both traditional widget and Kirigami QML interfaces
+
+- Technical Improvements:
+   * Created KirigamiBackend bridge class for QML/C++ integration
+   * PackageListModel for QML-accessible package data
+   * Support for both traditional widget-based and Kirigami QML UI modes
+   * Backend infrastructure for runtime UI mode switching
+   * CMake integration for Kirigami framework dependencies
+   * Enhanced PackageIconExtractor with intelligent category-based icon selection
+   * Added category filtering functionality with section-to-category mapping
+   * Implemented search term highlighting in QML frontend
+   * **EnhancedDetailsWidget**: New polished metadata panel implementation
+     * Gradient header rendering with QLinearGradient for modern visual appeal
+     * Custom typography improvements with CSS-like styling for text browsers
+     * Tab transition animations using QPropertyAnimation for smooth UX
+     * Shadow effects with QGraphicsDropShadowEffect for depth
+     * Responsive layout with proper spacing and margins
+     * Integration with existing PackageWidget architecture
+     * Maintains full compatibility with existing signal/slot connections
+
 Kydra Version 1.0.0
 ====================
 

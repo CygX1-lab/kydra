@@ -45,6 +45,7 @@
 
 // Own includes
 #include "PackageModel/PackageIconExtractor.h"
+#include "PackageModel/LocalPackageManager.h"
 #include "muonapt/MuonStrings.h"
 
 EnhancedDetailsWidget::EnhancedDetailsWidget(QWidget *parent)
@@ -55,6 +56,7 @@ EnhancedDetailsWidget::EnhancedDetailsWidget(QWidget *parent)
     , m_headerGradientEnd(QPalette().color(QPalette::Window).darker(110))
     , m_tabTransitionDuration(200)
     , m_isVirtual(false)
+    , m_isLocal(false)
 {
     setupUI();
     hide(); // Hide until a package is selected
@@ -310,7 +312,7 @@ void EnhancedDetailsWidget::applyGradientHeader()
     QPalette palette = m_headerWidget->palette();
     QLinearGradient gradient(0, 0, m_headerWidget->width(), m_headerWidget->height());
     
-    if (m_isVirtual) {
+    if (m_isLocal) {
         // Distinctive gradient for local packages (Blue-ish)
         gradient.setColorAt(0.0, QColor(66, 133, 244).lighter(150));
         gradient.setColorAt(1.0, QColor(66, 133, 244).lighter(110));
@@ -414,6 +416,7 @@ void EnhancedDetailsWidget::setPackage(QApt::Package *package)
 {
     m_package = package;
     m_isVirtual = false;
+    m_isLocal = false;
     
     if (!package) {
         clear();
@@ -425,6 +428,15 @@ void EnhancedDetailsWidget::setPackage(QApt::Package *package)
     m_nameLabel->setText(package->name());
     m_descriptionLabel->setText(package->shortDescription());
     m_versionLabel->setText(i18nc("@label", "Version: %1", package->version()));
+    
+    // Check if it's a local package
+    if (LocalPackageManager::instance()->isLocalInstallPackage(package->name())) {
+        m_isLocal = true;
+        m_versionLabel->setText(i18nc("@label", "Version: %1 (Local Package)", package->version()));
+    }
+    
+    // Update gradient header
+    applyGradientHeader();
     
     // Update button visibility based on package state
     bool isInstalled = package->isInstalled();
@@ -444,6 +456,7 @@ void EnhancedDetailsWidget::setVirtualPackage(const VirtualPackage &package)
 {
     m_virtualPackage = package;
     m_isVirtual = true;
+    m_isLocal = true;
     m_package = nullptr;
     
     // Update header information
@@ -478,6 +491,7 @@ void EnhancedDetailsWidget::clear()
 {
     m_package = nullptr;
     m_isVirtual = false;
+    m_isLocal = false;
     
     // Clear header
     m_iconLabel->clear();

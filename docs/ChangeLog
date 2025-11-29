@@ -1,4 +1,4 @@
-Kydra Version 1.3.3
+Kydra Version 1.4.0
 ====================
 
 - Features:
@@ -6,16 +6,24 @@ Kydra Version 1.3.3
     * Automatically extract and display icons from local .deb files.
     * Added colorful "Local" tag to package list for both virtual and installed local packages.
     * Improved details view for local packages with "Local Package" badge and distinct visual styling.
+    * Enhanced filter sidebar with category icons and improved list styling.
+    * Visual Masterpiece: Redesigned package list with modern card-style layout (rounded corners, shadows) and applied a premium global stylesheet.
 
 - Bugfixes:
-  * Fixed uninstalled local packages not appearing in the "Local files" filter if they also exist in a repository.
-  * Fixed `PackageProxyModel` filtering logic to correctly handle and display virtual packages (uninstalled local files).
   * Fixed application hang when loading local packages due to synchronous icon extraction.
   * Fixed potential crash and DBus errors when installing local packages by validating files and managing processes correctly.
   * Fixed UI interactions for virtual packages:
     * Resolved crash when right-clicking on virtual packages.
     * Enabled "Install" action and context menu for virtual packages.
     * Fixed missing details display in the package information panel.
+  * Restored distinctive blue gradient header for installed local packages.
+
+Kydra Version 1.3.3
+====================
+
+- Bugfixes:
+  * Fixed uninstalled local packages not appearing in the "Local files" filter if they also exist in a repository.
+  * Fixed `PackageProxyModel` filtering logic to correctly handle and display virtual packages (uninstalled local files).
 
 Kydra Version 1.3.2
 ====================

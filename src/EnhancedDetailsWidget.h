@@ -139,6 +139,7 @@ private:
     QApt::Package *m_package;
     VirtualPackage m_virtualPackage;
     bool m_isVirtual;
+    bool m_isLocal;
     
     // Styling
     QColor m_headerGradientStart;

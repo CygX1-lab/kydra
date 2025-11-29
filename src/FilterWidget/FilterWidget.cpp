@@ -78,6 +78,31 @@ FilterWidget::FilterWidget(QWidget *parent)
 
     setWidget(m_filterBox);
     setEnabled(false);
+    
+    // Apply styling
+    QString listStyle = 
+        "QListView {"
+        "   background-color: palette(base);"
+        "   border: none;"
+        "   outline: 0;"  // Remove focus dotted line
+        "}"
+        "QListView::item {"
+        "   padding: 6px;"  // Increase padding for better spacing
+        "   border-bottom: 1px solid palette(midlight);"
+        "}"
+        "QListView::item:selected {"
+        "   background-color: palette(highlight);"
+        "   color: palette(highlighted-text);"
+        "}"
+        "QListView::item:hover:!selected {"
+        "   background-color: palette(midlight);"
+        "}"
+        ;
+        
+    for (QListView *view : m_listViews) {
+        view->setStyleSheet(listStyle);
+        view->setIconSize(QSize(22, 22)); // Slightly larger icons
+    }
 }
 
 FilterWidget::~FilterWidget()

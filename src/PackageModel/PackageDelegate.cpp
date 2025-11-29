@@ -45,7 +45,7 @@ PackageDelegate::PackageDelegate(QObject *parent)
     , m_supportedEmblem(QIcon::fromTheme("emblem-ok-symbolic").pixmap(QSize(12,12)))
     , m_lockedEmblem(QIcon::fromTheme("object-locked-symbolic").pixmap(QSize(12,12)))
 {
-    m_spacing  = 4;
+    m_spacing  = 8; // Increased spacing for card layout
 
     m_iconSize = KIconLoader::SizeSmallMedium;
 }
@@ -76,8 +76,39 @@ void PackageDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
 
 void PackageDelegate::paintBackground(QPainter *painter, const QStyleOptionViewItem &option) const
 {
-    QStyle *style = option.widget ? option.widget->style() : QApplication::style();
-    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, option.widget);
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    // Card dimensions with margins
+    int margin = 6;
+    QRect cardRect = option.rect.adjusted(margin, margin/2, -margin, -margin/2);
+    
+    // Draw shadow
+    QColor shadowColor(0, 0, 0, 20);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(shadowColor);
+    painter->drawRoundedRect(cardRect.adjusted(2, 2, 2, 2), 6, 6);
+
+    // Draw card background
+    QColor bgColor = option.palette.color(QPalette::Base);
+    if (option.state & QStyle::State_Selected) {
+        bgColor = option.palette.color(QPalette::Highlight).lighter(160); // Subtle highlight
+    } else if (option.state & QStyle::State_MouseOver) {
+        bgColor = option.palette.color(QPalette::Base).darker(105);
+    }
+    
+    painter->setBrush(bgColor);
+    
+    // Border
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(QPen(option.palette.color(QPalette::Highlight), 1.5));
+    } else {
+        painter->setPen(QPen(option.palette.color(QPalette::Mid), 1));
+    }
+    
+    painter->drawRoundedRect(cardRect, 6, 6);
+    
+    painter->restore();
 }
 
 void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionViewItem &option , const QModelIndex &index) const
@@ -213,7 +244,12 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
 
     p.end();
 
-    painter->drawPixmap(option.rect.topLeft(), pixmap);
+    // Adjust rect for card layout
+    int margin = 6;
+    QRect cardRect = option.rect.adjusted(margin, margin/2, -margin, -margin/2);
+    
+    // Draw pixmap within card
+    painter->drawPixmap(cardRect.topLeft(), pixmap);
 }
 
 void PackageDelegate::paintText(QPainter *painter, const QStyleOptionViewItem &option , const QModelIndex &index) const
@@ -347,7 +383,7 @@ QSize PackageDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
     default:
         break;
     }
-    size.setHeight(option.fontMetrics.height() * 2 + m_spacing);
+    size.setHeight(option.fontMetrics.height() * 2 + m_spacing * 3); // Increased height for margins
 
     return size;
 }

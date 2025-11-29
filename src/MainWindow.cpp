@@ -848,6 +848,78 @@ void MainWindow::applyKDEColorScheme()
         ));
     }
     
+    // Apply Global "Visual Masterpiece" Stylesheet
+    QString globalStyle = R"(
+        /* Global Modernization */
+        QWidget {
+            font-family: 'Noto Sans', sans-serif;
+        }
+        
+        /* Sidebar (FilterWidget) */
+        QDockWidget {
+            titlebar-close-icon: url(:/icons/close.png);
+            titlebar-normal-icon: url(:/icons/float.png);
+            border: none;
+        }
+        
+        QToolBox::tab {
+            background: palette(button);
+            border-radius: 4px;
+            color: palette(button-text);
+            padding: 6px;
+            margin: 2px;
+        }
+        
+        QToolBox::tab:selected {
+            background: palette(highlight);
+            color: palette(highlighted-text);
+            font-weight: bold;
+        }
+        
+        /* Modern Scrollbars */
+        QScrollBar:vertical {
+            border: none;
+            background: palette(base);
+            width: 10px;
+            margin: 0px 0px 0px 0px;
+            border-radius: 5px;
+        }
+        QScrollBar::handle:vertical {
+            background: palette(mid);
+            min-height: 20px;
+            border-radius: 5px;
+        }
+        QScrollBar::handle:vertical:hover {
+            background: palette(midlight);
+        }
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+            height: 0px;
+        }
+        
+        /* Splitter */
+        QSplitter::handle {
+            background: palette(mid);
+            width: 1px;
+        }
+        
+        /* Toolbars */
+        QToolBar {
+            border: none;
+            background: palette(window);
+            spacing: 10px;
+            padding: 5px;
+        }
+        
+        /* Status Bar */
+        QStatusBar {
+            background: palette(window);
+            border-top: 1px solid palette(midlight);
+            color: palette(text);
+        }
+    )";
+    
+    qApp->setStyleSheet(qApp->styleSheet() + globalStyle);
+    
     // Apply KDE accent color if available
     QColor accentColor = scheme.decoration(KColorScheme::FocusColor).color();
     if (accentColor.isValid()) {

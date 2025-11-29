@@ -38,6 +38,46 @@ CategoryFilter::CategoryFilter(QObject *parent, QApt::Backend *backend)
 {
 }
 
+QString getIconForGroup(const QString &group)
+{
+    if (group == "Administration") return "applications-system";
+    if (group == "Base System") return "system-help";
+    if (group == "Communication") return "applications-internet";
+    if (group == "Development") return "applications-development";
+    if (group == "Documentation") return "help-contents";
+    if (group == "Editors") return "accessories-text-editor";
+    if (group == "Electronics") return "applications-engineering";
+    if (group == "Embedded Devices") return "applications-system";
+    if (group == "Games") return "applications-games";
+    if (group == "GNOME Desktop") return "preferences-desktop";
+    if (group == "Graphics") return "applications-graphics";
+    if (group == "Ham Radio") return "network-wireless";
+    if (group == "Interpreters") return "applications-development";
+    if (group == "KDE Desktop") return "kde";
+    if (group == "Libraries") return "applications-other";
+    if (group == "Mail") return "internet-mail";
+    if (group == "Mathematics") return "applications-education";
+    if (group == "Miscellaneous") return "applications-other";
+    if (group == "Multimedia") return "applications-multimedia";
+    if (group == "Networking") return "applications-internet";
+    if (group == "News") return "internet-news-reader";
+    if (group == "Old Libraries") return "applications-other";
+    if (group == "Other") return "applications-other";
+    if (group == "Perl") return "applications-development";
+    if (group == "Python") return "applications-development";
+    if (group == "Science") return "applications-science";
+    if (group == "Shells") return "utilities-terminal";
+    if (group == "Sound") return "audio-x-generic";
+    if (group == "TeX") return "applications-office";
+    if (group == "Text Processing") return "applications-office";
+    if (group == "Utilities") return "applications-utilities";
+    if (group == "Video") return "video-x-generic";
+    if (group == "Web Software") return "applications-internet";
+    if (group == "X11") return "preferences-desktop-display";
+    
+    return "applications-other";
+}
+
 void CategoryFilter::populate()
 {
     QApt::GroupList groups = m_backend->availableGroups();
@@ -64,6 +104,7 @@ void CategoryFilter::populate()
         QStandardItem *groupItem = new QStandardItem;
         groupItem->setEditable(false);
         groupItem->setText(group);
+        groupItem->setIcon(QIcon::fromTheme(getIconForGroup(group)));
         appendRow(groupItem);
     }
 }

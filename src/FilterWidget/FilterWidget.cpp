@@ -146,7 +146,18 @@ void FilterWidget::statusActivated(const QModelIndex &index)
 
 void FilterWidget::originActivated(const QModelIndex &index)
 {
-    QString originName = index.data(Qt::DisplayRole).toString();
+    // Check if this item has custom data (e.g., "local" origin)
+    QVariant customData = index.data(Qt::UserRole);
+    QString originName;
+    
+    if (customData.isValid() && !customData.toString().isEmpty()) {
+        // Use the custom data if available (e.g., "local" for "Local Files")
+        originName = customData.toString();
+    } else {
+        // Otherwise use the display text
+        originName = index.data(Qt::DisplayRole).toString();
+    }
+    
     emit filterByOrigin(originName);
 }
 

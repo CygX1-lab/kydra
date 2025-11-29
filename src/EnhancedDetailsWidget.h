@@ -34,6 +34,7 @@
 #include <QFrame>
 #include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
+#include <QGroupBox>
 
 namespace QApt {
     class Backend;
@@ -94,6 +95,9 @@ private:
     void createFilesTab();
     void createDependenciesTab();
     void createVersionsTab();
+    void createCollapsibleTechnicalDetails(QVBoxLayout *parentLayout);
+    void createCollapsibleDependencies(QVBoxLayout *parentLayout);
+    void updateTechnicalDetails();
     
     // Main layout and components
     QVBoxLayout *m_mainLayout;
@@ -115,6 +119,17 @@ private:
     QTextBrowser *m_filesBrowser;
     QTextBrowser *m_dependenciesBrowser;
     QTextBrowser *m_versionsBrowser;
+    QTextBrowser *m_reverseDepsBrowser;
+    
+    // Collapsible sections
+    QGroupBox *m_technicalGroup;
+    QGroupBox *m_dependenciesGroup;
+    QGroupBox *m_reverseDepsGroup;
+    QLabel *m_maintainerLabel;
+    QLabel *m_originLabel;
+    QLabel *m_sectionLabel;
+    QLabel *m_architectureLabel;
+    QLabel *m_sizeLabel;
     
     // Data
     QApt::Backend *m_backend;

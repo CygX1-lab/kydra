@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 PACKAGE_NAME="kydra"
-VERSION="1.1.0"
+VERSION="1.3.2"
 ARCHITECTURE="amd64"
 MAINTAINER="CygX1 <cygnx1@gmail.com>"
 DESCRIPTION="KDE-native package manager for Debian systems"

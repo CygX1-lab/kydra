@@ -62,6 +62,8 @@ ManagerSettingsDialog::ManagerSettingsDialog(QWidget* parent, QApt::Config *aptC
     connect(repositoryPage, SIGNAL(authChanged()), this, SLOT(authChanged()));
 
     m_pages.insert(repositoryPage);
+    
+    connect(buttonBox(), SIGNAL(clicked(QAbstractButton*)), this, SLOT(slotButtonClicked(QAbstractButton*)));
 }
 
 ManagerSettingsDialog::~ManagerSettingsDialog()

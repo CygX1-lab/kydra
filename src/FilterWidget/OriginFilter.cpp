@@ -26,6 +26,10 @@
 // QApt includes
 #include <QApt/Backend>
 
+// Own includes
+#include "PackageModel/LocalPackageManager.h"
+#include "MuonSettings.h"
+
 OriginFilter::OriginFilter(QObject *parent, QApt::Backend *backend)
     : FilterModel(parent)
     , m_backend(backend)
@@ -48,4 +52,13 @@ void OriginFilter::populate()
         originItem->setText(originLabel);
         appendRow(originItem);
     }
+    
+    // Always add "Local Files" origin to make it available
+    // The filtering logic will handle whether to show packages or not
+    QStandardItem *localItem = new QStandardItem;
+    localItem->setEditable(false);
+    localItem->setIcon(QIcon::fromTheme("folder-download"));
+    localItem->setText(i18nc("@item:inlistbox Local .deb files origin", "Local Files"));
+    localItem->setData("local", Qt::UserRole); // Store the origin identifier
+    appendRow(localItem);
 }

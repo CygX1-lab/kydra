@@ -79,6 +79,8 @@ private:
     QAction *m_createDownloadListAction;
     QAction *m_downloadListAction;
     QAction *m_loadArchivesAction;
+    QAction *m_addLocalFolderAction;
+    QAction *m_installLocalPackageAction;
 
     ManagerSettingsDialog *m_settingsDialog;
     KDialog *m_historyDialog;
@@ -117,6 +119,8 @@ private Q_SLOTS:
     void setActionsEnabled(bool enabled = true);
     void downloadArchives(QApt::Transaction *trans);
     void applyKDEColorScheme();
+    void addLocalFolder();
+    void installLocalPackage();
 
 public Q_SLOTS:
     void revertChanges();
@@ -130,6 +134,7 @@ public Q_SLOTS:
     bool useKAuthForPrivileges() const;
     void executeKAuthAction(const QString &actionId);
     void setupModernProcessHandling(QApt::Transaction *trans);
+    void openDebFile(const QString &debFilePath);
 
 signals:
     void backendReady(QApt::Backend *backend);

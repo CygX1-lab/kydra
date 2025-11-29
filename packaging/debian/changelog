@@ -1,3 +1,57 @@
+kydra (1.3.0-1) unstable; urgency=medium
+
+  * Local .deb Package Management:
+    * Treat local .deb files as their own "origin" in the package manager
+    * Added "Local Files" filter option in the By Origin sidebar
+    * Automatic detection of packages installed locally (not from repositories)
+    * Local package directory indexing with file system watching
+    * Support for multiple local package directories
+    * Real-time scanning and indexing of .deb files in monitored directories
+    * Integration with existing package filtering and search systems
+    * Visual distinction for local packages with special icons and labels
+  * Local Package Actions:
+    * "Add Local Folder" toolbar button for adding package directories
+    * "Install Local Package" toolbar button for installing individual .deb files
+    * File dialog integration for easy directory and file selection
+    * Safety checks before installation (dependency validation, architecture checks)
+    * Progress indication during local package scanning
+    * Automatic reload of package lists when local directories change
+  * Enhanced Package Information:
+    * Detailed metadata extraction from local .deb files
+    * Display of package name, version, architecture, maintainer, and description
+    * Dependency information parsing and validation
+    * Conflict and compatibility checking
+    * Integration with existing package details panels
+  * New LocalPackageManager class for centralized local package handling
+  * Singleton pattern for efficient resource management
+  * File system watcher integration for real-time updates
+  * Enhanced PackageProxyModel with local package filtering logic
+  * Updated OriginFilter to include "Local Files" origin option
+  * Comprehensive error handling and validation
+  * Thread-safe package scanning and indexing
+  * Integration with existing QApt backend infrastructure
+
+ -- Jonathan Thomas <echidnaman@kubuntu.org>  Mon, 18 Nov 2025 19:30:00 +0100
+
+kydra (1.2.0-1) unstable; urgency=medium
+
+  * Reduce Noise, Add Clarity UI Improvements:
+    * Replaced text labels with intuitive KDE icons throughout interface
+    * Grouped technical details under collapsible sections
+    * Implemented visual spacing instead of separator lines
+    * Simplified package status indicators with icon-based representations
+    * Consolidated redundant information displays in package details
+    * Streamlined toolbar and menu layouts for better focus
+    * Enhanced visual hierarchy with improved typography and spacing
+    * Reduced cognitive load by hiding advanced options under expandable sections
+    * Simplified search interface with cleaner visual presentation
+    * Improved package list readability with better visual grouping
+  * Enhanced UI component organization for better maintainability
+  * Optimized layout algorithms for cleaner visual presentation
+  * Improved icon theming consistency across all UI elements
+
+ -- Jonathan Thomas <echidnaman@kubuntu.org>  Mon, 18 Nov 2025 19:30:00 +0100
+
 kydra (1.1.0-1) unstable; urgency=medium
 
   * Full Kirigami framework integration for modern Plasma-native UI

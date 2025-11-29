@@ -1,3 +1,85 @@
+Kydra Version 1.3.2
+====================
+
+- Bugfixes:
+  * Fixed "The selected file is not a valid Debian package" error by ensuring `dpkg-deb` output is parsed correctly.
+  * Fixed uninstalled local packages not appearing in the "Local files" filter.
+  * Fixed application crash caused by race conditions in `LocalPackageManager` by adding mutex locking for thread-safe access to package data.
+  * Fixed secondary crash caused by unsafe access to package backend from background scanning thread.
+  * Fixed invalid directory scanning by filtering out empty paths from the local folder configuration.
+
+Kydra Version 1.3.1
+====================
+
+- Bugfixes:
+  * Fix "The selected file is not a valid Debian package" error when opening large .deb files by increasing the parsing timeout.
+  * Fix "Local files" filter not working by ensuring the custom 'local' origin identifier is properly handled throughout the filter chain.
+  * Implemented "Virtual Package" support: Uninstalled .deb files found in configured local folders are now displayed in the package list under the "Local files" filter, even if they are not present in the APT database.
+  * Fixed performance issues and crashes during local package detection by optimizing the scanning logic to use `apt list --installed` instead of checking each package individually.
+  * Fixed configuration settings (including local package folder paths) not persisting across application restarts.
+
+Kydra Version 1.3.0
+====================
+
+- Features:
+  * **Local .deb Package Management**:
+    * Treat local .deb files as their own "origin" in the package manager
+    * Added "Local Files" filter option in the By Origin sidebar
+    * Automatic detection of packages installed locally (not from repositories)
+    * Local package directory indexing with file system watching
+    * Support for multiple local package directories
+    * Real-time scanning and indexing of .deb files in monitored directories
+    * Integration with existing package filtering and search systems
+    * Visual distinction for local packages with special icons and labels
+
+  * **Local Package Actions**:
+    * "Add Local Folder" toolbar button for adding package directories
+    * "Install Local Package" toolbar button for installing individual .deb files
+    * File dialog integration for easy directory and file selection
+    * Safety checks before installation (dependency validation, architecture checks)
+    * Progress indication during local package scanning
+    * Automatic reload of package lists when local directories change
+
+  * **Enhanced Package Information**:
+    * Detailed metadata extraction from local .deb files
+    * Display of package name, version, architecture, maintainer, and description
+    * Dependency information parsing and validation
+    * Conflict and compatibility checking
+    * Integration with existing package details panels
+
+- Technical Improvements:
+  * New LocalPackageManager class for centralized local package handling
+  * Singleton pattern for efficient resource management
+  * File system watcher integration for real-time updates
+  * Enhanced PackageProxyModel with local package filtering logic
+  * Updated OriginFilter to include "Local Files" origin option
+  * Comprehensive error handling and validation
+  * Thread-safe package scanning and indexing
+  * Integration with existing QApt backend infrastructure
+
+Kydra Version 1.2.0
+====================
+
+- Features:
+  * **Reduce Noise, Add Clarity UI Improvements**:
+    * Replaced text labels with intuitive KDE icons throughout the interface
+    * Grouped technical details under collapsible sections to reduce visual clutter
+    * Implemented visual spacing instead of separator lines for cleaner layout
+    * Simplified package status indicators with icon-based representations
+    * Consolidated redundant information displays in package details
+    * Streamlined toolbar and menu layouts for better focus on primary actions
+    * Enhanced visual hierarchy with improved typography and spacing
+    * Reduced cognitive load by hiding advanced options under expandable sections
+    * Simplified search interface with cleaner visual presentation
+    * Improved package list readability with better visual grouping
+
+- Technical Improvements:
+  * Enhanced UI component organization for better maintainability
+  * Optimized layout algorithms for cleaner visual presentation
+  * Improved icon theming consistency across all UI elements
+  * Streamlined signal/slot connections for better performance
+  * Enhanced accessibility with better icon-to-action mapping
+
 Kydra Version 1.1.0
 ====================
 

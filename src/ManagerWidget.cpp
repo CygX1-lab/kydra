@@ -40,6 +40,8 @@
 #include "PackageModel/PackageProxyModel.h"
 #include "PackageModel/PackageView.h"
 #include "PackageModel/PackageDelegate.h"
+#include "PackageModel/LocalPackageManager.h"
+#include "PackageModel/VirtualPackage.h"
 
 ManagerWidget::ManagerWidget(QWidget *parent)
     : PackageWidget(parent)
@@ -64,6 +66,11 @@ ManagerWidget::ManagerWidget(QWidget *parent)
         m_packageView->header()->setSectionHidden(4, true);  // Installed Version
         m_packageView->header()->setSectionHidden(5, true);  // Available Version
     }
+    
+    // Reduce visual noise by hiding less important columns by default
+    // Hide maintainer and origin columns to reduce clutter
+    m_packageView->header()->setSectionHidden(6, true);  // Maintainer column
+    m_packageView->header()->setSectionHidden(7, true);  // Origin column
     
     showSearchEdit();
 }
@@ -106,7 +113,33 @@ void ManagerWidget::filterByStatus(const QApt::Package::State state)
 
 void ManagerWidget::filterByOrigin(const QString &originName)
 {
-    QString origin = m_backend->origin(originName);
+    QString origin;
+    
+    // Special handling for "local" origin which is not known by the backend
+    if (originName == "local") {
+        origin = "local";
+        
+        // Load virtual packages from local folder
+        LocalPackageManager *localManager = LocalPackageManager::instance();
+        if (localManager) {
+            QList<LocalPackageInfo> virtualPackageInfos = localManager->getVirtualPackages();
+            QList<VirtualPackage> virtualPackages;
+            
+            qDebug() << "Loading" << virtualPackageInfos.size() << "virtual packages for local filter";
+            
+            for (const LocalPackageInfo &info : virtualPackageInfos) {
+                virtualPackages.append(VirtualPackage(info));
+            }
+            
+            m_model->setVirtualPackages(virtualPackages);
+        }
+    } else {
+        origin = m_backend->origin(originName);
+        
+        // Clear virtual packages when switching away from local filter
+        m_model->clearVirtualPackages();
+    }
+    
     m_proxyModel->setOriginFilter(origin);
 }
 

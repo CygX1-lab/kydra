@@ -25,6 +25,8 @@
 
 #include <QApt/Package>
 
+#include "VirtualPackage.h"
+
 class PackageModel: public QAbstractListModel
 {
     Q_OBJECT
@@ -49,12 +51,18 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
     void setPackages(const QApt::PackageList &list);
+    void setVirtualPackages(const QList<VirtualPackage> &virtualPackages);
+    void addVirtualPackages(const QList<VirtualPackage> &virtualPackages);
+    void clearVirtualPackages();
     void clear();
     QApt::Package *packageAt(const QModelIndex &index) const;
     QApt::PackageList packages() const;
+    bool isVirtualPackage(const QModelIndex &index) const;
+    VirtualPackage virtualPackageAt(const QModelIndex &index) const;
 
 private:
     QApt::PackageList m_packages;
+    QList<VirtualPackage> m_virtualPackages;
 
 public slots:
     void externalDataChanged();

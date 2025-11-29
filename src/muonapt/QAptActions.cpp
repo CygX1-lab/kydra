@@ -33,7 +33,12 @@
 #include <QStandardPaths>
 #include <QDialogButtonBox>
 #include <QLayout>
+#include <QLayout>
+
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 #include <QNetworkConfigurationManager>
+QT_WARNING_POP
 
 // KDE includes
 #include <KActionCollection>
@@ -58,9 +63,12 @@ QAptActions::QAptActions()
     , m_reloadWhenEditorFinished(false)
     , m_historyDialog(nullptr)
     , m_distUpgradeAvailable(false)
-    , m_config(new QNetworkConfigurationManager(this))
 {
+    QT_WARNING_PUSH
+    QT_WARNING_DISABLE_DEPRECATED
+    m_config = new QNetworkConfigurationManager(this);
     connect(m_config, &QNetworkConfigurationManager::onlineStateChanged, this, &QAptActions::shouldConnect);
+    QT_WARNING_POP
 }
 
 QAptActions* QAptActions::self()
@@ -171,7 +179,7 @@ void QAptActions::setupActions()
     historyAction->setPriority(QAction::LowPriority);
     historyAction->setIcon(QIcon::fromTheme("view-history"));
     historyAction->setText(i18nc("@action::inmenu", "History..."));
-    actionCollection()->setDefaultShortcut(historyAction, QKeySequence(Qt::CTRL + Qt::Key_H));
+    actionCollection()->setDefaultShortcut(historyAction, QKeySequence(Qt::CTRL | Qt::Key_H));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showHistoryDialog()));
 
     QAction *distUpgradeAction = actionCollection()->addAction("dist-upgrade");
@@ -218,7 +226,10 @@ bool QAptActions::reloadWhenSourcesEditorFinished() const
 
 bool QAptActions::isConnected() const
 {
+    QT_WARNING_PUSH
+    QT_WARNING_DISABLE_DEPRECATED
     return m_config->isOnline();
+    QT_WARNING_POP
 }
 
 bool QAptActions::saveSelections()
@@ -405,7 +416,7 @@ void QAptActions::runSourcesEditor()
                              "to configure software sources.</para>");
         QString title = xi18nc("@title:window",
                               "Cannot find <command>software-properties-qt</command>");
-        KMessageBox::sorry(m_mainWindow, text, title);
+        KMessageBox::error(m_mainWindow, text, title);
         return;
     }
 

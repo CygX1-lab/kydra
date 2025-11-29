@@ -29,6 +29,7 @@
 // Own includes
 #include "PackageModel.h"
 #include "MuonSettings.h"
+#include "LocalPackageManager.h"
 
 // Qt includes
 #include <QRegularExpression>
@@ -156,8 +157,40 @@ bool PackageProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
     }
 
     if (!m_originFilter.isEmpty()) {
-        if (!(package->origin() == m_originFilter)) {
-            return false;
+        if (m_originFilter == "local") {
+            // For "local" origin filter, show ONLY packages that are either:
+            // 1. Installed locally (not from any repository)
+            // 2. Have local .deb files available in configured directories
+            LocalPackageManager *localManager = LocalPackageManager::instance();
+            if (!localManager) {
+                qDebug() << "LocalPackageManager not available for package:" << package->name();
+                return false; // No local manager, no local packages
+            }
+            
+            // Check if this package is locally installed (not from repos)
+            bool isLocalInstall = localManager->isLocalInstallPackage(package->name());
+            
+            // Check if this package has a local .deb file available
+            bool hasLocalFile = localManager->hasLocalFile(package->name());
+            
+            qDebug() << "Checking package:" << package->name()
+                     << "isLocalInstall:" << isLocalInstall
+                     << "hasLocalFile:" << hasLocalFile;
+            
+            // CRITICAL: Only show packages that are ACTUALLY local
+            // If neither condition is true, this is NOT a local package
+            if (!isLocalInstall && !hasLocalFile) {
+                qDebug() << "Package" << package->name() << "is NOT local, filtering out";
+                return false;
+            }
+            
+            qDebug() << "Package" << package->name() << "is LOCAL, showing it";
+            // If we reach here, it's a local package - show it
+        } else {
+            // For other origins, use the standard origin check
+            if (!(package->origin() == m_originFilter)) {
+                return false;
+            }
         }
     }
 

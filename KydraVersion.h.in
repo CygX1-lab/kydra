@@ -20,6 +20,6 @@
 #ifndef KYDRAVERSION_H
 #define KYDRAVERSION_H
 
-static const char version[] = "@MUON_VERSION@";
+static const char version[] = "1.3.2";
 
 #endif

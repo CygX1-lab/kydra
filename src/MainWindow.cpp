@@ -31,6 +31,7 @@
 #include <QAction>
 #include <QStyle>
 #include <QProcess>
+#include <QFileDialog>
 #ifdef HAVE_KIRIGAMI
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -56,6 +57,7 @@
 #include <QApt/Backend>
 #include <QApt/Config>
 #include <QApt/Transaction>
+#include <QApt/DebFile>
 
 // Own includes
 #include "muonapt/MuonStrings.h"
@@ -67,6 +69,7 @@
 #include "StatusWidget.h"
 #include "config/ManagerSettingsDialog.h"
 #include "muonapt/QAptActions.h"
+#include "PackageModel/LocalPackageManager.h"
 
 MainWindow::MainWindow()
     : KXmlGuiWindow()
@@ -240,11 +243,59 @@ void MainWindow::initGUI()
     connect(this, &MainWindow::backendReady,
             m_statusWidget, &StatusWidget::setBackend);
     centralLayout->addWidget(m_statusWidget);
+    
+    // Initialize LocalPackageManager
+    LocalPackageManager::setBackend(m_backend);
+    LocalPackageManager *localManager = LocalPackageManager::instance();
+    QString localDebFolder = MuonSettings::self()->localDebFolder();
+    if (!localDebFolder.isEmpty()) {
+        localManager->setLocalDebFolders(localDebFolder.split(';'));
+    }
 }
 
 void MainWindow::initObject()
 {
     QAptActions::self()->setBackend(m_backend);
+    
+    // Initialize local package manager with delay to avoid blocking UI
+    QTimer::singleShot(1000, this, [this]() {
+        LocalPackageManager::setBackend(m_backend);
+        LocalPackageManager *localManager = LocalPackageManager::instance();
+        if (localManager) {
+            QStringList folders = MuonSettings::self()->localDebFolder().split(';');
+            folders.removeAll(QString()); // Remove empty strings
+            
+            if (!folders.isEmpty()) {
+                // Connect to both scan finished and local install detection finished
+                connect(localManager, &LocalPackageManager::scanFinished, this, [this, localManager]() {
+                    // After scan finishes, detect local install packages
+                    localManager->detectLocalInstallPackages();
+                });
+                
+                connect(localManager, &LocalPackageManager::localInstallPackagesDetected, this, [this]() {
+                    // Reload filters after both scanning and local install detection completes
+                    if (m_filterBox) {
+                        m_filterBox->reload();
+                    }
+                });
+                
+                localManager->setLocalDebFolders(folders);
+                localManager->scanLocalPackages();
+            } else {
+                // Even if no folders are configured, try to detect locally installed packages
+                localManager->detectLocalInstallPackages();
+                if (m_filterBox) {
+                    m_filterBox->reload();
+                }
+            }
+        } else {
+            // If no local manager, just reload filters to ensure proper initialization
+            if (m_filterBox) {
+                m_filterBox->reload();
+            }
+        }
+    });
+    
     emit backendReady(m_backend);
     connect(m_backend, &QApt::Backend::packageChanged,
             this, [this]() {
@@ -268,6 +319,17 @@ void MainWindow::loadSettings()
 {
     m_backend->setUndoRedoCacheSize(MuonSettings::self()->undoStackSize());
     m_managerWidget->invalidateFilter();
+    
+    // Update LocalPackageManager settings
+    LocalPackageManager *localManager = LocalPackageManager::instance();
+    if (localManager) {
+        QString localDebFolder = MuonSettings::self()->localDebFolder();
+        if (!localDebFolder.isEmpty()) {
+            localManager->setLocalDebFolders(localDebFolder.split(';'));
+        } else {
+            localManager->setLocalDebFolders(QStringList());
+        }
+    }
     
     // Update column visibility based on settings
     if (MuonSettings::self()->showVersionColumns()) {
@@ -303,35 +365,39 @@ void MainWindow::setupActions()
 
     m_safeUpgradeAction = actionCollection()->addAction("safeupgrade");
     m_safeUpgradeAction->setIcon(QIcon::fromTheme("go-up"));
-    m_safeUpgradeAction->setText(i18nc("@action Marks upgradeable packages for upgrade", "Cautious Upgrade"));
+    m_safeUpgradeAction->setText(i18nc("@action", "Upgrade"));
+    m_safeUpgradeAction->setToolTip(i18nc("@info:tooltip", "Mark upgradeable packages for cautious upgrade"));
     connect(m_safeUpgradeAction, SIGNAL(triggered()), this, SLOT(markUpgrade()));
 
     m_distUpgradeAction = actionCollection()->addAction("fullupgrade");
     m_distUpgradeAction->setIcon(QIcon::fromTheme("go-top"));
-    m_distUpgradeAction->setText(i18nc("@action Marks upgradeable packages, including ones that install/remove new things",
-                                       "Full Upgrade"));
+    m_distUpgradeAction->setText(i18nc("@action", "Full Upgrade"));
+    m_distUpgradeAction->setToolTip(i18nc("@info:tooltip", "Mark all upgradeable packages, including those requiring new installations"));
     connect(m_distUpgradeAction, SIGNAL(triggered()), this, SLOT(markDistUpgrade()));
 
     m_autoRemoveAction = actionCollection()->addAction("autoremove");
     m_autoRemoveAction->setIcon(QIcon::fromTheme("trash-empty"));
-    m_autoRemoveAction->setText(i18nc("@action Marks packages no longer needed for removal",
-                                      "Remove Unnecessary Packages"));
+    m_autoRemoveAction->setText(i18nc("@action", "Clean"));
+    m_autoRemoveAction->setToolTip(i18nc("@info:tooltip", "Remove unnecessary packages"));
     connect(m_autoRemoveAction, SIGNAL(triggered()), this, SLOT(markAutoRemove()));
 
     m_previewAction = actionCollection()->addAction("preview");
     m_previewAction->setIcon(QIcon::fromTheme("document-preview-archive"));
-    m_previewAction->setText(i18nc("@action Takes the user to the preview page", "Preview Changes"));
+    m_previewAction->setText(i18nc("@action", "Preview"));
+    m_previewAction->setToolTip(i18nc("@info:tooltip", "Preview pending changes"));
     connect(m_previewAction, SIGNAL(triggered()), this, SLOT(previewChanges()));
 
     m_applyAction = actionCollection()->addAction("apply");
     m_applyAction->setIcon(QIcon::fromTheme("dialog-ok-apply"));
-    m_applyAction->setText(i18nc("@action Applys the changes a user has made", "Apply Changes"));
+    m_applyAction->setText(i18nc("@action", "Apply"));
+    m_applyAction->setToolTip(i18nc("@info:tooltip", "Apply pending changes"));
     connect(m_applyAction, SIGNAL(triggered()), this, SLOT(startCommit()));
 
     QAction* updateAction = actionCollection()->addAction("update");
     updateAction->setIcon(QIcon::fromTheme("system-software-update"));
-    updateAction->setText(i18nc("@action Checks the Internet for updates", "Check for Updates"));
-    actionCollection()->setDefaultShortcut(updateAction, QKeySequence(Qt::CTRL + Qt::Key_R));
+    updateAction->setText(i18nc("@action", "Refresh"));
+    updateAction->setToolTip(i18nc("@info:tooltip", "Check for package updates"));
+    actionCollection()->setDefaultShortcut(updateAction, QKeySequence(Qt::ControlModifier | Qt::Key_R));
     connect(updateAction, SIGNAL(triggered()), SLOT(checkForUpdates()));
     updateAction->setEnabled(QAptActions::self()->isConnected());
     connect(QAptActions::self(), SIGNAL(shouldConnect(bool)), updateAction, SLOT(setEnabled(bool)));
@@ -340,15 +406,30 @@ void MainWindow::setupActions()
 
     QAction* configureRepositoriesAction = actionCollection()->addAction("configure_repositories");
     configureRepositoriesAction->setIcon(QIcon::fromTheme("network-server"));
-    configureRepositoriesAction->setText(i18nc("@action Configure package repositories", "Configure Repositories"));
+    configureRepositoriesAction->setText(i18nc("@action", "Sources"));
+    configureRepositoriesAction->setToolTip(i18nc("@info:tooltip", "Configure package repositories"));
     connect(configureRepositoriesAction, SIGNAL(triggered()), this, SLOT(configureRepositories()));
 
     QAction* donateAction = actionCollection()->addAction("donate");
     donateAction->setIcon(QIcon::fromTheme("help-donate"));
-    donateAction->setText(i18nc("@action Open donation dialog", "Donate"));
+    donateAction->setText(i18nc("@action", "Support"));
+    donateAction->setToolTip(i18nc("@info:tooltip", "Support the project"));
     connect(donateAction, SIGNAL(triggered()), this, SLOT(openDonateDialog()));
 
     KStandardAction::aboutApp(this, SLOT(showAboutApplication()), actionCollection());
+
+    // Local package actions
+    m_addLocalFolderAction = actionCollection()->addAction("add_local_folder");
+    m_addLocalFolderAction->setIcon(QIcon::fromTheme("folder-new"));
+    m_addLocalFolderAction->setText(i18nc("@action", "Add Local Folder"));
+    m_addLocalFolderAction->setToolTip(i18nc("@info:tooltip", "Add a directory containing local .deb packages"));
+    connect(m_addLocalFolderAction, SIGNAL(triggered()), this, SLOT(addLocalFolder()));
+
+    m_installLocalPackageAction = actionCollection()->addAction("install_local_package");
+    m_installLocalPackageAction->setIcon(QIcon::fromTheme("package-x-generic"));
+    m_installLocalPackageAction->setText(i18nc("@action", "Install Local Package"));
+    m_installLocalPackageAction->setToolTip(i18nc("@info:tooltip", "Install a local .deb package file"));
+    connect(m_installLocalPackageAction, SIGNAL(triggered()), this, SLOT(installLocalPackage()));
 
     setActionsEnabled(false);
 
@@ -366,6 +447,9 @@ void MainWindow::setupActions()
         mainToolBar->addAction(actionCollection()->action("undo"));
         mainToolBar->addAction(actionCollection()->action("redo"));
         mainToolBar->addAction(m_autoRemoveAction);
+        mainToolBar->addSeparator();
+        mainToolBar->addAction(m_addLocalFolderAction);
+        mainToolBar->addAction(m_installLocalPackageAction);
     }
 }
 
@@ -770,5 +854,179 @@ void MainWindow::applyKDEColorScheme()
         palette.setColor(QPalette::Highlight, accentColor);
         palette.setColor(QPalette::HighlightedText, Qt::white);
         qApp->setPalette(palette);
+    }
+}
+
+void MainWindow::addLocalFolder()
+{
+    QString directory = QFileDialog::getExistingDirectory(this,
+        i18nc("@title:window", "Select Local Package Directory"),
+        QDir::homePath(),
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    
+    if (!directory.isEmpty()) {
+        QStringList currentFolders = MuonSettings::self()->localDebFolder().split(';');
+        if (!currentFolders.contains(directory)) {
+            currentFolders.append(directory);
+            MuonSettings::self()->setLocalDebFolder(currentFolders.join(';'));
+            MuonSettings::self()->save();
+            
+            // Update local package manager
+            LocalPackageManager *localManager = LocalPackageManager::instance();
+            if (localManager) {
+                localManager->setLocalDebFolders(currentFolders);
+                localManager->scanLocalPackages();
+            }
+            
+            // Reload filters to show the new local files origin
+            m_filterBox->reload();
+            
+            KMessageBox::information(this,
+                i18nc("@info", "Local package directory added successfully. Scanning for packages..."),
+                i18nc("@title:window", "Directory Added"));
+        } else {
+            KMessageBox::information(this,
+                i18nc("@info", "This directory is already being monitored for local packages."),
+                i18nc("@title:window", "Directory Already Added"));
+        }
+    }
+}
+
+void MainWindow::installLocalPackage()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        i18nc("@title:window", "Select Local Package File"),
+        QDir::homePath(),
+        i18nc("@label", "Debian Package Files (*.deb)"));
+    
+    if (!fileName.isEmpty()) {
+        // Validate the .deb file
+        LocalPackageManager *localManager = LocalPackageManager::instance();
+        if (!localManager) {
+            KMessageBox::error(this,
+                i18nc("@info", "Local package manager is not available."),
+                i18nc("@title:window", "Error"));
+            return;
+        }
+        
+        LocalPackageInfo info;
+        if (!localManager->parseDebFile(fileName, info)) {
+            KMessageBox::error(this,
+                i18nc("@info", "The selected file is not a valid Debian package."),
+                i18nc("@title:window", "Invalid Package File"));
+            return;
+        }
+        
+        // Check if package is already installed
+        QApt::Package *existingPackage = m_backend->package(info.packageName);
+        if (existingPackage && existingPackage->isInstalled()) {
+            QString message = i18nc("@info",
+                "Package '%1' version %2 is already installed.\n"
+                "Version: %3\n"
+                "Do you want to reinstall or upgrade it?",
+                info.packageName, info.version, existingPackage->installedVersion());
+            
+            int result = KMessageBox::questionTwoActions(this, message,
+                i18nc("@title:window", "Package Already Installed"),
+                KGuiItem(i18nc("@action:button", "Reinstall")),
+                KGuiItem(i18nc("@action:button", "Cancel")));
+            
+            if ( result != KMessageBox::PrimaryAction ) {
+                return;
+            }
+        }
+        
+        // Perform safety checks
+        QProcess safetyCheck;
+        safetyCheck.start("apt-get", QStringList() << "-s" << "install" << fileName);
+        if (!safetyCheck.waitForFinished(30000)) {
+            KMessageBox::information(this,
+                i18nc("@info", "Safety check timeout. Proceeding with installation."),
+                i18nc("@title:window", "Safety Check Timeout"));
+        } else if (safetyCheck.exitCode() != 0) {
+            QString errorOutput = safetyCheck.readAllStandardError();
+            KMessageBox::error(this,
+                i18nc("@info", "Safety check failed:\n%1", errorOutput),
+                i18nc("@title:window", "Installation Error"));
+            return;
+        }
+        
+        // Install the package
+        setActionsEnabled(false);
+        m_managerWidget->setEnabled(false);
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        
+        m_stack->setCurrentWidget(m_transWidget);
+        
+        // Create DebFile object from filename
+        QApt::DebFile debFile(fileName);
+        m_trans = m_backend->installFile(debFile);
+        setupTransaction(m_trans);
+        
+        m_trans->run();
+    }
+}
+
+void MainWindow::openDebFile(const QString &debFilePath)
+{
+    qDebug() << "Opening .deb file:" << debFilePath;
+    
+    if (!QFile::exists(debFilePath)) {
+        KMessageBox::error(this,
+            i18nc("@info", "The specified .deb file does not exist: %1", debFilePath),
+            i18nc("@title:window", "File Not Found"));
+        return;
+    }
+    
+    // Parse the .deb file to get package information
+    LocalPackageManager *localManager = LocalPackageManager::instance();
+    if (!localManager) {
+        KMessageBox::error(this,
+            i18nc("@info", "Local package manager is not available."),
+            i18nc("@title:window", "Error"));
+        return;
+    }
+    
+    LocalPackageInfo info;
+    if (!localManager->parseDebFile(debFilePath, info)) {
+        KMessageBox::error(this,
+            i18nc("@info", "The selected file is not a valid Debian package."),
+            i18nc("@title:window", "Invalid Package File"));
+        return;
+    }
+    
+    // Add this file to the local package manager temporarily
+    // This ensures it appears in the local files filter
+    info.filename = debFilePath;
+    
+    // Use the proper method to add temporary package
+    LocalPackageManager *manager = LocalPackageManager::instance();
+    if (manager) {
+        manager->addTemporaryPackage(info);
+        
+        // Switch to Local Files filter to show this package
+        if (m_filterBox) {
+            // Use the existing origin filter mechanism
+            // The OriginFilter should handle setting the filter to "local"
+            // We need to trigger a filter update
+            m_filterBox->reload();
+        }
+        
+        // Try to select and highlight this specific package
+        if (m_managerWidget) {
+            // Find the package in the model
+            QApt::Package *package = m_backend->package(info.packageName);
+            if (package) {
+                // Use the existing selection mechanism
+                // The ManagerWidget should have a way to select packages
+                // For now, we'll just ensure the filter is set correctly
+                qDebug() << "Found package" << info.packageName << "in backend, filter should show it";
+            }
+        }
+        
+        KMessageBox::information(this,
+            i18nc("@info", "Local package '%1' version %2 has been loaded for installation.",
+                  info.packageName, info.version),
+            i18nc("@title:window", "Package Loaded"));
     }
 }

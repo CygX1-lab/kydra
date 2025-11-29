@@ -41,7 +41,8 @@ public:
         InstalledSizeRole = Qt::UserRole + 6,
         InstalledSizeDisplayRole = Qt::UserRole + 7,
         InstalledVersionRole = Qt::UserRole + 8,
-        AvailableVersionRole = Qt::UserRole + 9
+        AvailableVersionRole = Qt::UserRole + 9,
+        IsLocalRole = Qt::UserRole + 10
     };
     explicit PackageModel(QObject *parent = 0);
 
@@ -66,6 +67,7 @@ private:
 
 public slots:
     void externalDataChanged();
+    void onIconExtracted(const QString &filePath, const QString &iconPath);
 };
 
 #endif

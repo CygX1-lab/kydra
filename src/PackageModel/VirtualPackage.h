@@ -34,6 +34,7 @@
 class VirtualPackage
 {
 public:
+    VirtualPackage();
     explicit VirtualPackage(const LocalPackageInfo &info);
     
     // Package identification
@@ -53,6 +54,7 @@ public:
     QString homepage() const;
     qint64 installedSize() const;
     QString filename() const;
+    QString iconPath() const;
     
     // Dependencies
     QStringList dependencies() const;

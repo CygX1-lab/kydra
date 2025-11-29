@@ -23,6 +23,7 @@
 #define ENHANCEDDETAILSWIDGET_H
 
 #include "DetailsWidget.h"
+#include "PackageModel/VirtualPackage.h"
 #include <QWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -65,6 +66,7 @@ public:
     // Backend and package management
     void setBackend(QApt::Backend *backend);
     void setPackage(QApt::Package *package);
+    void setVirtualPackage(const VirtualPackage &package);
     void clear();
 
 public Q_SLOTS:
@@ -78,6 +80,7 @@ Q_SIGNALS:
     void setReInstall(QApt::Package *package);
     void setKeep(QApt::Package *package);
     void setPurge(QApt::Package *package);
+    void installLocalPackage(const QString &filePath);
     void emitHideButtonsSignal();
 
 private Q_SLOTS:
@@ -134,6 +137,8 @@ private:
     // Data
     QApt::Backend *m_backend;
     QApt::Package *m_package;
+    VirtualPackage m_virtualPackage;
+    bool m_isVirtual;
     
     // Styling
     QColor m_headerGradientStart;

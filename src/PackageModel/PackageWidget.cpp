@@ -47,6 +47,7 @@
 #include <QApt/MarkingErrorInfo>
 
 // Own includes
+#include "VirtualPackage.h"
 #include "muonapt/ChangesDialog.h"
 #include "DetailsWidget.h"
 #include "EnhancedDetailsWidget.h"
@@ -135,6 +136,8 @@ PackageWidget::PackageWidget(QWidget *parent)
             this, SLOT(setKeep(QApt::Package*)));
     connect(m_detailsWidget, SIGNAL(setPurge(QApt::Package*)),
             this, SLOT(setPurge(QApt::Package*)));
+    connect(m_detailsWidget, &EnhancedDetailsWidget::installLocalPackage,
+            this, &PackageWidget::installLocalPackage);
 
     m_busyWidget = new KPixmapSequenceOverlayPainter(this);
     m_busyWidget->setSequence(KPixmapSequence("process-working", KIconLoader::SizeSmallMedium));
@@ -301,6 +304,11 @@ startSearch();
 
 void PackageWidget::packageActivated(const QModelIndex &index)
 {
+    if (m_proxyModel->isVirtualPackage(index)) {
+        m_detailsWidget->setVirtualPackage(m_proxyModel->virtualPackageAt(index));
+        return;
+    }
+
     QApt::Package *package = m_proxyModel->packageAt(index);
     if (package == 0) {
         m_detailsWidget->hide();
@@ -329,7 +337,30 @@ void PackageWidget::contextMenuRequested(const QPoint &pos)
     }
 
     if (selected == 1) {
-        int state = m_proxyModel->packageAt(m_packageView->currentIndex())->state();
+        QModelIndex index = m_packageView->currentIndex();
+        
+        // Handle Virtual Packages
+        if (m_proxyModel->isVirtualPackage(index)) {
+            m_installAction->setEnabled(true);
+            m_removeAction->setEnabled(false);
+            m_upgradeAction->setEnabled(false);
+            m_reinstallAction->setEnabled(false);
+            m_purgeAction->setEnabled(false);
+            m_keepAction->setEnabled(false);
+            m_lockAction->setEnabled(false);
+            
+            // Reconnect install action for this specific instance? 
+            // No, standard action calls setPackagesInstall which iterates selected packages.
+            // We need to handle virtual packages in actOnPackages or similar.
+            // Actually, for context menu, we might need a specific action or modify setPackagesInstall.
+            // For now, let's just show the menu. The install action currently calls setPackagesInstall.
+            // We need to modify setPackagesInstall to handle virtual packages too.
+            
+            menu.exec(m_packageView->mapToGlobal(pos));
+            return;
+        }
+
+        int state = m_proxyModel->packageAt(index)->state();
         bool upgradeable = (state & QApt::Package::Upgradeable);
 
         if (state & QApt::Package::Installed) {
@@ -498,6 +529,24 @@ void PackageWidget::actOnPackages(QApt::Package::State action)
             break;
         default:
             break;
+        }
+    }
+    
+    // Handle Virtual Packages separately
+    // Note: selectedPackages() currently only returns QApt::Package*. 
+    // We need to update selectedPackages() or handle virtual packages differently.
+    // Since selectedPackages() returns QApt::PackageList, it can't return virtual packages.
+    
+    // Let's check for virtual packages in the selection directly here
+    const QModelIndexList selected = m_packageView->selectionModel()->selectedIndexes();
+    for (const QModelIndex &index : selected) {
+        if (index.column() != 0) continue; // Only process once per row
+        
+        if (m_proxyModel->isVirtualPackage(index)) {
+            if (action == QApt::Package::ToInstall) {
+                 VirtualPackage vPkg = m_proxyModel->virtualPackageAt(index);
+                 emit installLocalPackage(vPkg.filename());
+            }
         }
     }
 

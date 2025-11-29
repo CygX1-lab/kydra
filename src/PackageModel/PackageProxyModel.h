@@ -25,6 +25,7 @@
 #include <QtCore/QString>
 
 #include <QApt/Package>
+#include "VirtualPackage.h"
 
 namespace QApt {
     class Backend;
@@ -47,6 +48,8 @@ public:
 
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     QApt::Package *packageAt(const QModelIndex &index) const;
+    bool isVirtualPackage(const QModelIndex &index) const;
+    VirtualPackage virtualPackageAt(const QModelIndex &index) const;
     void reset();
     QApt::PackageList performSlowSearch(const QString &searchText) const;
 

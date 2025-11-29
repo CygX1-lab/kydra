@@ -20,6 +20,10 @@
 
 #include "VirtualPackage.h"
 
+VirtualPackage::VirtualPackage()
+{
+}
+
 VirtualPackage::VirtualPackage(const LocalPackageInfo &info)
     : m_info(info)
 {
@@ -102,6 +106,15 @@ qint64 VirtualPackage::installedSize() const
 QString VirtualPackage::filename() const
 {
     return m_info.filename;
+}
+
+QString VirtualPackage::iconPath() const
+{
+    LocalPackageManager *manager = LocalPackageManager::instance();
+    if (manager) {
+        return manager->getPackageIcon(m_info.filename);
+    }
+    return QString();
 }
 
 QStringList VirtualPackage::dependencies() const

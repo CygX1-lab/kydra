@@ -137,8 +137,62 @@ void PackageProxyModel::setArchFilter(const QString &arch)
 
 bool PackageProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    // Our "main"-method
-    QApt::Package *package = static_cast<PackageModel *>(sourceModel())->packageAt(sourceModel()->index(sourceRow, 1, sourceParent));
+    PackageModel *model = static_cast<PackageModel *>(sourceModel());
+    QModelIndex index = model->index(sourceRow, 0, sourceParent);
+    
+    // Handle Virtual Packages
+    if (model->isVirtualPackage(index)) {
+        VirtualPackage vPkg = model->virtualPackageAt(index);
+        
+        if (!m_groupFilter.isEmpty()) {
+            if (!vPkg.section().contains(m_groupFilter)) {
+                return false;
+            }
+        }
+
+        // Virtual packages currently don't support state filtering in the same way
+        // But they are usually "Not Installed"
+        if (m_stateFilter != 0) {
+             // For now, if we filter by specific state, we might hide virtual packages
+             // unless we map their state. Virtual packages are generally "not installed".
+             // If filter includes "NotInstalled", show it.
+             if (!(m_stateFilter & QApt::Package::NotInstalled)) {
+                 return false;
+             }
+        }
+
+        if (!m_originFilter.isEmpty()) {
+            if (m_originFilter == "local") {
+                // Always show in local filter
+                return true;
+            } else {
+                if (vPkg.origin() != m_originFilter) {
+                    return false;
+                }
+            }
+        }
+
+        if (!m_archFilter.isEmpty()) {
+            if (vPkg.architecture() != m_archFilter) {
+                return false;
+            }
+        }
+        
+        // Search filtering for virtual packages
+        if (m_useSearchResults) {
+            // Basic search implementation for virtual packages
+            // Since m_searchPackages only contains QApt::Package*, we can't use it directly.
+            // We rely on the fact that if we are using search results, we probably shouldn't show virtual packages
+            // UNLESS we implement search for them too.
+            // For now, let's hide them if search is active, OR implement a simple check.
+            return false; // TODO: Implement search for virtual packages
+        }
+
+        return true;
+    }
+
+    // Handle APT Packages
+    QApt::Package *package = model->packageAt(index);
     // We have a package as internal pointer
     if (!package) {
         return false;
@@ -150,7 +204,7 @@ bool PackageProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
         }
     }
 
-    if (!m_stateFilter == 0) {
+    if (m_stateFilter != 0) {
         if ((bool)(package->state() & m_stateFilter) == false) {
             return false;
         }
@@ -163,8 +217,7 @@ bool PackageProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
             // 2. Have local .deb files available in configured directories
             LocalPackageManager *localManager = LocalPackageManager::instance();
             if (!localManager) {
-                qDebug() << "LocalPackageManager not available for package:" << package->name();
-                return false; // No local manager, no local packages
+                return false; 
             }
             
             // Check if this package is locally installed (not from repos)
@@ -173,29 +226,21 @@ bool PackageProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourc
             // Check if this package has a local .deb file available
             bool hasLocalFile = localManager->hasLocalFile(package->name());
             
-            qDebug() << "Checking package:" << package->name()
-                     << "isLocalInstall:" << isLocalInstall
-                     << "hasLocalFile:" << hasLocalFile;
-            
             // CRITICAL: Only show packages that are ACTUALLY local
-            // If neither condition is true, this is NOT a local package
             if (!isLocalInstall && !hasLocalFile) {
-                qDebug() << "Package" << package->name() << "is NOT local, filtering out";
                 return false;
             }
-            
-            qDebug() << "Package" << package->name() << "is LOCAL, showing it";
             // If we reach here, it's a local package - show it
         } else {
             // For other origins, use the standard origin check
-            if (!(package->origin() == m_originFilter)) {
+            if (package->origin() != m_originFilter) {
                 return false;
             }
         }
     }
 
     if (!m_archFilter.isEmpty()) {
-        if (!(package->architecture() == m_archFilter)) {
+        if (package->architecture() != m_archFilter) {
             return false;
         }
     }
@@ -219,6 +264,18 @@ QApt::Package *PackageProxyModel::packageAt(const QModelIndex &index) const
     return package;
 }
 
+bool PackageProxyModel::isVirtualPackage(const QModelIndex &index) const
+{
+    QModelIndex sourceIndex = mapToSource(index);
+    return static_cast<PackageModel *>(sourceModel())->isVirtualPackage(sourceIndex);
+}
+
+VirtualPackage PackageProxyModel::virtualPackageAt(const QModelIndex &index) const
+{
+    QModelIndex sourceIndex = mapToSource(index);
+    return static_cast<PackageModel *>(sourceModel())->virtualPackageAt(sourceIndex);
+}
+
 void PackageProxyModel::reset()
 {
     beginRemoveRows(QModelIndex(), 0, m_packages.size());
@@ -230,8 +287,43 @@ void PackageProxyModel::reset()
 bool PackageProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     PackageModel *model = static_cast<PackageModel *>(sourceModel());
+    
+    bool leftIsVirtual = model->isVirtualPackage(left);
+    bool rightIsVirtual = model->isVirtualPackage(right);
+    
+    // If both are virtual
+    if (leftIsVirtual && rightIsVirtual) {
+        VirtualPackage leftPkg = model->virtualPackageAt(left);
+        VirtualPackage rightPkg = model->virtualPackageAt(right);
+        
+        switch (left.column()) {
+            case 0: // Name
+                return leftPkg.name() < rightPkg.name();
+            case 3: // Installed Size
+                return leftPkg.installedSize() < rightPkg.installedSize();
+            case 4: // Installed Version
+                return false; // Neither installed
+            case 5: // Available Version
+                return QApt::Package::compareVersion(leftPkg.availableVersion(), rightPkg.availableVersion()) < 0;
+            default:
+                return false;
+        }
+    }
+    
+    // If one is virtual and other is not
+    if (leftIsVirtual != rightIsVirtual) {
+        // Put virtual packages at the end? Or beginning?
+        // Let's put them at the end for now
+        return !leftIsVirtual; 
+    }
+
+    // Both are APT packages
     QApt::Package *leftPackage = model->packageAt(left);
     QApt::Package *rightPackage = model->packageAt(right);
+    
+    if (!leftPackage || !rightPackage) {
+        return false;
+    }
 
     switch (left.column()) {
       case 0:

@@ -54,6 +54,7 @@ EnhancedDetailsWidget::EnhancedDetailsWidget(QWidget *parent)
     , m_headerGradientStart(QPalette().color(QPalette::Window))
     , m_headerGradientEnd(QPalette().color(QPalette::Window).darker(110))
     , m_tabTransitionDuration(200)
+    , m_isVirtual(false)
 {
     setupUI();
     hide(); // Hide until a package is selected
@@ -128,7 +129,14 @@ void EnhancedDetailsWidget::setupHeader()
     m_installButton->setIcon(QIcon::fromTheme("list-add"));
     m_installButton->setText(i18nc("@action:button", "Install"));
     m_installButton->setStyleSheet("QPushButton { padding: 8px 16px; font-weight: bold; }");
-    connect(m_installButton, &QPushButton::clicked, this, [this]() { emit setInstall(m_package); });
+    m_installButton->setStyleSheet("QPushButton { padding: 8px 16px; font-weight: bold; }");
+    connect(m_installButton, &QPushButton::clicked, this, [this]() { 
+        if (m_isVirtual) {
+            emit installLocalPackage(m_virtualPackage.filename());
+        } else {
+            emit setInstall(m_package); 
+        }
+    });
     
     m_updateButton = new QPushButton(m_headerWidget);
     m_updateButton->setIcon(QIcon::fromTheme("system-software-update"));
@@ -300,9 +308,17 @@ void EnhancedDetailsWidget::applyGradientHeader()
 {
     // Create gradient background for header
     QPalette palette = m_headerWidget->palette();
-    QLinearGradient gradient(0, 0, 0, m_headerWidget->height());
-    gradient.setColorAt(0.0, m_headerGradientStart);
-    gradient.setColorAt(1.0, m_headerGradientEnd);
+    QLinearGradient gradient(0, 0, m_headerWidget->width(), m_headerWidget->height());
+    
+    if (m_isVirtual) {
+        // Distinctive gradient for local packages (Blue-ish)
+        gradient.setColorAt(0.0, QColor(66, 133, 244).lighter(150));
+        gradient.setColorAt(1.0, QColor(66, 133, 244).lighter(110));
+    } else {
+        // Standard gradient
+        gradient.setColorAt(0.0, m_headerGradientStart);
+        gradient.setColorAt(1.0, m_headerGradientEnd);
+    }
     
     palette.setBrush(QPalette::Window, QBrush(gradient));
     m_headerWidget->setPalette(palette);
@@ -397,6 +413,7 @@ void EnhancedDetailsWidget::setBackend(QApt::Backend *backend)
 void EnhancedDetailsWidget::setPackage(QApt::Package *package)
 {
     m_package = package;
+    m_isVirtual = false;
     
     if (!package) {
         clear();
@@ -423,9 +440,44 @@ void EnhancedDetailsWidget::setPackage(QApt::Package *package)
     show();
 }
 
+void EnhancedDetailsWidget::setVirtualPackage(const VirtualPackage &package)
+{
+    m_virtualPackage = package;
+    m_isVirtual = true;
+    m_package = nullptr;
+    
+    // Update header information
+    // Use extracted icon if available
+    QString iconPath = package.iconPath();
+    if (!iconPath.isEmpty()) {
+        m_iconLabel->setPixmap(QIcon(iconPath).pixmap(64, 64));
+    } else {
+        m_iconLabel->setPixmap(QIcon::fromTheme("application-x-deb").pixmap(64, 64));
+    }
+    m_nameLabel->setText(package.name());
+    m_descriptionLabel->setText(package.shortDescription());
+    m_versionLabel->setText(i18nc("@label", "Version: %1 (Local Package)", package.version()));
+    
+    // Update gradient for local package
+    applyGradientHeader();
+    
+    // Update button visibility
+    // Virtual packages are by definition "not installed" in the APT sense (or at least treated as such for display)
+    // So Install button should be visible.
+    m_installButton->setVisible(true);
+    m_updateButton->setVisible(false);
+    m_removeButton->setVisible(false);
+    
+    // Update tab content
+    refreshCurrentTab();
+    
+    show();
+}
+
 void EnhancedDetailsWidget::clear()
 {
     m_package = nullptr;
+    m_isVirtual = false;
     
     // Clear header
     m_iconLabel->clear();
@@ -444,11 +496,46 @@ void EnhancedDetailsWidget::clear()
 
 void EnhancedDetailsWidget::refreshCurrentTab()
 {
-    if (!m_package) {
+    if (!m_package && !m_isVirtual) {
         return;
     }
     
     int currentIndex = m_tabWidget->currentIndex();
+    
+    if (m_isVirtual) {
+        switch (currentIndex) {
+        case 0: // Overview tab
+            {
+                QString descriptionText = m_virtualPackage.longDescription();
+                descriptionText += QString("\n\n") + i18nc("@info", "This is a local package file: %1", m_virtualPackage.filename());
+                m_descriptionBrowser->setPlainText(descriptionText);
+            }
+            break;
+        case 1: // Files tab
+            m_filesBrowser->setPlainText(i18nc("@info", "File list not available for uninstalled local packages."));
+            break;
+        case 2: // Dependencies tab
+            {
+                QString dependenciesText;
+                QStringList deps = m_virtualPackage.dependencies();
+                
+                if (!deps.isEmpty()) {
+                    dependenciesText += i18nc("@title", "Dependencies:\n");
+                    foreach(const QString &dep, deps) {
+                        dependenciesText.append("  " + dep + '\n');
+                    }
+                } else {
+                    dependenciesText = i18nc("@info", "No dependencies found");
+                }
+                m_dependenciesBrowser->setPlainText(dependenciesText);
+            }
+            break;
+        case 3: // Versions tab
+            m_versionsBrowser->setPlainText(m_virtualPackage.version() + " " + i18nc("@label", "(local file)"));
+            break;
+        }
+        return;
+    }
     
     switch (currentIndex) {
     case 0: // Overview tab

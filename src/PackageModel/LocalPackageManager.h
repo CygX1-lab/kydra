@@ -90,8 +90,9 @@ public:
     QStringList getLocalPackageFiles() const;
     
     // Get packages that exist in local folder but NOT in APT database
-    QList<LocalPackageInfo> getVirtualPackages() const;
-    
+    QList<LocalPackageInfo> getVirtualPackages();
+    QString getPackageIcon(const QString &filePath);
+
     bool parseDebFile(const QString &filePath, LocalPackageInfo &info);
     void addTemporaryPackage(const LocalPackageInfo &info);
     
@@ -100,6 +101,7 @@ signals:
     void localInstallPackagesDetected();
     void scanProgress(int current, int total);
     void scanFinished();
+    void iconExtracted(const QString &filePath, const QString &iconPath);
     
 private slots:
     void onDirectoryChanged(const QString &path);
@@ -108,6 +110,7 @@ private:
     void scanDirectory(const QString &directory);
     void parseControlFile(const QString &controlData, LocalPackageInfo &info);
     QString extractField(const QString &data, const QString &field) const;
+    void extractIconAsync(const QString &filePath);
     bool isPackageFromLocalInstall(const QString &packageName);
     
     QApt::Backend *m_backend;
@@ -116,6 +119,9 @@ private:
     QSet<QString> m_localInstallPackages;
     QFileSystemWatcher *m_fileWatcher;
     mutable QMutex m_mutex;
+    
+    QMap<QString, QString> m_iconCache;
+    QSet<QString> m_pendingIconRequests;
     
     static const QString LOCAL_ORIGIN;
 };

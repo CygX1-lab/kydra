@@ -142,6 +142,7 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     void packageChanged();
+    void installLocalPackage(const QString &filePath);
 };
 
 #endif

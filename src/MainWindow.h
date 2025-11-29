@@ -121,6 +121,7 @@ private Q_SLOTS:
     void applyKDEColorScheme();
     void addLocalFolder();
     void installLocalPackage();
+    void installLocalPackageFile(const QString &filePath);
 
 public Q_SLOTS:
     void revertChanges();

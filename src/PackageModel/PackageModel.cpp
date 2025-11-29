@@ -21,6 +21,7 @@
 #include "PackageModel.h"
 #include "PackageIconExtractor.h"
 #include "VirtualPackage.h"
+#include "LocalPackageManager.h"
 
 #include <QStringBuilder>
 #include <QIcon>
@@ -32,6 +33,8 @@ PackageModel::PackageModel(QObject *parent)
     , m_packages(QApt::PackageList())
     , m_virtualPackages(QList<VirtualPackage>())
 {
+    connect(LocalPackageManager::instance(), &LocalPackageManager::iconExtracted,
+            this, &PackageModel::onIconExtracted);
 }
 
 int PackageModel::rowCount(const QModelIndex & /*parent*/) const
@@ -86,6 +89,8 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
             return package->installedVersion();
         case AvailableVersionRole:
             return package->availableVersion();
+        case IsLocalRole:
+            return LocalPackageManager::instance()->isLocalInstallPackage(package->name());
         case Qt::ToolTipRole:
             return QVariant();
         }
@@ -96,9 +101,15 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
             const VirtualPackage &vPkg = m_virtualPackages.at(virtualIdx);
             switch (role) {
             case NameRole:
-                return vPkg.name() + QLatin1String(" [Local]");
+                return vPkg.name();
             case IconRole:
-                return QIcon::fromTheme("package-x-generic"); // Generic package icon
+                {
+                    QString iconPath = vPkg.iconPath();
+                    if (!iconPath.isEmpty()) {
+                        return QIcon(iconPath);
+                    }
+                    return QIcon::fromTheme("package-x-generic"); // Generic package icon
+                }
             case DescriptionRole:
                 return vPkg.shortDescription();
             case StatusRole:
@@ -120,6 +131,8 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
                 return QString(); // Not installed
             case AvailableVersionRole:
                 return vPkg.availableVersion();
+            case IsLocalRole:
+                return true;
             case Qt::ToolTipRole:
                 return QString("Local package: %1").arg(vPkg.filename());
             }
@@ -232,6 +245,19 @@ VirtualPackage PackageModel::virtualPackageAt(const QModelIndex &index) const
 QApt::PackageList PackageModel::packages() const
 {
     return m_packages;
+}
+
+void PackageModel::onIconExtracted(const QString &filePath, const QString & /*iconPath*/)
+{
+    // Find the virtual package with this file path and emit dataChanged
+    for (int i = 0; i < m_virtualPackages.size(); ++i) {
+        if (m_virtualPackages[i].filename() == filePath) {
+            int row = m_packages.size() + i;
+            QModelIndex idx = index(row, 0);
+            emit dataChanged(idx, idx, QVector<int>() << IconRole);
+            return;
+        }
+    }
 }
 
 #include "PackageModel.moc"

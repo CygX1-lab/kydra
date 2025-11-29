@@ -24,10 +24,12 @@
 // Qt
 #include <QApplication>
 #include <QPainter>
+#include <QPainterPath>
 
 // KDE
 #include <KColorScheme>
 #include <KIconLoader>
+#include <KLocalizedString>
 
 // Own
 #include "muonapt/MuonStrings.h"
@@ -130,12 +132,58 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
     const int itemHeight = calcItemHeight(option);
 
     p.setPen(foregroundColor);
-    p.drawText(left + (leftToRight ? textInner : 0),
-               top + 1,
-               width - textInner,
+    
+    // Draw "Local" tag if applicable
+    int nameX = left + (leftToRight ? textInner : 0);
+    int nameY = top + 1;
+    int nameWidth = width - textInner;
+    
+    bool isLocal = index.data(PackageModel::IsLocalRole).toBool();
+    QString nameText = index.data(PackageModel::NameRole).toString();
+    
+    if (isLocal) {
+        QFontMetrics fm(name_item.font);
+        int nameTextWidth = fm.width(nameText);
+        
+        // Tag settings
+        QString tagText = i18n("Local");
+        QFont tagFont = name_item.font;
+        tagFont.setPointSize(tagFont.pointSize() - 2);
+        tagFont.setBold(true);
+        QFontMetrics tagFm(tagFont);
+        int tagWidth = tagFm.width(tagText) + 8;
+        int tagHeight = tagFm.height() + 2;
+        
+        int tagX = nameX + nameTextWidth + 8;
+        int tagY = nameY + (itemHeight / 2 - tagHeight) / 2 + 2; // Vertically center relative to name line
+        
+        // Draw tag background
+        QColor tagColor = QColor(66, 133, 244); // Google Blue-ish
+        QColor tagBgColor = tagColor.lighter(170);
+        tagBgColor.setAlpha(200);
+        
+        p.setRenderHint(QPainter::Antialiasing);
+        QPainterPath path;
+        path.addRoundedRect(tagX, tagY, tagWidth, tagHeight, 4, 4);
+        p.fillPath(path, tagBgColor);
+        
+        // Draw tag text
+        p.setPen(tagColor.darker(120));
+        p.setFont(tagFont);
+        p.drawText(tagX, tagY, tagWidth, tagHeight, Qt::AlignCenter, tagText);
+        
+        // Reset painter for main text
+        p.setPen(foregroundColor);
+        p.setFont(name_item.font);
+        p.setRenderHint(QPainter::Antialiasing, false);
+    }
+
+    p.drawText(nameX,
+               nameY,
+               nameWidth,
                itemHeight / 2,
                Qt::AlignBottom | Qt::AlignLeft,
-               index.data(PackageModel::NameRole).toString());
+               nameText);
 
     p.drawText(left + (leftToRight ? textInner : 0) + 10,
                top + itemHeight / 2,

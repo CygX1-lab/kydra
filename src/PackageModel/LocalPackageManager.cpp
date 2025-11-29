@@ -467,14 +467,14 @@ QStringList LocalPackageManager::getLocalPackageFiles() const
     return files;
 }
 
-QList<LocalPackageInfo> LocalPackageManager::getVirtualPackages() const
+QList<LocalPackageInfo> LocalPackageManager::getVirtualPackages()
 {
     QList<LocalPackageInfo> virtualPackages;
     
     QMutexLocker locker(&m_mutex);
-    if (!m_backend) {
-        return virtualPackages;
-    }
+    // if (!m_backend) { // Removed as per instruction to check m_localInstallPackages instead
+    //     return virtualPackages;
+    // }
     
     // Iterate through all local packages and check if they exist in APT
     for (auto it = m_localPackages.constBegin(); it != m_localPackages.constEnd(); ++it) {
@@ -491,6 +491,114 @@ QList<LocalPackageInfo> LocalPackageManager::getVirtualPackages() const
     }
     
     return virtualPackages;
+}
+
+QString LocalPackageManager::getPackageIcon(const QString &filePath)
+{
+    if (filePath.isEmpty()) {
+        return QString();
+    }
+
+    QMutexLocker locker(&m_mutex);
+    
+    // Check cache first
+    if (m_iconCache.contains(filePath)) {
+        return m_iconCache.value(filePath);
+    }
+
+    // If not cached and not pending, start async extraction
+    if (!m_pendingIconRequests.contains(filePath)) {
+        m_pendingIconRequests.insert(filePath);
+        extractIconAsync(filePath);
+    }
+
+    // Return empty string while loading
+    return QString();
+}
+
+void LocalPackageManager::extractIconAsync(const QString &filePath)
+{
+    QtConcurrent::run([this, filePath]() {
+        // Create a temporary directory for extraction if it doesn't exist
+        QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/icons/";
+        QDir().mkpath(cacheDir);
+
+        // 1. List files to find an icon
+        QProcess listProcess;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("LC_ALL", "C");
+        listProcess.setProcessEnvironment(env);
+        
+        listProcess.start("dpkg-deb", QStringList() << "--contents" << filePath);
+        if (!listProcess.waitForFinished(5000)) {
+            listProcess.kill();
+            listProcess.waitForFinished();
+            QMutexLocker locker(&m_mutex);
+            m_pendingIconRequests.remove(filePath);
+            return;
+        }
+
+        QString output = QString::fromLatin1(listProcess.readAllStandardOutput());
+        QStringList lines = output.split('\n');
+        QString bestIconCandidate;
+
+        // Regex to find icon files
+        QRegularExpression iconRegex("\\./usr/share/(icons|pixmaps)/.*\\.(png|svg|xpm)$");
+
+        for (const QString &line : lines) {
+            QStringList parts = line.split(QRegularExpression("\\s+"));
+            if (parts.isEmpty()) continue;
+            QString path = parts.last();
+
+            if (path.contains(iconRegex)) {
+                // Prefer hicolor/48x48 or pixmaps
+                if (path.contains("48x48") || path.contains("pixmaps")) {
+                    bestIconCandidate = path;
+                } else if (bestIconCandidate.isEmpty()) {
+                    bestIconCandidate = path;
+                }
+            }
+        }
+
+        QString resultPath;
+
+        // If we found an icon file directly
+        if (!bestIconCandidate.isEmpty()) {
+            QString destPath = cacheDir + QFileInfo(bestIconCandidate).fileName();
+            
+            // Check if already extracted
+            if (QFile::exists(destPath)) {
+                resultPath = destPath;
+            } else {
+                // Extract it using dpkg-deb --fsys-tarfile
+                // We use QProcess to pipe output to tar
+                QProcess debProcess;
+                debProcess.setProcessEnvironment(env);
+                debProcess.setStandardOutputProcess(&debProcess); // Self-pipe trick? No.
+                
+                // Construct command line for system() as it's easier for piping than QProcess
+                // Ensure paths are quoted to prevent injection (though filePath comes from us)
+                QString cmd = QString("dpkg-deb --fsys-tarfile \"%1\" | tar -xO \"%2\" > \"%3\"")
+                                .arg(filePath).arg(bestIconCandidate).arg(destPath);
+                
+                if (system(cmd.toLocal8Bit().constData()) == 0) {
+                     resultPath = destPath;
+                }
+            }
+        }
+
+        {
+            QMutexLocker locker(&m_mutex);
+            m_pendingIconRequests.remove(filePath);
+            if (!resultPath.isEmpty()) {
+                m_iconCache.insert(filePath, resultPath);
+            }
+        }
+        
+        if (!resultPath.isEmpty()) {
+            emit iconExtracted(filePath, resultPath);
+        }
+    });
 }
 
 void LocalPackageManager::onDirectoryChanged(const QString &path)

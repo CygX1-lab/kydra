@@ -196,6 +196,8 @@ void MainWindow::initGUI()
     connect(m_managerWidget, &ManagerWidget::packageChanged, this, [this]() {
         setActionsEnabled(true);
     });
+    connect(m_managerWidget, &ManagerWidget::installLocalPackage,
+            this, &MainWindow::installLocalPackageFile);
 
     m_mainWidget = new QSplitter(this);
     m_mainWidget->setOrientation(Qt::Horizontal);
@@ -900,71 +902,88 @@ void MainWindow::installLocalPackage()
         i18nc("@label", "Debian Package Files (*.deb)"));
     
     if (!fileName.isEmpty()) {
-        // Validate the .deb file
-        LocalPackageManager *localManager = LocalPackageManager::instance();
-        if (!localManager) {
-            KMessageBox::error(this,
-                i18nc("@info", "Local package manager is not available."),
-                i18nc("@title:window", "Error"));
-            return;
-        }
-        
-        LocalPackageInfo info;
-        if (!localManager->parseDebFile(fileName, info)) {
-            KMessageBox::error(this,
-                i18nc("@info", "The selected file is not a valid Debian package."),
-                i18nc("@title:window", "Invalid Package File"));
-            return;
-        }
-        
-        // Check if package is already installed
-        QApt::Package *existingPackage = m_backend->package(info.packageName);
-        if (existingPackage && existingPackage->isInstalled()) {
-            QString message = i18nc("@info",
-                "Package '%1' version %2 is already installed.\n"
-                "Version: %3\n"
-                "Do you want to reinstall or upgrade it?",
-                info.packageName, info.version, existingPackage->installedVersion());
-            
-            int result = KMessageBox::questionTwoActions(this, message,
-                i18nc("@title:window", "Package Already Installed"),
-                KGuiItem(i18nc("@action:button", "Reinstall")),
-                KGuiItem(i18nc("@action:button", "Cancel")));
-            
-            if ( result != KMessageBox::PrimaryAction ) {
-                return;
-            }
-        }
-        
-        // Perform safety checks
-        QProcess safetyCheck;
-        safetyCheck.start("apt-get", QStringList() << "-s" << "install" << fileName);
-        if (!safetyCheck.waitForFinished(30000)) {
-            KMessageBox::information(this,
-                i18nc("@info", "Safety check timeout. Proceeding with installation."),
-                i18nc("@title:window", "Safety Check Timeout"));
-        } else if (safetyCheck.exitCode() != 0) {
-            QString errorOutput = safetyCheck.readAllStandardError();
-            KMessageBox::error(this,
-                i18nc("@info", "Safety check failed:\n%1", errorOutput),
-                i18nc("@title:window", "Installation Error"));
-            return;
-        }
-        
-        // Install the package
-        setActionsEnabled(false);
-        m_managerWidget->setEnabled(false);
-        QApplication::setOverrideCursor(Qt::WaitCursor);
-        
-        m_stack->setCurrentWidget(m_transWidget);
-        
-        // Create DebFile object from filename
-        QApt::DebFile debFile(fileName);
-        m_trans = m_backend->installFile(debFile);
-        setupTransaction(m_trans);
-        
-        m_trans->run();
+        installLocalPackageFile(fileName);
     }
+}
+
+void MainWindow::installLocalPackageFile(const QString &fileName)
+{
+    if (fileName.isEmpty()) return;
+
+    // Validate the .deb file
+    LocalPackageManager *localManager = LocalPackageManager::instance();
+    if (!localManager) {
+        KMessageBox::error(this,
+            i18nc("@info", "Local package manager is not available."),
+            i18nc("@title:window", "Error"));
+        return;
+    }
+    
+    LocalPackageInfo info;
+    if (!localManager->parseDebFile(fileName, info)) {
+        KMessageBox::error(this,
+            i18nc("@info", "The selected file is not a valid Debian package."),
+            i18nc("@title:window", "Invalid Package File"));
+        return;
+    }
+    
+    // Check if package is already installed
+    QApt::Package *existingPackage = m_backend->package(info.packageName);
+    if (existingPackage && existingPackage->isInstalled()) {
+        QString message = i18nc("@info",
+            "Package '%1' version %2 is already installed.\n"
+            "Version: %3\n"
+            "Do you want to reinstall or upgrade it?",
+            info.packageName, info.version, existingPackage->installedVersion());
+        
+        int result = KMessageBox::questionTwoActions(this, message,
+            i18nc("@title:window", "Package Already Installed"),
+            KGuiItem(i18nc("@action:button", "Reinstall")),
+            KGuiItem(i18nc("@action:button", "Cancel")));
+        
+        if ( result != KMessageBox::PrimaryAction ) {
+            return;
+        }
+    }
+    
+    // Perform safety checks
+    QProcess safetyCheck;
+    safetyCheck.start("apt-get", QStringList() << "-s" << "install" << fileName);
+    if (!safetyCheck.waitForFinished(30000)) {
+        KMessageBox::information(this,
+            i18nc("@info", "Safety check timeout. Proceeding with installation."),
+            i18nc("@title:window", "Safety Check Timeout"));
+    } else if (safetyCheck.exitCode() != 0) {
+        QString errorOutput = safetyCheck.readAllStandardError();
+        KMessageBox::error(this,
+            i18nc("@info", "Safety check failed:\n%1", errorOutput),
+            i18nc("@title:window", "Installation Error"));
+        return;
+    }
+    
+    // Install the package
+    setActionsEnabled(false);
+    m_managerWidget->setEnabled(false);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    
+    m_stack->setCurrentWidget(m_transWidget);
+    
+    // Create DebFile object from filename
+    QApt::DebFile debFile(fileName);
+    
+    if (!debFile.isValid()) {
+        KMessageBox::error(this,
+            i18nc("@info", "The selected file is not a valid Debian package (QApt validation failed)."),
+            i18nc("@title:window", "Invalid Package File"));
+        return;
+    }
+    
+    qDebug() << "Installing local package:" << fileName << "Valid:" << debFile.isValid();
+    
+    m_trans = m_backend->installFile(debFile);
+    setupTransaction(m_trans);
+    
+    m_trans->run();
 }
 
 void MainWindow::openDebFile(const QString &debFilePath)

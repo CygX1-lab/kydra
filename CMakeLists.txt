@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(kydra VERSION 1.3.2)
+project(kydra VERSION 1.3.3)
 set(PROJECT_VERSION "1.3.2")
 set(PROJECT_VERSION_MAJOR 5)
 

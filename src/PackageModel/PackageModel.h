@@ -26,6 +26,7 @@
 #include <QApt/Package>
 
 #include "VirtualPackage.h"
+#include "FlatpakManager.h"
 
 class PackageModel: public QAbstractListModel
 {
@@ -55,19 +56,27 @@ public:
     void setVirtualPackages(const QList<VirtualPackage> &virtualPackages);
     void addVirtualPackages(const QList<VirtualPackage> &virtualPackages);
     void clearVirtualPackages();
+    
+    void setFlatpakPackages(const QList<FlatpakPackage> &flatpakPackages); // New method
+    
     void clear();
+    void externalDataChanged();
     QApt::Package *packageAt(const QModelIndex &index) const;
     QApt::PackageList packages() const;
     bool isVirtualPackage(const QModelIndex &index) const;
     VirtualPackage virtualPackageAt(const QModelIndex &index) const;
+    
+    bool isFlatpakPackage(const QModelIndex &index) const; // New method
+    FlatpakPackage flatpakPackageAt(const QModelIndex &index) const; // New method
 
 private:
     QApt::PackageList m_packages;
     QList<VirtualPackage> m_virtualPackages;
+    QList<FlatpakPackage> m_flatpakPackages; // New list
 
 public slots:
-    void externalDataChanged();
     void onIconExtracted(const QString &filePath, const QString &iconPath);
+    void onFlatpaksChanged(); // New slot
 };
 
 #endif

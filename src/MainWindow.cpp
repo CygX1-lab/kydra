@@ -70,12 +70,14 @@
 #include "config/ManagerSettingsDialog.h"
 #include "muonapt/QAptActions.h"
 #include "PackageModel/LocalPackageManager.h"
+#include "Dashboard/DashboardWidget.h"
 
 MainWindow::MainWindow()
     : KXmlGuiWindow()
     , m_settingsDialog(nullptr)
     , m_reviewWidget(nullptr)
     , m_transWidget(nullptr)
+    , m_dashboardWidget(nullptr)
     , m_reloading(false)
     , m_qmlEngine(nullptr)
     , m_kirigamiBackend(nullptr)
@@ -190,6 +192,10 @@ void MainWindow::initGUI()
 
     setCentralWidget(centralWidget);
 
+    // Initialize Dashboard
+    m_dashboardWidget = new DashboardWidget(m_stack);
+    m_stack->addWidget(m_dashboardWidget);
+
     m_managerWidget = new ManagerWidget(m_stack);
     connect(this, &MainWindow::backendReady,
             m_managerWidget, &ManagerWidget::setBackend);
@@ -198,6 +204,25 @@ void MainWindow::initGUI()
     });
     connect(m_managerWidget, &ManagerWidget::installLocalPackage,
             this, &MainWindow::installLocalPackageFile);
+            
+    // Connect Dashboard Signals
+    connect(m_dashboardWidget, &DashboardWidget::categorySelected, this, [this](const QString &category) {
+        // Switch to Manager and filter by category
+        m_stack->setCurrentWidget(m_mainWidget);
+        m_managerWidget->filterByGroup(category);
+    });
+    
+    connect(m_dashboardWidget, &DashboardWidget::packageSelected, this, [this](const QString &packageName) {
+        m_stack->setCurrentWidget(m_mainWidget);
+        m_managerWidget->setSearchText(packageName);
+    });
+    
+    // Start at Dashboard if enabled
+    if (MuonSettings::self()->startOnDashboard()) {
+        m_stack->setCurrentWidget(m_dashboardWidget);
+    } else {
+        m_stack->setCurrentWidget(m_mainWidget);
+    }
 
     m_mainWidget = new QSplitter(this);
     m_mainWidget->setOrientation(Qt::Horizontal);
@@ -229,7 +254,8 @@ void MainWindow::initGUI()
 
     m_stack->addWidget(m_transWidget);
     m_stack->addWidget(m_mainWidget);
-    m_stack->setCurrentWidget(m_mainWidget);
+    m_stack->addWidget(m_mainWidget);
+    // m_stack->setCurrentWidget(m_mainWidget); // Removed to keep Dashboard as start screen
 
     m_backend = new QApt::Backend(this);
     QApt::FrontendCaps caps = (QApt::FrontendCaps)(QApt::DebconfCap | QApt::MediumPromptCap |

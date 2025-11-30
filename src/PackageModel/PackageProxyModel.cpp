@@ -276,6 +276,18 @@ VirtualPackage PackageProxyModel::virtualPackageAt(const QModelIndex &index) con
     return static_cast<PackageModel *>(sourceModel())->virtualPackageAt(sourceIndex);
 }
 
+bool PackageProxyModel::isFlatpakPackage(const QModelIndex &index) const
+{
+    QModelIndex sourceIndex = mapToSource(index);
+    return static_cast<PackageModel *>(sourceModel())->isFlatpakPackage(sourceIndex);
+}
+
+FlatpakPackage PackageProxyModel::flatpakPackageAt(const QModelIndex &index) const
+{
+    QModelIndex sourceIndex = mapToSource(index);
+    return static_cast<PackageModel *>(sourceModel())->flatpakPackageAt(sourceIndex);
+}
+
 void PackageProxyModel::reset()
 {
     beginRemoveRows(QModelIndex(), 0, m_packages.size());

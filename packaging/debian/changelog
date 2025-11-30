@@ -1,3 +1,14 @@
+kydra (1.5.0-1) unstable; urgency=medium
+
+  * Major Release v1.5.0:
+    * **AppStream Integration**: Rich metadata support including screenshots, long descriptions, and homepage links.
+    * **Discover Dashboard**: New home screen with rotating banner, categories, and top apps.
+    * **Modern History View**: Card-style layout for history items.
+    * **Flatpak Support**: Native support for listing, installing, and removing Flatpak applications.
+    * **Visual Overhaul**: Redesigned package list with modern card-style layout and premium stylesheet.
+
+ -- Jonathan Thomas <echidnaman@kubuntu.org>  Mon, 25 Nov 2025 12:00:00 +0100
+
 kydra (1.3.0-1) unstable; urgency=medium
 
   * Local .deb Package Management:

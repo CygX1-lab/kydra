@@ -48,6 +48,7 @@
 
 // Own includes
 #include "VirtualPackage.h"
+#include "FlatpakManager.h"
 #include "muonapt/ChangesDialog.h"
 #include "DetailsWidget.h"
 #include "EnhancedDetailsWidget.h"
@@ -167,6 +168,9 @@ PackageWidget::PackageWidget(QWidget *parent)
     setLayout(new QVBoxLayout);
     layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(splitter);
+    
+    // Initialize FlatpakManager
+    FlatpakManager::instance()->init();
 }
 
 void PackageWidget::setupActions()
@@ -246,6 +250,12 @@ void PackageWidget::setFocusSearchEdit()
     m_searchEdit->selectAll();
 }
 
+void PackageWidget::setSearchText(const QString &text)
+{
+    showSearchEdit();
+    m_searchEdit->setText(text);
+}
+
 QByteArray PackageWidget::saveColumnsState() const
 {
     return m_packageView->header()->saveState();
@@ -306,6 +316,12 @@ void PackageWidget::packageActivated(const QModelIndex &index)
 {
     if (m_proxyModel->isVirtualPackage(index)) {
         m_detailsWidget->setVirtualPackage(m_proxyModel->virtualPackageAt(index));
+        return;
+    }
+    
+    if (m_proxyModel->isFlatpakPackage(index)) {
+        FlatpakPackage fPkg = m_proxyModel->flatpakPackageAt(index);
+        m_detailsWidget->setFlatpak(fPkg.id);
         return;
     }
 

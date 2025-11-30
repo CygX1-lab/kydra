@@ -49,6 +49,7 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
         , m_autoCleanSpinbox(new QSpinBox(this))
         , m_useSlowSearchCheckBox(new QCheckBox(this))
         , m_confirmOnQuitCheckBox(new QCheckBox(this))
+        , m_startOnDashboardCheckBox(new QCheckBox(this))
         , m_showVersionColumnsCheckBox(new QCheckBox(this))
         , m_statusColorsButton(new QPushButton(this))
 {
@@ -63,6 +64,7 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     m_untrustedCheckBox->setText(i18n("Allow the installation of untrusted packages"));
     m_useSlowSearchCheckBox->setText(i18n("Use supplemental slow search when xapian search is not available"));
     m_confirmOnQuitCheckBox->setText(i18n("Show confirmation dialog when quitting with pending changes"));
+    m_startOnDashboardCheckBox->setText(i18n("Show Dashboard on startup"));
     m_showVersionColumnsCheckBox->setText(i18n("Show installed and available version columns by default"));
     m_statusColorsButton->setText(i18n("Configure Status Column Colors..."));
 
@@ -103,6 +105,7 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     
     QGroupBox *appearanceGroup = new QGroupBox(i18n("Appearance"), this);
     QFormLayout *appearanceLayout = new QFormLayout(appearanceGroup);
+    appearanceLayout->addRow(m_startOnDashboardCheckBox);
     appearanceLayout->addRow(m_showVersionColumnsCheckBox);
     appearanceLayout->addRow(m_statusColorsButton);
     
@@ -120,6 +123,7 @@ GeneralSettingsPage::GeneralSettingsPage(QWidget* parent, QApt::Config *aptConfi
     connect(m_autoCleanSpinbox, SIGNAL(valueChanged(int)), this, SLOT(emitAuthChanged()));
     connect(m_useSlowSearchCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
     connect(m_confirmOnQuitCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
+    connect(m_startOnDashboardCheckBox, SIGNAL(clicked()), this, SIGNAL(changed()));
     connect(m_showVersionColumnsCheckBox, SIGNAL(clicked()), this, SLOT(applyVersionColumnsSetting()));
     connect(m_statusColorsButton, SIGNAL(clicked()), this, SLOT(editStatusColors()));
 
@@ -146,6 +150,7 @@ void GeneralSettingsPage::loadSettings()
     m_undoStackSpinbox->setValue(settings->undoStackSize());
     m_useSlowSearchCheckBox->setChecked(settings->useSlowSearch());
     m_confirmOnQuitCheckBox->setChecked(settings->confirmOnQuit());
+    m_startOnDashboardCheckBox->setChecked(settings->startOnDashboard());
     m_showVersionColumnsCheckBox->setChecked(settings->showVersionColumns());
 
     int autoCleanValue = m_aptConfig->readEntry("APT::Periodic::AutocleanInterval", 0);
@@ -162,6 +167,7 @@ void GeneralSettingsPage::applySettings()
     settings->setUndoStackSize(m_undoStackSpinbox->value());
     settings->setUseSlowSearch(m_useSlowSearchCheckBox->isChecked());
     settings->setConfirmOnQuit(m_confirmOnQuitCheckBox->isChecked());
+    settings->setStartOnDashboard(m_startOnDashboardCheckBox->isChecked());
     settings->setShowVersionColumns(m_showVersionColumnsCheckBox->isChecked());
     settings->save();
 

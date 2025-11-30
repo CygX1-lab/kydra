@@ -66,6 +66,7 @@ private:
     QSpinBox *m_autoCleanSpinbox;
     QCheckBox *m_useSlowSearchCheckBox;
     QCheckBox *m_confirmOnQuitCheckBox;
+    QCheckBox *m_startOnDashboardCheckBox;
     QCheckBox *m_showVersionColumnsCheckBox;
     QPushButton *m_statusColorsButton;
 

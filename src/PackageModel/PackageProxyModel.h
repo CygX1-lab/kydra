@@ -26,6 +26,7 @@
 
 #include <QApt/Package>
 #include "VirtualPackage.h"
+#include "FlatpakManager.h"
 
 namespace QApt {
     class Backend;
@@ -50,6 +51,10 @@ public:
     QApt::Package *packageAt(const QModelIndex &index) const;
     bool isVirtualPackage(const QModelIndex &index) const;
     VirtualPackage virtualPackageAt(const QModelIndex &index) const;
+    
+    bool isFlatpakPackage(const QModelIndex &index) const; // New method
+    FlatpakPackage flatpakPackageAt(const QModelIndex &index) const; // New method
+
     void reset();
     QApt::PackageList performSlowSearch(const QString &searchText) const;
 

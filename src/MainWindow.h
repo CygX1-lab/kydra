@@ -37,6 +37,7 @@ class FilterWidget;
 class ManagerWidget;
 class ReviewWidget;
 class TransactionWidget;
+class DashboardWidget; // Forward declaration
 class StatusWidget;
 class DonateDialog;
 
@@ -88,6 +89,7 @@ private:
     ManagerWidget *m_managerWidget;
     ReviewWidget *m_reviewWidget;
     TransactionWidget *m_transWidget;
+    DashboardWidget *m_dashboardWidget; // New Dashboard
     StatusWidget *m_statusWidget;
     bool m_reloading;
 

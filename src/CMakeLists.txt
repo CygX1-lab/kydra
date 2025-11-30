@@ -37,6 +37,7 @@ set(kydra_SRCS
     PackageModel/PackageIconExtractor.cpp
     PackageModel/LocalPackageManager.cpp
     PackageModel/VirtualPackage.cpp
+    PackageModel/FlatpakManager.cpp
     StatusWidget.cpp
     TransactionWidget.cpp
     config/ManagerSettingsDialog.cpp
@@ -45,6 +46,8 @@ set(kydra_SRCS
     settings/SettingsPageBase.cpp
     DonateDialog.cpp
     KirigamiBackend.cpp
+    AppStreamHelper.cpp
+    Dashboard/DashboardWidget.cpp
     
     muonapt/ChangesDialog.cpp
     muonapt/MuonStrings.cpp
@@ -52,6 +55,7 @@ set(kydra_SRCS
     muonapt/HistoryView/HistoryView.h
     muonapt/HistoryView/HistoryProxyModel.h
     muonapt/HistoryView/HistoryView.cpp
+    muonapt/HistoryView/HistoryDelegate.cpp
     muonapt/HistoryView/HistoryProxyModel.cpp
 
 )
@@ -73,6 +77,12 @@ target_link_libraries(kydra KF5::KIOWidgets
                            KF5::XmlGui
                            Qt5::Concurrent
                            QApt::Main)
+
+find_package(AppStreamQt5)
+if(AppStreamQt5_FOUND)
+    target_link_libraries(kydra AppStreamQt)
+    target_compile_definitions(kydra PRIVATE -DHAVE_APPSTREAM)
+endif()
 
 if(WITH_KIRIGAMI)
     target_link_libraries(kydra KF5::Kirigami2 Qt5::Qml Qt5::Quick)

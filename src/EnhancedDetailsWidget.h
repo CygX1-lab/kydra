@@ -24,6 +24,7 @@
 
 #include "DetailsWidget.h"
 #include "PackageModel/VirtualPackage.h"
+#include "AppStreamHelper.h"
 #include <QWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -67,6 +68,7 @@ public:
     void setBackend(QApt::Backend *backend);
     void setPackage(QApt::Package *package);
     void setVirtualPackage(const VirtualPackage &package);
+    void setFlatpak(const QString &flatpakId); // New method
     void clear();
 
 public Q_SLOTS:
@@ -113,6 +115,7 @@ private:
     QLabel *m_nameLabel;
     QLabel *m_descriptionLabel;
     QLabel *m_versionLabel;
+    QLabel *m_screenshotLabel; // New screenshot display
     QPushButton *m_installButton;
     QPushButton *m_updateButton;
     QPushButton *m_removeButton;
@@ -140,6 +143,7 @@ private:
     VirtualPackage m_virtualPackage;
     bool m_isVirtual;
     bool m_isLocal;
+    bool m_isFlatpak; // New flag
     
     // Styling
     QColor m_headerGradientStart;

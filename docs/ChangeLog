@@ -1,4 +1,4 @@
-Kydra Version 1.4.0
+Kydra Version 1.5.0
 ====================
 
 - Features:
@@ -8,6 +8,11 @@ Kydra Version 1.4.0
     * Improved details view for local packages with "Local Package" badge and distinct visual styling.
     * Enhanced filter sidebar with category icons and improved list styling.
     * Visual Masterpiece: Redesigned package list with modern card-style layout (rounded corners, shadows) and applied a premium global stylesheet.
+    * **AppStream Integration**: Rich metadata support including screenshots, long descriptions, and homepage links for packages.
+    * **Discover Dashboard**: A new home screen featuring a rotating hero banner, category grid, and "Top Apps" list for easier application discovery.
+    * **Modern History View**: Updated the history view to match the card-style aesthetic of the main package list.
+    * **Flatpak Support**: Native support for listing, installing, and removing Flatpak applications via `flatpak` CLI integration.
+
 
 - Bugfixes:
   * Fixed application hang when loading local packages due to synchronous icon extraction.

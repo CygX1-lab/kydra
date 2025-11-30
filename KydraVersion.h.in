@@ -18,8 +18,8 @@
  */
 
 #ifndef KYDRAVERSION_H
-#define KYDRA_VERSION_STRING "1.4.0"
+#define KYDRA_VERSION_STRING "1.5.0"
 
-static const char version[] = "1.4.0";
+static const char version[] = "1.5.0";
 
 #endif

@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "HistoryView.h"
+#include "HistoryDelegate.h"
 
 #include <QtCore/QTimer>
 #include <QtWidgets/QLabel>
@@ -215,6 +216,11 @@ HistoryView::HistoryView(QWidget *parent)
     m_proxyModel->sort(0);
 
     m_historyView->setModel(m_proxyModel);
+    
+    // Set custom delegate
+    m_historyView->setItemDelegate(new HistoryDelegate(this));
+    
+    m_historyView->setAlternatingRowColors(false); // Card style handles background
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }

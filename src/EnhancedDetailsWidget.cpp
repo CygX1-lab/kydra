@@ -33,6 +33,9 @@
 #include <QPropertyAnimation>
 #include <QPainter>
 #include <QPalette>
+#include <QDebug>
+
+#include "PackageModel/FlatpakManager.h"
 
 // KDE includes
 #include <KLocalizedString>
@@ -52,12 +55,14 @@ EnhancedDetailsWidget::EnhancedDetailsWidget(QWidget *parent)
     : QWidget(parent)
     , m_backend(nullptr)
     , m_package(nullptr)
+    , m_isVirtual(false)
+    , m_isLocal(false)
+    , m_isFlatpak(false)
     , m_headerGradientStart(QPalette().color(QPalette::Window))
     , m_headerGradientEnd(QPalette().color(QPalette::Window).darker(110))
     , m_tabTransitionDuration(200)
-    , m_isVirtual(false)
-    , m_isLocal(false)
 {
+    AppStreamHelper::instance()->init();
     setupUI();
     hide(); // Hide until a package is selected
 }
@@ -121,7 +126,17 @@ void EnhancedDetailsWidget::setupHeader()
     textLayout->addWidget(m_nameLabel);
     textLayout->addWidget(m_descriptionLabel);
     textLayout->addWidget(m_versionLabel);
+    textLayout->addWidget(m_versionLabel);
     textLayout->addStretch();
+    
+    // Screenshot preview (initially hidden)
+    m_screenshotLabel = new QLabel(m_headerWidget);
+    m_screenshotLabel->setFixedSize(200, 112); // 16:9 aspect ratio
+    m_screenshotLabel->setScaledContents(true);
+    m_screenshotLabel->setStyleSheet("border: 1px solid palette(mid); border-radius: 4px; background: black;");
+    m_screenshotLabel->hide();
+    
+    m_headerLayout->addWidget(m_screenshotLabel);
     
     // Action buttons
     auto *buttonLayout = new QHBoxLayout();
@@ -316,6 +331,10 @@ void EnhancedDetailsWidget::applyGradientHeader()
         // Distinctive gradient for local packages (Blue-ish)
         gradient.setColorAt(0.0, QColor(66, 133, 244).lighter(150));
         gradient.setColorAt(1.0, QColor(66, 133, 244).lighter(110));
+    } else if (m_isFlatpak) {
+        // Distinctive gradient for Flatpaks (Purple-ish)
+        gradient.setColorAt(0.0, QColor(142, 68, 173).lighter(150));
+        gradient.setColorAt(1.0, QColor(142, 68, 173).lighter(110));
     } else {
         // Standard gradient
         gradient.setColorAt(0.0, m_headerGradientStart);
@@ -417,6 +436,7 @@ void EnhancedDetailsWidget::setPackage(QApt::Package *package)
     m_package = package;
     m_isVirtual = false;
     m_isLocal = false;
+    m_isFlatpak = false;
     
     if (!package) {
         clear();
@@ -428,6 +448,18 @@ void EnhancedDetailsWidget::setPackage(QApt::Package *package)
     m_nameLabel->setText(package->name());
     m_descriptionLabel->setText(package->shortDescription());
     m_versionLabel->setText(i18nc("@label", "Version: %1", package->version()));
+    
+    // AppStream Integration
+    QString screenshotUrl = AppStreamHelper::instance()->getScreenshotUrl(package->name());
+    if (!screenshotUrl.isEmpty()) {
+        // In a real implementation, we would fetch this asynchronously via QNetworkAccessManager
+        // For now, we'll just log it or set a placeholder if we had a local cache
+        // m_screenshotLabel->show();
+        // Network fetching logic would go here
+        qDebug() << "Found screenshot URL for" << package->name() << ":" << screenshotUrl;
+    } else {
+        m_screenshotLabel->hide();
+    }
     
     // Check if it's a local package
     if (LocalPackageManager::instance()->isLocalInstallPackage(package->name())) {
@@ -457,6 +489,7 @@ void EnhancedDetailsWidget::setVirtualPackage(const VirtualPackage &package)
     m_virtualPackage = package;
     m_isVirtual = true;
     m_isLocal = true;
+    m_isFlatpak = false;
     m_package = nullptr;
     
     // Update header information
@@ -487,11 +520,57 @@ void EnhancedDetailsWidget::setVirtualPackage(const VirtualPackage &package)
     show();
 }
 
+void EnhancedDetailsWidget::setFlatpak(const QString &flatpakId)
+{
+    FlatpakPackage pkg = FlatpakManager::instance()->getPackage(flatpakId);
+    
+    m_package = nullptr;
+    m_isVirtual = false;
+    m_isLocal = false;
+    m_isFlatpak = true;
+    
+    // Update header
+    // Try to get icon from AppStream or theme
+    QString iconName = pkg.id;
+    if (QIcon::hasThemeIcon(iconName)) {
+         m_iconLabel->setPixmap(QIcon::fromTheme(iconName).pixmap(64, 64));
+    } else {
+         m_iconLabel->setPixmap(QIcon::fromTheme("application-x-executable").pixmap(64, 64));
+    }
+    
+    m_nameLabel->setText(pkg.name);
+    m_descriptionLabel->setText(pkg.description);
+    m_versionLabel->setText(i18nc("@label", "Version: %1 (Flatpak)", pkg.version));
+    
+    applyGradientHeader();
+    
+    // Buttons
+    m_installButton->setVisible(!pkg.isInstalled);
+    m_removeButton->setVisible(pkg.isInstalled);
+    m_updateButton->setVisible(false); // TODO: Check updates
+    
+    // Connect buttons (simplified for now)
+    disconnect(m_installButton, nullptr, nullptr, nullptr);
+    disconnect(m_removeButton, nullptr, nullptr, nullptr);
+    
+    connect(m_installButton, &QPushButton::clicked, this, [this, pkg]() {
+        FlatpakManager::instance()->installPackage(pkg.id, pkg.remote);
+    });
+    
+    connect(m_removeButton, &QPushButton::clicked, this, [this, pkg]() {
+        FlatpakManager::instance()->removePackage(pkg.id);
+    });
+    
+    refreshCurrentTab();
+    show();
+}
+
 void EnhancedDetailsWidget::clear()
 {
     m_package = nullptr;
     m_isVirtual = false;
     m_isLocal = false;
+    m_isFlatpak = false;
     
     // Clear header
     m_iconLabel->clear();

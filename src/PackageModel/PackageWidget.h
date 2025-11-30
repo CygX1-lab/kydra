@@ -62,6 +62,7 @@ public:
     void setHeaderText(const QString &text);
     void hideHeaderLabel();
     void showSearchEdit();
+    void setSearchText(const QString &text); // New method
     int packagesType() {
         return m_packagesType;
     }

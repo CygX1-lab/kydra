@@ -35,11 +35,15 @@ PackageModel::PackageModel(QObject *parent)
 {
     connect(LocalPackageManager::instance(), &LocalPackageManager::iconExtracted,
             this, &PackageModel::onIconExtracted);
+            
+    // Connect to FlatpakManager
+    connect(FlatpakManager::instance(), &FlatpakManager::packagesChanged,
+            this, &PackageModel::onFlatpaksChanged);
 }
 
 int PackageModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    return m_packages.size() + m_virtualPackages.size();
+    return m_packages.size() + m_virtualPackages.size() + m_flatpakPackages.size();
 }
 
 int PackageModel::columnCount(const QModelIndex & /*parent*/) const
@@ -55,7 +59,7 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
     
     int row = index.row();
     
-    // Determine if this is an APT package or virtual package
+    // Determine if this is an APT package, virtual package, or Flatpak
     if (row < m_packages.size()) {
         // APT package
         QApt::Package *package = m_packages.at(row);
@@ -94,47 +98,79 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
         case Qt::ToolTipRole:
             return QVariant();
         }
-    } else {
+    } else if (row < m_packages.size() + m_virtualPackages.size()) {
         // Virtual package
         int virtualIdx = row - m_packages.size();
-        if (virtualIdx >= 0 && virtualIdx < m_virtualPackages.size()) {
-            const VirtualPackage &vPkg = m_virtualPackages.at(virtualIdx);
+        const VirtualPackage &vPkg = m_virtualPackages.at(virtualIdx);
+        switch (role) {
+        case NameRole:
+            return vPkg.name();
+        case IconRole:
+            {
+                QString iconPath = vPkg.iconPath();
+                if (!iconPath.isEmpty()) {
+                    return QIcon(iconPath);
+                }
+                return QIcon::fromTheme("package-x-generic"); // Generic package icon
+            }
+        case DescriptionRole:
+            return vPkg.shortDescription();
+        case StatusRole:
+        case ActionRole:
+            return 0; // Not installed state
+        case SupportRole:
+            return false; // Virtual packages don't have official support
+        case InstalledSizeRole:
+            return vPkg.installedSize();
+        case InstalledSizeDisplayRole:
+            {
+                qint64 size = vPkg.installedSize();
+                if (size != -1) {
+                    return KFormat().formatByteSize(size);
+                }
+            }
+            return QVariant();
+        case InstalledVersionRole:
+            return QString(); // Not installed
+        case AvailableVersionRole:
+            return vPkg.availableVersion();
+        case IsLocalRole:
+            return true;
+        case Qt::ToolTipRole:
+            return QString("Local package: %1").arg(vPkg.filename());
+        }
+    } else {
+        // Flatpak package
+        int flatpakIdx = row - m_packages.size() - m_virtualPackages.size();
+        if (flatpakIdx >= 0 && flatpakIdx < m_flatpakPackages.size()) {
+            const FlatpakPackage &fPkg = m_flatpakPackages.at(flatpakIdx);
             switch (role) {
             case NameRole:
-                return vPkg.name();
+                return fPkg.name;
             case IconRole:
-                {
-                    QString iconPath = vPkg.iconPath();
-                    if (!iconPath.isEmpty()) {
-                        return QIcon(iconPath);
-                    }
-                    return QIcon::fromTheme("package-x-generic"); // Generic package icon
+                if (QIcon::hasThemeIcon(fPkg.id)) {
+                    return QIcon::fromTheme(fPkg.id);
                 }
+                return QIcon::fromTheme("application-x-executable");
             case DescriptionRole:
-                return vPkg.shortDescription();
+                return fPkg.description;
             case StatusRole:
             case ActionRole:
-                return 0; // Not installed state
+                return 0; // TODO: Map Flatpak state
             case SupportRole:
-                return false; // Virtual packages don't have official support
-            case InstalledSizeRole:
-                return vPkg.installedSize();
-            case InstalledSizeDisplayRole:
-                {
-                    qint64 size = vPkg.installedSize();
-                    if (size != -1) {
-                        return KFormat().formatByteSize(size);
-                    }
-                }
-                return QVariant();
-            case InstalledVersionRole:
-                return QString(); // Not installed
-            case AvailableVersionRole:
-                return vPkg.availableVersion();
-            case IsLocalRole:
                 return true;
+            case InstalledSizeRole:
+                return 0; // Unknown size
+            case InstalledSizeDisplayRole:
+                return QString();
+            case InstalledVersionRole:
+                return fPkg.version;
+            case AvailableVersionRole:
+                return fPkg.version;
+            case IsLocalRole:
+                return false;
             case Qt::ToolTipRole:
-                return QString("Local package: %1").arg(vPkg.filename());
+                return QString("Flatpak: %1").arg(fPkg.id);
             }
         }
     }
@@ -204,9 +240,10 @@ void PackageModel::clearVirtualPackages()
 
 void PackageModel::clear()
 {
-    beginRemoveRows(QModelIndex(), 0, m_packages.size() + m_virtualPackages.size() - 1);
+    beginRemoveRows(QModelIndex(), 0, m_packages.size() + m_virtualPackages.size() + m_flatpakPackages.size() - 1);
     m_packages.clear();
     m_virtualPackages.clear();
+    m_flatpakPackages.clear();
     endRemoveRows();
 }
 
@@ -214,8 +251,12 @@ void PackageModel::externalDataChanged()
 {
     // A package being changed means that any number of other packages can have
     // changed, so say everything changed to trigger refreshes.
-    int totalRows = m_packages.size() + m_virtualPackages.size();
-    emit dataChanged(index(0, 0), index(totalRows - 1, 0));
+    // A package being changed means that any number of other packages can have
+    // changed, so say everything changed to trigger refreshes.
+    int totalRows = m_packages.size() + m_virtualPackages.size() + m_flatpakPackages.size();
+    if (totalRows > 0) {
+        emit dataChanged(index(0, 0), index(totalRows - 1, 0));
+    }
 }
 
 QApt::Package *PackageModel::packageAt(const QModelIndex &index) const
@@ -245,6 +286,32 @@ VirtualPackage PackageModel::virtualPackageAt(const QModelIndex &index) const
 QApt::PackageList PackageModel::packages() const
 {
     return m_packages;
+}
+
+void PackageModel::setFlatpakPackages(const QList<FlatpakPackage> &flatpakPackages)
+{
+    beginResetModel();
+    m_flatpakPackages = flatpakPackages;
+    endResetModel();
+}
+
+bool PackageModel::isFlatpakPackage(const QModelIndex &index) const
+{
+    return index.row() >= (m_packages.size() + m_virtualPackages.size());
+}
+
+FlatpakPackage PackageModel::flatpakPackageAt(const QModelIndex &index) const
+{
+    int flatpakIdx = index.row() - m_packages.size() - m_virtualPackages.size();
+    if (flatpakIdx >= 0 && flatpakIdx < m_flatpakPackages.size()) {
+        return m_flatpakPackages.at(flatpakIdx);
+    }
+    return FlatpakPackage();
+}
+
+void PackageModel::onFlatpaksChanged()
+{
+    setFlatpakPackages(FlatpakManager::instance()->listPackages());
 }
 
 void PackageModel::onIconExtracted(const QString &filePath, const QString & /*iconPath*/)

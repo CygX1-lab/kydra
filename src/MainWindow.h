@@ -92,6 +92,7 @@ private:
     DashboardWidget *m_dashboardWidget; // New Dashboard
     StatusWidget *m_statusWidget;
     bool m_reloading;
+    QString m_pendingLocalPackage;
 
     // Kirigami UI support
     QQmlApplicationEngine *m_qmlEngine;

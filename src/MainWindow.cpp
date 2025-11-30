@@ -82,6 +82,7 @@ MainWindow::MainWindow()
     , m_qmlEngine(nullptr)
     , m_kirigamiBackend(nullptr)
     , m_useKirigamiUI(false)
+    , m_pendingLocalPackage(QString())
 {
     // Check if Kirigami is available and user wants to use it
 #ifdef HAVE_KIRIGAMI
@@ -195,6 +196,14 @@ void MainWindow::initGUI()
     // Initialize Dashboard
     m_dashboardWidget = new DashboardWidget(m_stack);
     m_stack->addWidget(m_dashboardWidget);
+    
+    connect(this, &MainWindow::backendReady,
+            m_dashboardWidget, &DashboardWidget::setBackend);
+    connect(m_dashboardWidget, &DashboardWidget::searchRequested, this, [this](const QString &text) {
+        m_stack->setCurrentWidget(m_mainWidget);
+        m_managerWidget->setSearchText(text);
+    });
+    connect(m_dashboardWidget, &DashboardWidget::showUpdates, this, &MainWindow::checkForUpdates);
 
     m_managerWidget = new ManagerWidget(m_stack);
     connect(this, &MainWindow::backendReady,
@@ -606,10 +615,19 @@ void MainWindow::returnFromPreview()
     connect(m_previewAction, SIGNAL(triggered()), this, SLOT(previewChanges()));
 }
 
+
 void MainWindow::startCommit()
 {
     // Debug output to verify which method is being used
     qDebug() << "startCommit() called, useKAuthForPrivileges() =" << useKAuthForPrivileges();
+    
+    // Check for pending local package first
+    if (!m_pendingLocalPackage.isEmpty()) {
+        QString packageFile = m_pendingLocalPackage;
+        m_pendingLocalPackage.clear(); // Clear it so we don't try to install it again
+        installLocalPackageFile(packageFile);
+        return;
+    }
     
     // Force traditional method for now - KAuth action files are not properly configured
     // Traditional method
@@ -680,7 +698,7 @@ void MainWindow::setActionsEnabled(bool enabled)
     }
 
     int upgradeable = m_backend->packageCount(QApt::Package::Upgradeable);
-    bool changesPending = m_backend->areChangesMarked();
+    bool changesPending = m_backend->areChangesMarked() || !m_pendingLocalPackage.isEmpty();
     int autoRemoveable = m_backend->packageCount(QApt::Package::IsGarbage);
 
     m_applyAction->setEnabled(changesPending);
@@ -1028,20 +1046,26 @@ void MainWindow::installLocalPackageFile(const QString &fileName)
     // Check if package is already installed
     QApt::Package *existingPackage = m_backend->package(info.packageName);
     if (existingPackage && existingPackage->isInstalled()) {
-        QString message = i18nc("@info",
-            "Package '%1' version %2 is already installed.\n"
-            "Version: %3\n"
-            "Do you want to reinstall or upgrade it?",
-            info.packageName, info.version, existingPackage->installedVersion());
+        QString installedVer = existingPackage->installedVersion();
         
-        int result = KMessageBox::questionTwoActions(this, message,
-            i18nc("@title:window", "Package Already Installed"),
-            KGuiItem(i18nc("@action:button", "Reinstall")),
-            KGuiItem(i18nc("@action:button", "Cancel")));
-        
-        if ( result != KMessageBox::PrimaryAction ) {
-            return;
+        // Only prompt if the version is exactly the same
+        if (installedVer == info.version) {
+            QString message = i18nc("@info",
+                "Package '%1' version %2 is already installed.\n"
+                "Do you want to reinstall it?",
+                info.packageName, info.version);
+            
+            int result = KMessageBox::questionTwoActions(this, message,
+                i18nc("@title:window", "Package Already Installed"),
+                KGuiItem(i18nc("@action:button", "Reinstall")),
+                KGuiItem(i18nc("@action:button", "Cancel")));
+            
+            if ( result != KMessageBox::PrimaryAction ) {
+                return;
+            }
         }
+        // If versions differ, we assume it's an upgrade/downgrade and proceed
+        // (apt-get will handle the details, or we could add a specific prompt for downgrades if desired)
     }
     
     // Perform safety checks
@@ -1145,5 +1169,9 @@ void MainWindow::openDebFile(const QString &debFilePath)
             i18nc("@info", "Local package '%1' version %2 has been loaded for installation.",
                   info.packageName, info.version),
             i18nc("@title:window", "Package Loaded"));
+            
+        // Mark as pending and enable actions
+        m_pendingLocalPackage = debFilePath;
+        setActionsEnabled(true);
     }
 }

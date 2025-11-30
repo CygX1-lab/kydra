@@ -2,8 +2,7 @@
 
 A powerful, KDE-native package manager forked from Muon.
 
-![Kydra Main Window](docs/screenshots/main_window_placeholder.png)
-*Note: Screenshot placeholder - Please replace with an actual screenshot of the application*
+[Kydra Main Window](docs/screenshots/main_window.png)
 
 Kydra brings a modern, Plasma-integrated interface to Debian package management. Designed around clarity and speed, it gives users full control of repositories, updates, packages, and system components through a clean, multi-view UI.
 

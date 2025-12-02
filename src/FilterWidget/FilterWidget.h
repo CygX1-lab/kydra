@@ -65,6 +65,7 @@ private:
 public Q_SLOTS:
     void setBackend(QApt::Backend *backend);
     void reload();
+    void setSelectedCategory(const QString &category);
 
 private Q_SLOTS:
     void populateFilters();

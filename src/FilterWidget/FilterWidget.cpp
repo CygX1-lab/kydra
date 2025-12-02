@@ -25,6 +25,9 @@
 #include <QtWidgets/QLabel>
 #include <QListView>
 #include <QToolBox>
+#include <QToolButton>
+#include <QTimer>
+#include <QDebug>
 
 // KDE includes
 #include <KLocalizedString>
@@ -52,25 +55,35 @@ FilterWidget::FilterWidget(QWidget *parent)
     connect(m_categoriesList, SIGNAL(clicked(QModelIndex)),
             this, SLOT(categoryActivated(QModelIndex)));
     m_listViews.append(m_categoriesList);
-    m_filterBox->addItem(m_categoriesList, QIcon(), i18nc("@title:tab", "By Category"));
+    m_filterBox->addItem(m_categoriesList, i18nc("@title:tab", "By Category"));
 
     m_statusList = new QListView(this);
     connect(m_statusList, SIGNAL(clicked(QModelIndex)),
             this, SLOT(statusActivated(QModelIndex)));
     m_listViews.append(m_statusList);
-    m_filterBox->addItem(m_statusList, QIcon(), i18nc("@title:tab", "By Status"));
+    m_filterBox->addItem(m_statusList, i18nc("@title:tab", "By Status"));
 
     m_originList = new QListView(this);
     connect(m_originList, SIGNAL(clicked(QModelIndex)),
             this, SLOT(originActivated(QModelIndex)));
     m_listViews.append(m_originList);
-    m_filterBox->addItem(m_originList, QIcon(), i18nc("@title:tab", "By Origin"));
+    m_filterBox->addItem(m_originList, i18nc("@title:tab", "By Origin"));
 
     m_archList = new QListView(this);
     connect(m_archList, SIGNAL(clicked(QModelIndex)),
             this, SLOT(architectureActivated(QModelIndex)));
     m_listViews.append(m_archList);
-    m_filterBox->addItem(m_archList, QIcon(), i18nc("@title:tab", "By Architecture"));
+    m_filterBox->addItem(m_archList, i18nc("@title:tab", "By Architecture"));
+
+    // Set minimum height for tab buttons after widgets are constructed
+    QTimer::singleShot(100, this, [this]() {
+        QList<QWidget*> allChildren = m_filterBox->findChildren<QWidget*>();
+        for (QWidget *child : allChildren) {
+            if (QString(child->metaObject()->className()) == "QToolBoxButton") {
+                child->setMinimumHeight(40);
+            }
+        }
+    });
 
     for (QListView *view : m_listViews) {
         view->setAlternatingRowColors(true);
@@ -157,6 +170,26 @@ void FilterWidget::populateFilters()
     }
 }
 
+void FilterWidget::setSelectedCategory(const QString &category)
+{
+    // Switch to "By Category" tab (index 0)
+    m_filterBox->setCurrentIndex(0);
+
+    QAbstractItemModel *model = m_categoriesList->model();
+    if (!model) return;
+
+    for (int i = 0; i < model->rowCount(); ++i) {
+        QModelIndex index = model->index(i, 0);
+        QString name = index.data(Qt::DisplayRole).toString();
+        if (name == category) {
+            m_categoriesList->setCurrentIndex(index);
+            m_categoriesList->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+            m_categoriesList->scrollTo(index);
+            return;
+        }
+    }
+}
+
 void FilterWidget::categoryActivated(const QModelIndex &index)
 {
     QString groupName = index.data(Qt::DisplayRole).toString();
@@ -198,4 +231,4 @@ void FilterWidget::selectFirstRow(const QAbstractItemView *itemView)
     itemView->selectionModel()->select(firstRow, QItemSelectionModel::Select);
 }
 
-#include "FilterWidget.moc"
+

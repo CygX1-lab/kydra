@@ -203,7 +203,7 @@ void MainWindow::initGUI()
         m_stack->setCurrentWidget(m_mainWidget);
         m_managerWidget->setSearchText(text);
     });
-    connect(m_dashboardWidget, &DashboardWidget::showUpdates, this, &MainWindow::checkForUpdates);
+    connect(m_dashboardWidget, &DashboardWidget::showUpdates, this, &MainWindow::handleDashboardUpdate);
 
     m_managerWidget = new ManagerWidget(m_stack);
     connect(this, &MainWindow::backendReady,
@@ -219,6 +219,7 @@ void MainWindow::initGUI()
         // Switch to Manager and filter by category
         m_stack->setCurrentWidget(m_mainWidget);
         m_managerWidget->filterByGroup(category);
+        m_filterBox->setSelectedCategory(category);
     });
     
     connect(m_dashboardWidget, &DashboardWidget::packageSelected, this, [this](const QString &packageName) {
@@ -535,6 +536,18 @@ void MainWindow::markAutoRemove()
     m_backend->saveCacheState();
     m_backend->markPackagesForAutoRemove();
     previewChanges();
+}
+
+void MainWindow::handleDashboardUpdate()
+{
+    // Switch to main view
+    m_stack->setCurrentWidget(m_mainWidget);
+    
+    // Filter by upgradeable
+    m_managerWidget->filterByStatus(QApt::Package::Upgradeable);
+    
+    // Mark for upgrade (Smart Upgrade / Dist Upgrade)
+    markDistUpgrade();
 }
 
 void MainWindow::checkForUpdates()

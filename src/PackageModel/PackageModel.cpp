@@ -327,4 +327,4 @@ void PackageModel::onIconExtracted(const QString &filePath, const QString & /*ic
     }
 }
 
-#include "PackageModel.moc"
+

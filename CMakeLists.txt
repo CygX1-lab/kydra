@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
-project(kydra VERSION 1.6.0)
-set(PROJECT_VERSION "1.6.0")
+project(kydra VERSION 1.7.0)
+set(PROJECT_VERSION "1.7.0")
 set(PROJECT_VERSION_MAJOR 5)
 
 find_package(ECM REQUIRED NO_MODULE)

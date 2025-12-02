@@ -60,7 +60,6 @@ public:
     void setFlatpakPackages(const QList<FlatpakPackage> &flatpakPackages); // New method
     
     void clear();
-    void externalDataChanged();
     QApt::Package *packageAt(const QModelIndex &index) const;
     QApt::PackageList packages() const;
     bool isVirtualPackage(const QModelIndex &index) const;
@@ -75,6 +74,7 @@ private:
     QList<FlatpakPackage> m_flatpakPackages; // New list
 
 public slots:
+    void externalDataChanged();
     void onIconExtracted(const QString &filePath, const QString &iconPath);
     void onFlatpaksChanged(); // New slot
 };

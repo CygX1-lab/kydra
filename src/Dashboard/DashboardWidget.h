@@ -6,6 +6,7 @@
 #include <QApt/Backend>
 
 class QLabel;
+class QGridLayout;
 class QPushButton;
 
 class DashboardWidget : public QWidget
@@ -23,6 +24,7 @@ signals:
 
 private slots:
     void refreshUpdates();
+    void populateCategories();
 
 private:
     void setupUi();
@@ -32,6 +34,9 @@ private:
     QWidget *m_updatesWidget;
     QLabel *m_updatesLabel;
     QPushButton *m_updateButton;
+    
+    QWidget *m_categoryGridWidget;
+    QGridLayout *m_categoryLayout;
 };
 
 #endif // DASHBOARDWIDGET_H

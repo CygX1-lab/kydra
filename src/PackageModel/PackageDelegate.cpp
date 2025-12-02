@@ -45,7 +45,7 @@ PackageDelegate::PackageDelegate(QObject *parent)
     , m_supportedEmblem(QIcon::fromTheme("emblem-ok-symbolic").pixmap(QSize(12,12)))
     , m_lockedEmblem(QIcon::fromTheme("object-locked-symbolic").pixmap(QSize(12,12)))
 {
-    m_spacing  = 8; // Increased spacing for card layout
+    m_spacing  = 12; // Increased spacing for cleaner layout
 
     m_iconSize = KIconLoader::SizeSmallMedium;
 }
@@ -79,34 +79,35 @@ void PackageDelegate::paintBackground(QPainter *painter, const QStyleOptionViewI
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    // Card dimensions with margins
-    int margin = 6;
-    QRect cardRect = option.rect.adjusted(margin, margin/2, -margin, -margin/2);
+    // Cleaner, flatter list design
+    // No heavy shadows or rounded cards for every item, just a clean list item
     
-    // Draw shadow
-    QColor shadowColor(0, 0, 0, 20);
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(shadowColor);
-    painter->drawRoundedRect(cardRect.adjusted(2, 2, 2, 2), 6, 6);
-
-    // Draw card background
     QColor bgColor = option.palette.color(QPalette::Base);
+    
     if (option.state & QStyle::State_Selected) {
-        bgColor = option.palette.color(QPalette::Highlight).lighter(160); // Subtle highlight
+        // Modern selection style
+        bgColor = option.palette.color(QPalette::Highlight).lighter(170);
+        painter->fillRect(option.rect, bgColor);
+        
+        // Selection indicator on the left
+        if (option.rect.left() == 0) { // Only draw for the first column or effectively the whole row
+             painter->setPen(Qt::NoPen);
+             painter->setBrush(option.palette.color(QPalette::Highlight));
+             painter->drawRect(option.rect.left(), option.rect.top(), 3, option.rect.height());
+        }
     } else if (option.state & QStyle::State_MouseOver) {
-        bgColor = option.palette.color(QPalette::Base).darker(105);
-    }
-    
-    painter->setBrush(bgColor);
-    
-    // Border
-    if (option.state & QStyle::State_Selected) {
-        painter->setPen(QPen(option.palette.color(QPalette::Highlight), 1.5));
+        // Subtle hover effect
+        bgColor = option.palette.color(QPalette::Base).darker(102);
+        painter->fillRect(option.rect, bgColor);
     } else {
-        painter->setPen(QPen(option.palette.color(QPalette::Mid), 1));
+        // Alternating row colors or just plain white/base
+        // Keeping it simple with base color for now
+        painter->fillRect(option.rect, bgColor);
     }
     
-    painter->drawRoundedRect(cardRect, 6, 6);
+    // Bottom separator line
+    painter->setPen(QPen(option.palette.color(QPalette::Midlight), 1));
+    painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
     
     painter->restore();
 }
@@ -119,8 +120,14 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
 
     bool leftToRight = (painter->layoutDirection() == Qt::LeftToRight);
 
-    QColor foregroundColor = (option.state.testFlag(QStyle::State_Selected)) ?
-                             option.palette.color(QPalette::HighlightedText) : option.palette.color(QPalette::Text);
+    QColor foregroundColor = option.palette.color(QPalette::Text);
+    if (option.state & QStyle::State_Selected) {
+        foregroundColor = option.palette.color(QPalette::HighlightedText);
+        // If highlighted text color is too similar to background (common in some light themes with light selection), use text color
+        if (foregroundColor == option.palette.color(QPalette::Highlight)) {
+             foregroundColor = option.palette.color(QPalette::Text);
+        }
+    }
 
     const qreal dpr = painter->device()->devicePixelRatioF();
 
@@ -133,9 +140,12 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
 
     // Get package-specific icon
     QIcon packageIcon = index.data(PackageModel::IconRole).value<QIcon>();
+    int iconX = leftToRight ? left + m_spacing : left + width - m_spacing - m_iconSize;
+    int iconY = top + (option.rect.height() - m_iconSize) / 2; // Vertically centered
+    
     packageIcon.paint(&p,
-                      leftToRight ? left + m_spacing : left + width - m_spacing - m_iconSize,
-                      top + m_spacing,
+                      iconX,
+                      iconY,
                       m_iconSize,
                       m_iconSize,
                       Qt::AlignCenter,
@@ -144,12 +154,12 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
     int state = index.data(PackageModel::StatusRole).toInt();
 
     if (state & QApt::Package::IsPinned) {
-        p.drawPixmap(left + m_iconSize - m_lockedEmblem.width()/2,
-                     top + option.rect.height() - 1.5*m_lockedEmblem.height(),
+        p.drawPixmap(iconX + m_iconSize - m_lockedEmblem.width()/2,
+                     iconY + m_iconSize - m_lockedEmblem.height()/2,
                      m_lockedEmblem);
     } else if (index.data(PackageModel::SupportRole).toBool()) {
-        p.drawPixmap(left + m_iconSize - m_lockedEmblem.width()/2,
-                     top + option.rect.height() - 1.5*m_lockedEmblem.height(),
+        p.drawPixmap(iconX + m_iconSize - m_supportedEmblem.width()/2,
+                     iconY + m_iconSize - m_supportedEmblem.height()/2,
                      m_supportedEmblem);
     }
 
@@ -157,36 +167,44 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
     QStyleOptionViewItem name_item(option);
     QStyleOptionViewItem description_item(option);
 
-    description_item.font.setPointSize(name_item.font.pointSize() - 1);
+    // Make name slightly larger/bolder
+    name_item.font.setBold(true);
+    name_item.font.setPointSize(name_item.font.pointSize() + 1);
+    
+    // Description slightly smaller and lighter
+    description_item.font.setPointSize(name_item.font.pointSize() - 2);
 
     int textInner = 2 * m_spacing + m_iconSize;
-    const int itemHeight = calcItemHeight(option);
-
+    
     p.setPen(foregroundColor);
     
     // Draw "Local" tag if applicable
     int nameX = left + (leftToRight ? textInner : 0);
-    int nameY = top + 1;
     int nameWidth = width - textInner;
+    
+    // Calculate vertical positions
+    QFontMetrics nameFm(name_item.font);
+    QFontMetrics descFm(description_item.font);
+    
+    int totalTextHeight = nameFm.height() + descFm.height() + 2; // 2px padding between lines
+    int startY = top + (option.rect.height() - totalTextHeight) / 2;
     
     bool isLocal = index.data(PackageModel::IsLocalRole).toBool();
     QString nameText = index.data(PackageModel::NameRole).toString();
     
+    int nameTextWidth = nameFm.width(nameText);
+    
     if (isLocal) {
-        QFontMetrics fm(name_item.font);
-        int nameTextWidth = fm.width(nameText);
-        
         // Tag settings
         QString tagText = i18n("Local");
-        QFont tagFont = name_item.font;
-        tagFont.setPointSize(tagFont.pointSize() - 2);
+        QFont tagFont = description_item.font;
         tagFont.setBold(true);
         QFontMetrics tagFm(tagFont);
-        int tagWidth = tagFm.width(tagText) + 8;
+        int tagWidth = tagFm.width(tagText) + 10;
         int tagHeight = tagFm.height() + 2;
         
-        int tagX = nameX + nameTextWidth + 8;
-        int tagY = nameY + (itemHeight / 2 - tagHeight) / 2 + 2; // Vertically center relative to name line
+        int tagX = nameX + nameTextWidth + 10;
+        int tagY = startY + (nameFm.height() - tagHeight) / 2;
         
         // Draw tag background
         QColor tagColor = QColor(66, 133, 244); // Google Blue-ish
@@ -205,23 +223,21 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
         
         // Reset painter for main text
         p.setPen(foregroundColor);
-        p.setFont(name_item.font);
         p.setRenderHint(QPainter::Antialiasing, false);
     }
 
-    p.drawText(nameX,
-               nameY,
-               nameWidth,
-               itemHeight / 2,
-               Qt::AlignBottom | Qt::AlignLeft,
-               nameText);
+    // Draw Name
+    p.setFont(name_item.font);
+    p.drawText(nameX, startY + nameFm.ascent(), nameText);
 
-    p.drawText(left + (leftToRight ? textInner : 0) + 10,
-               top + itemHeight / 2,
-               width - textInner,
-               itemHeight / 2,
-               Qt::AlignTop | Qt::AlignLeft,
-               index.data(PackageModel::DescriptionRole).toString());
+    // Draw Description
+    p.setFont(description_item.font);
+    QColor descColor = foregroundColor;
+    descColor.setAlpha(180); // Slightly transparent for secondary text
+    p.setPen(descColor);
+    
+    QString descText = index.data(PackageModel::DescriptionRole).toString();
+    p.drawText(nameX, startY + nameFm.height() + 2 + descFm.ascent(), descText);
 
     QLinearGradient gradient;
 
@@ -238,18 +254,16 @@ void PackageDelegate::paintPackageName(QPainter *painter, const QStyleOptionView
         gradient.setColorAt(1, Qt::white);
     }
 
+    // Only apply fade if text might overflow (simplification: always apply for now as in original)
+    // Actually, let's skip the fade for the cleaner look unless strictly necessary, 
+    // but keeping it to match original logic is safer for now.
     QRect paintRect = option.rect;
     p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
     p.fillRect(paintRect, gradient);
 
     p.end();
 
-    // Adjust rect for card layout
-    int margin = 6;
-    QRect cardRect = option.rect.adjusted(margin, margin/2, -margin, -margin/2);
-    
-    // Draw pixmap within card
-    painter->drawPixmap(cardRect.topLeft(), pixmap);
+    painter->drawPixmap(option.rect.topLeft(), pixmap);
 }
 
 void PackageDelegate::paintText(QPainter *painter, const QStyleOptionViewItem &option , const QModelIndex &index) const

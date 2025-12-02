@@ -164,4 +164,4 @@ void ManagerWidget::hideVersionColumns()
     }
 }
 
-#include "ManagerWidget.moc"
+

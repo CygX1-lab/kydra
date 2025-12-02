@@ -113,6 +113,7 @@ private Q_SLOTS:
     void markDistUpgrade();
     void markAutoRemove();
     void checkForUpdates();
+    void handleDashboardUpdate();
     void transactionStatusChanged(QApt::TransactionStatus status);
     void errorOccurred(QApt::ErrorCode error);
     void previewChanges();

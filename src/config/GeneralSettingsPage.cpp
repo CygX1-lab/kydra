@@ -266,4 +266,4 @@ void GeneralSettingsPage::editStatusColors()
     }
 }
 
-#include "GeneralSettingsPage.moc"
+

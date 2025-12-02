@@ -39,4 +39,4 @@ ReviewWidget::~ReviewWidget()
     MuonSettings::self()->save();
 }
 
-#include "ReviewWidget.moc"
+

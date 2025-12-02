@@ -1,3 +1,31 @@
+kydra (1.7.0-1) unstable; urgency=medium
+
+  * Dashboard Overhaul:
+    * Modernized visual design with gradient hero banner
+    * Improved category navigation with card-style layout
+    * Enhanced system updates notification area
+    * Added visual polish to featured applications list
+    * Fixed "Update Now" action to correctly preview upgradeable packages
+  * UI Improvements:
+    * Refined typography and spacing throughout the dashboard
+    * Cleaned up package list view with improved spacing and typography
+    * Fixed visual glitch in "By Origin" filter tab (text cutoff)
+    * Added hover effects and animations for better interactivity
+    * Improved search bar styling and accessibility
+  * Bug Fixes:
+    * Fixed raw HTML display in package dependencies tab
+    * Fixed console errors related to invalid QSS properties
+    * Fixed "Invalid pixmap" errors by implementing safe icon loading
+    * Fixed "Invalid pixmap" errors by implementing safe icon loading
+    * Fixed missing slot connection for external data changes
+  * New Features:
+    * Implemented dynamic dashboard category filtering (tiles now reflect available system categories)
+    * Dashboard tiles now correctly filter the package list when clicked
+  * Build System:
+    * Fixed AutoMoc warnings by removing erroneous include directives
+
+ -- CygX1 <cygnx1@gmail.com>  Tue, 02 Dec 2025 04:33:00 +0100
+
 kydra (1.6.0-1) unstable; urgency=medium
 
   * Dashboard Improvements:
@@ -6,6 +34,9 @@ kydra (1.6.0-1) unstable; urgency=medium
     * Added dynamic featured apps list
   * Local Package Fixes:
     * Fixed "Apply" button for local package installations
+    * Fixed "Already installed" prompt logic for local package upgrades
+  * Build System:
+    * Fixed build errors (missing includes, forward declarations)
 
  -- CygX1 <cygnx1@gmail.com>  Sun, 30 Nov 2025 09:37:00 +0100
 

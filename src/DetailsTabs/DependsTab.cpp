@@ -96,7 +96,7 @@ void DependsTab::populateDepends(int index)
     }
 
     foreach(const QString &string, list) {
-            m_dependsBrowser->append(string);
+            m_dependsBrowser->insertHtml(string + "<br>");
     }
 
     QTextCursor cursor;
@@ -104,4 +104,4 @@ void DependsTab::populateDepends(int index)
     m_dependsBrowser->setTextCursor(cursor);
 }
 
-#include "DependsTab.moc"
+

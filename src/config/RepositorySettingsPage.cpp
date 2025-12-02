@@ -292,5 +292,3 @@ void RepositorySettingsPage::onRepositorySelectionChanged()
     m_localDebFolderEdit->setEnabled(localDebEnabled);
     m_browseButton->setEnabled(localDebEnabled);
 }
-
-#include "RepositorySettingsPage.moc"

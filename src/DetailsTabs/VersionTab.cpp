@@ -121,4 +121,4 @@ void VersionTab::forceVersion()
     m_package->setInstall();
 }
 
-#include "VersionTab.moc"
+

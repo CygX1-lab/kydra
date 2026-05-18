@@ -1107,6 +1107,10 @@ void MainWindow::installLocalPackageFile(const QString &fileName)
     QApt::DebFile debFile(fileName);
     
     if (!debFile.isValid()) {
+        setActionsEnabled(true);
+        m_managerWidget->setEnabled(true);
+        QApplication::restoreOverrideCursor();
+        m_stack->setCurrentWidget(m_mainWidget);
         KMessageBox::error(this,
             i18nc("@info", "The selected file is not a valid Debian package (QApt validation failed)."),
             i18nc("@title:window", "Invalid Package File"));

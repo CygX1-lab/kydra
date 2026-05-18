@@ -107,7 +107,7 @@ private slots:
     void onDirectoryChanged(const QString &path);
     
 private:
-    void scanDirectory(const QString &directory);
+    void scanDirectory(const QString &directory, QMap<QString, LocalPackageInfo> &result);
     void parseControlFile(const QString &controlData, LocalPackageInfo &info);
     QString extractField(const QString &data, const QString &field) const;
     void extractIconAsync(const QString &filePath);

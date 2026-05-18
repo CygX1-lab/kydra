@@ -96,32 +96,41 @@ QStringList LocalPackageManager::localDebFolders() const
 
 void LocalPackageManager::scanLocalPackages()
 {
-    // Use QtConcurrent to run scanning in background thread
-    QtConcurrent::run([this]() {
-        qDebug() << "Scanning local packages in folders:" << m_localDebFolders;
-        m_localPackages.clear();
-        
+    // Capture folder list on the calling thread before launching the worker.
+    QStringList foldersToScan;
+    {
+        QMutexLocker locker(&m_mutex);
+        foldersToScan = m_localDebFolders;
+    }
+
+    QtConcurrent::run([this, foldersToScan]() {
+        qDebug() << "Scanning local packages in folders:" << foldersToScan;
+
         int total = 0;
-        int current = 0;
-        
-        // Count total .deb files first
-        for (const QString &folder : m_localDebFolders) {
+        for (const QString &folder : foldersToScan) {
             QDir dir(folder);
             if (dir.exists()) {
                 dir.setNameFilters(QStringList() << "*.deb");
                 total += dir.entryList(QDir::Files).size();
             }
         }
-        
+
         emit scanProgress(0, total);
-        
-        // Scan each directory
-        for (const QString &folder : m_localDebFolders) {
-            scanDirectory(folder);
+
+        // Build result into a local map so we never touch m_localPackages without the mutex.
+        QMap<QString, LocalPackageInfo> newPackages;
+        int current = 0;
+        for (const QString &folder : foldersToScan) {
+            scanDirectory(folder, newPackages);
             current += QDir(folder).entryList(QStringList() << "*.deb", QDir::Files).size();
             emit scanProgress(current, total);
         }
-        
+
+        {
+            QMutexLocker locker(&m_mutex);
+            m_localPackages = std::move(newPackages);
+        }
+
         emit scanFinished();
         emit localPackagesChanged();
     });
@@ -182,33 +191,30 @@ void LocalPackageManager::detectLocalInstallPackages()
     });
 }
 
-void LocalPackageManager::scanDirectory(const QString &directory)
+void LocalPackageManager::scanDirectory(const QString &directory, QMap<QString, LocalPackageInfo> &result)
 {
     QDir dir(directory);
     if (!dir.exists()) {
         return;
     }
-    
+
     dir.setNameFilters(QStringList() << "*.deb");
     dir.setFilter(QDir::Files);
-    
-    QFileInfoList files;
-    files = dir.entryInfoList();
-    if (files.isEmpty() && dir.exists()) {
+
+    const QFileInfoList files = dir.entryInfoList();
+    if (files.isEmpty()) {
         qWarning() << "No .deb files found in directory" << directory;
     }
-    
+
     for (const QFileInfo &fileInfo : files) {
         if (!fileInfo.exists() || !fileInfo.isReadable()) {
             continue;
         }
-        
+
         LocalPackageInfo info;
         if (parseDebFile(fileInfo.absoluteFilePath(), info)) {
             info.filename = fileInfo.absoluteFilePath();
-            
-            QMutexLocker locker(&m_mutex);
-            m_localPackages[info.packageName] = info;
+            result[info.packageName] = info;  // caller owns this map, no mutex needed
         }
     }
 }
@@ -469,27 +475,24 @@ QStringList LocalPackageManager::getLocalPackageFiles() const
 
 QList<LocalPackageInfo> LocalPackageManager::getVirtualPackages()
 {
+    if (!m_backend) {
+        return {};
+    }
+
+    // Copy the map under the mutex, then query the backend without holding it.
+    QMap<QString, LocalPackageInfo> packagesCopy;
+    {
+        QMutexLocker locker(&m_mutex);
+        packagesCopy = m_localPackages;
+    }
+
     QList<LocalPackageInfo> virtualPackages;
-    
-    QMutexLocker locker(&m_mutex);
-    // if (!m_backend) { // Removed as per instruction to check m_localInstallPackages instead
-    //     return virtualPackages;
-    // }
-    
-    // Iterate through all local packages and check if they exist in APT
-    for (auto it = m_localPackages.constBegin(); it != m_localPackages.constEnd(); ++it) {
-        const QString &packageName = it.key();
-        
-        // Check if this package exists in APT database
-        QApt::Package *aptPackage = m_backend->package(packageName);
-        
-        if (!aptPackage) {
-            // Package doesn't exist in APT - it's virtual
+    for (auto it = packagesCopy.constBegin(); it != packagesCopy.constEnd(); ++it) {
+        if (!m_backend->package(it.key())) {
             virtualPackages.append(it.value());
-            qDebug() << "Found virtual package:" << packageName << "from" << it.value().filename;
+            qDebug() << "Found virtual package:" << it.key() << "from" << it.value().filename;
         }
     }
-    
     return virtualPackages;
 }
 

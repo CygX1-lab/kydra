@@ -20,6 +20,10 @@ target_compile_definitions(AppIdentityTest PRIVATE
     -DKYDRA_ICONDIR=\"${CMAKE_SOURCE_DIR}/src/icons\")
 set_tests_properties(AppIdentityTest PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
+# The publishing script, against a NAS, a GitHub and a gh that are folders here.
+add_test(NAME push
+         COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/test_push.sh ${CMAKE_SOURCE_DIR}/push.sh)
+
 # The index helper, against packages the test builds for itself.
 add_test(NAME kydra-repo-index
          COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/test_kydra_repo_index.sh

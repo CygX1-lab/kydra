@@ -68,6 +68,22 @@ sudo apt --fix-broken install
 
 For detailed instructions on building Kydra from source, including all dependencies and compilation steps, please refer to [INSTALL.md](INSTALL.md).
 
+## 🚀 Publishing (maintainers)
+
+`./push.sh` publishes a version once `./build_deb.sh` has built it:
+
+1.  **NAS** - every branch and tag, over SSH, to `/volume1/git-repository/kydra.git` on `192.168.188.27` (user `pbs`); the repository is created there the first time.
+2.  **GitHub** - the current branch and every tag to `origin`.
+3.  **Release** - the version in `CMakeLists.txt` is tagged `v<version>` and released as *Kydra &lt;version&gt;*, with its section of `docs/RELEASE_NOTES.md` as the text and every `kydra_<version>_<arch>.deb` from `~/Documents/Software/deb/<arch>/` attached, each with a `.sha256` file. Run it again on another machine (the amd64 one, say) and its package is added to the same release.
+
+```bash
+sudo apt install gh && gh auth login   # once, for the release
+./push.sh                              # all three
+./push.sh --no-nas                     # or --no-github, --no-release
+```
+
+Everything the release needs is checked before anything is pushed, and nothing is ever force-pushed.
+
 ## 📞 Getting Help
 
 If you encounter any issues or have questions, please contact:

@@ -93,6 +93,7 @@
   <provides>
     <binary>kydra</binary>
     <id>org.kydra.app.desktop</id>
+    <mediatype>application/vnd.debian.binary-package</mediatype>
   </provides>
   <developer id="cygx1.dev">
     <name>CygX1</name>

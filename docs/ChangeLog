@@ -1,3 +1,15 @@
+Kydra Version 1.7.1
+====================
+
+- New features:
+  * Local repository: Settings > Set Up Local Repository indexes a folder of .deb files and adds it as an apt source, and Settings > Update Local Repository indexes new builds put there, so apt update and apt upgrade offer them like any other update.
+  * Kydra can be chosen to open .deb files: file managers offer it for them, and a file opened while Kydra is running goes to the window already open.
+  * build_deb.sh builds for the machine's own architecture into ~/Documents/Software/deb/<arch>/.
+
+- Bug fixes:
+  * Help > About showed 1.6.0; it now takes the version from CMakeLists.txt.
+  * Opening a .deb while Kydra was already running did nothing.
+
 Kydra Version 1.5.0
 ====================
 

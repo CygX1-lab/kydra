@@ -27,8 +27,10 @@
 #include <KLocalizedString>
 #include <QSessionManager>
 #include <QCommandLineParser>
-#include <QFileInfo>
+#include <QDir>
 #include <QTimer>
+
+#include "DebFileArgument.h"
 
 int main(int argc, char **argv)
 {
@@ -50,17 +52,17 @@ int main(int argc, char **argv)
     );
     KAboutData::setApplicationData(about);
 
-    {
-        QCommandLineParser parser;
+    // Used twice: for this process's own arguments, and for those of a later
+    // launch that KDBusService hands over below.
+    auto setupCommandLine = [&about](QCommandLineParser &parser) {
         about.setupCommandLine(&parser);
-        
-        // Add option for opening .deb files
         parser.addPositionalArgument("file", i18n("Local .deb package file to open"), "[file.deb]");
-        
-        parser.process(app);
-        about.processCommandLine(&parser);
-    }
+    };
 
+    QCommandLineParser parser;
+    setupCommandLine(parser);
+    parser.process(app);
+    about.processCommandLine(&parser);
 
     KDBusService service(KDBusService::Unique);
 
@@ -73,19 +75,33 @@ int main(int argc, char **argv)
     MainWindow *mainWindow = new MainWindow;
     mainWindow->show();
 
-    // Check if we need to open a .deb file
-    // Get the command line arguments directly
-    QStringList args = app.arguments();
-    if (args.size() > 1) { // Skip the first argument (program name)
-        QString debFile = args.last(); // Use the last argument
-        QFileInfo fileInfo(debFile);
-        if (fileInfo.exists() && fileInfo.suffix().toLower() == "deb") {
-            // Use a timer to ensure the main window is fully initialized before opening the file
-            QTimer::singleShot(2000, mainWindow, [mainWindow, debFile]() {
-                mainWindow->openDebFile(debFile);
-            });
-        }
+    const QString debFile = debFileFromArguments(parser.positionalArguments(), QDir::currentPath());
+    if (!debFile.isEmpty()) {
+        // Use a timer to ensure the main window is fully initialized before opening the file
+        QTimer::singleShot(2000, mainWindow, [mainWindow, debFile]() {
+            mainWindow->openDebFile(debFile);
+        });
     }
+
+    // Kydra runs once. Opening a .deb while it is already open starts a second
+    // process that KDBusService ends straight away, passing its arguments to
+    // this one - so the file is opened here, in the window already showing.
+    QObject::connect(&service, &KDBusService::activateRequested, mainWindow,
+                     [mainWindow, setupCommandLine](const QStringList &arguments,
+                                                    const QString &workingDirectory) {
+        mainWindow->show();
+        mainWindow->raise();
+        mainWindow->activateWindow();
+
+        QCommandLineParser remote;
+        setupCommandLine(remote);
+        remote.parse(arguments);
+        const QString debFile =
+            debFileFromArguments(remote.positionalArguments(), workingDirectory);
+        if (!debFile.isEmpty()) {
+            mainWindow->openDebFile(debFile);
+        }
+    });
 
     return app.exec();
 }

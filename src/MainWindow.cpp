@@ -32,6 +32,8 @@
 #include <QStyle>
 #include <QProcess>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QProgressDialog>
 #ifdef HAVE_KIRIGAMI
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -71,6 +73,7 @@
 #include "muonapt/QAptActions.h"
 #include "PackageModel/LocalPackageManager.h"
 #include "Dashboard/DashboardWidget.h"
+#include "LocalRepository.h"
 
 MainWindow::MainWindow()
     : KXmlGuiWindow()
@@ -447,6 +450,22 @@ void MainWindow::setupActions()
     configureRepositoriesAction->setText(i18nc("@action", "Sources"));
     configureRepositoriesAction->setToolTip(i18nc("@info:tooltip", "Configure package repositories"));
     connect(configureRepositoriesAction, SIGNAL(triggered()), this, SLOT(configureRepositories()));
+
+    QAction* setupLocalRepositoryAction = actionCollection()->addAction("setup_local_repository");
+    setupLocalRepositoryAction->setIcon(QIcon::fromTheme("folder-network"));
+    setupLocalRepositoryAction->setText(i18nc("@action", "Set Up Local Repository..."));
+    setupLocalRepositoryAction->setToolTip(i18nc("@info:tooltip",
+        "Make a folder of .deb packages a source apt updates and upgrades from"));
+    connect(setupLocalRepositoryAction, &QAction::triggered,
+            this, &MainWindow::setupLocalRepository);
+
+    QAction* updateLocalRepositoryAction = actionCollection()->addAction("update_local_repository");
+    updateLocalRepositoryAction->setIcon(QIcon::fromTheme("view-refresh"));
+    updateLocalRepositoryAction->setText(i18nc("@action", "Update Local Repository"));
+    updateLocalRepositoryAction->setToolTip(i18nc("@info:tooltip",
+        "Index new packages in the local repository and check for updates"));
+    connect(updateLocalRepositoryAction, &QAction::triggered,
+            this, &MainWindow::updateLocalRepository);
 
     QAction* donateAction = actionCollection()->addAction("donate");
     donateAction->setIcon(QIcon::fromTheme("help-donate"));
@@ -1191,4 +1210,156 @@ void MainWindow::openDebFile(const QString &debFilePath)
         m_pendingLocalPackage = debFilePath;
         setActionsEnabled(true);
     }
+}
+
+void MainWindow::setupLocalRepository()
+{
+    if (m_indexingLocalRepository) {
+        return;
+    }
+
+    // Start where the packages most likely are: the folder chosen last time,
+    // else the first local .deb folder already configured.
+    QString start = MuonSettings::self()->localRepository();
+    if (start.isEmpty()) {
+        const QStringList folders =
+            MuonSettings::self()->localDebFolder().split(QLatin1Char(';'), Qt::SkipEmptyParts);
+        start = folders.isEmpty() ? QDir::homePath() : folders.first();
+    }
+    const QString folder = QFileDialog::getExistingDirectory(this,
+        i18nc("@title:window", "Select Local Repository Folder"), start, QFileDialog::ShowDirsOnly);
+    if (folder.isEmpty()) {
+        return;
+    }
+
+    const QString aptFolder = LocalRepository::aptFolder(folder, m_backend->nativeArchitecture());
+    const QString blocked = LocalRepository::folderAptCannotRead(aptFolder);
+    if (!blocked.isEmpty()) {
+        KMessageBox::error(this,
+            xi18nc("@info", "<para>apt reads package sources as a user of its own, and that user "
+                   "cannot open <filename>%1</filename>.</para><para>Choose a folder outside your "
+                   "home folder, or make this one readable by others.</para>", blocked),
+            i18nc("@title:window", "Folder Not Readable by apt"));
+        return;
+    }
+
+    const QString text = xi18nc("@info",
+        "<para>apt will install and upgrade packages from <filename>%1</filename>.</para>"
+        "<para>The folder is not signed, so apt trusts whatever is in it: anyone who can "
+        "write to it can have software installed as root.</para>", aptFolder);
+    const QString title = i18nc("@title:window", "Set Up Local Repository");
+    if (KMessageBox::warningContinueCancel(this, text, title,
+            KGuiItem(i18nc("@action:button", "Set Up"), QStringLiteral("dialog-ok-apply")))
+        != KMessageBox::Continue) {
+        return;
+    }
+
+    MuonSettings::self()->setLocalRepository(folder);
+    MuonSettings::self()->save();
+
+    // Indexed before apt is pointed at it, so the first refresh finds an
+    // index instead of failing on a folder that has none yet.
+    indexLocalRepository(folder, [this, aptFolder]() {
+        if (LocalRepository::configuredAptFolder() == aptFolder) {
+            checkForUpdates();
+            return;
+        }
+        LocalRepository::writeSourceFile(aptFolder, this, [this](const QString &error) {
+            if (!error.isEmpty()) {
+                KMessageBox::detailedError(this,
+                    i18nc("@info", "The local repository could not be added to apt's sources."),
+                    error, i18nc("@title:window", "Set Up Local Repository"));
+                return;
+            }
+            checkForUpdates();
+        });
+    });
+}
+
+void MainWindow::updateLocalRepository()
+{
+    if (m_indexingLocalRepository) {
+        return;
+    }
+
+    const QString folder = MuonSettings::self()->localRepository();
+    if (folder.isEmpty() || LocalRepository::configuredAptFolder().isEmpty()) {
+        const int answer = KMessageBox::questionTwoActions(this,
+            i18nc("@info", "No local repository has been set up yet. Set one up now?"),
+            i18nc("@title:window", "Update Local Repository"),
+            KGuiItem(i18nc("@action:button", "Set Up..."), QStringLiteral("folder-network")),
+            KStandardGuiItem::cancel());
+        if (answer == KMessageBox::PrimaryAction) {
+            setupLocalRepository();
+        }
+        return;
+    }
+    if (!QFileInfo(folder).isDir()) {
+        KMessageBox::error(this,
+            xi18nc("@info", "The local repository folder <filename>%1</filename> cannot be found. "
+                   "If it is on a network share, check that the share is mounted.", folder),
+            i18nc("@title:window", "Update Local Repository"));
+        return;
+    }
+
+    indexLocalRepository(folder, [this]() { checkForUpdates(); });
+}
+
+void MainWindow::indexLocalRepository(const QString &folder, const std::function<void()> &then)
+{
+    const QString helper = LocalRepository::indexHelperPath();
+    if (helper.isEmpty()) {
+        KMessageBox::error(this,
+            i18nc("@info", "The kydra-repo-index helper is missing. "
+                           "Reinstalling Kydra restores it."),
+            i18nc("@title:window", "Local Repository"));
+        return;
+    }
+
+    m_indexingLocalRepository = true;
+    auto *process = new QProcess(this);
+    process->setProcessChannelMode(QProcess::MergedChannels);
+
+    // The first run reads every package, which on a network share takes a
+    // while; later runs only read what changed.
+    auto *progress = new QProgressDialog(i18nc("@info", "Indexing the packages in %1...", folder),
+                                         i18nc("@action:button", "Cancel"), 0, 0, this);
+    progress->setWindowTitle(i18nc("@title:window", "Local Repository"));
+    progress->setWindowModality(Qt::WindowModal);
+    progress->setMinimumDuration(0);
+    connect(progress, &QProgressDialog::canceled, process, &QProcess::kill);
+
+    auto cleanUp = [this, process, progress]() {
+        m_indexingLocalRepository = false;
+        progress->deleteLater();
+        process->deleteLater();
+    };
+    connect(process, &QProcess::errorOccurred, this,
+            [this, helper, cleanUp](QProcess::ProcessError error) {
+        // Every other error is followed by finished().
+        if (error == QProcess::FailedToStart) {
+            cleanUp();
+            KMessageBox::error(this, i18nc("@info", "%1 could not be started.", helper),
+                               i18nc("@title:window", "Local Repository"));
+        }
+    });
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
+            [this, process, progress, cleanUp, then](int exitCode, QProcess::ExitStatus status) {
+        const QString output = QString::fromLocal8Bit(process->readAll()).trimmed();
+        const bool canceled = progress->wasCanceled();
+        cleanUp();
+        if (canceled) {
+            return;
+        }
+        if (status != QProcess::NormalExit || exitCode != 0) {
+            KMessageBox::detailedError(this,
+                i18nc("@info", "The local repository could not be indexed."),
+                output, i18nc("@title:window", "Local Repository"));
+            return;
+        }
+        then();
+    });
+
+    process->start(helper, {folder});
+    progress->show();
 }

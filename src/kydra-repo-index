@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# kydra-repo-index - write the apt index for a folder of .deb files, so that a
+# file: source pointing at it makes `apt update` and `apt upgrade` see them.
+#
+#   kydra-repo-index [--force] <folder>
+#
+# Kydra runs this from Settings > Update Local Repository; it works just as
+# well by hand after building a package.
+#
+# Two layouts are understood:
+#   <folder>/<arch>/*.deb  one subfolder per architecture, e.g. arm64/ and
+#                          amd64/ - each gets its own index, and the one named
+#                          after this machine is the one apt is pointed at
+#   <folder>/*.deb         a single folder, indexed for this machine
+# LocalRepository::aptFolder() in Kydra applies the same rule.
+#
+# Every version in a folder is listed, so apt upgrades to the newest. The
+# index is not signed, so the apt source has to say it is trusted.
+#
+# Only dpkg, coreutils and gzip are needed - not dpkg-dev. The SHA-256 of each
+# package is remembered in .kydra-index-cache by name, size and time, so the
+# run after one new build hashes that one package instead of every package in
+# the folder again over the network; a folder where nothing changed is skipped
+# outright. --force rebuilds from scratch.
+set -euo pipefail
+
+FORCE=0
+if [[ "${1:-}" == "--force" ]]; then
+    FORCE=1
+    shift
+fi
+if [[ $# -ne 1 || ! -d "$1" ]]; then
+    echo "usage: kydra-repo-index [--force] <folder>" >&2
+    exit 2
+fi
+ROOT="$(readlink -f "$1")"
+HOST_ARCH="$(dpkg --print-architecture)"
+# What a subfolder has to be called to be taken for an architecture.
+KNOWN_ARCHES="amd64 arm64 armel armhf i386 loong64 mips64el ppc64el riscv64 s390x"
+# What a package file has to be called to be indexed.
+NAME_PATTERN='^[A-Za-z0-9._+~%-]+\.deb$'
+
+index_folder() {
+    local dir="$1" arch="$2"
+    local cache="$dir/.kydra-index-cache" stampfile="$dir/.kydra-index-stamp"
+
+    # Name, size and time of every package: what was added, removed or rebuilt
+    # since the last run. -L so links to packages elsewhere count by target.
+    local stamp
+    stamp="$(find -L "$dir" -maxdepth 1 -name '*.deb' -type f -printf '%f %s %T@\n' \
+             | sort | sha256sum | cut -d' ' -f1)"
+    if [[ $FORCE -eq 0 && -f "$dir/Release" \
+          && "$(cat "$stampfile" 2>/dev/null)" == "$stamp" ]]; then
+        echo "$dir: up to date"
+        return
+    fi
+
+    local -A known=()
+    local name size mtime sha
+    if [[ $FORCE -eq 0 && -f "$cache" ]]; then
+        while IFS=$'\t' read -r name size mtime sha; do
+            [[ -n "$sha" ]] && known["$name"$'\t'"$size"$'\t'"$mtime"]="$sha"
+        done < "$cache"
+    fi
+
+    local packages="$dir/Packages.tmp" newcache="$dir/.kydra-index-cache.tmp"
+    : > "$packages"
+    : > "$newcache"
+    local count=0 hashed=0 deb control debarch
+    while IFS= read -r -d '' deb; do
+        name="${deb##*/}"
+        # The name goes into the index as it is: a newline or a tab in it
+        # could forge fields there, and a space splits the path apt fetches.
+        if [[ ! "$name" =~ $NAME_PATTERN ]]; then
+            echo "$dir: skipped '$name' - unusual characters in the file name" >&2
+            continue
+        fi
+        if ! control="$(dpkg-deb -f "$deb" 2>/dev/null)" || [[ -z "$control" ]]; then
+            echo "$dir: skipped $name - not a readable package" >&2
+            continue
+        fi
+        # Where the file is and what it hashes to are for this index to say,
+        # not the package: a control file naming its own would be listed twice.
+        control="$(grep -v -E '^(Filename|Size|MD5sum|SHA1|SHA256|SHA512):' \
+                   <<<"$control" || true)"
+        # A package for another machine would be offered here and refused.
+        debarch="$(sed -n 's/^Architecture:[[:space:]]*//p' <<<"$control")"
+        [[ "$debarch" == "$arch" || "$debarch" == all ]] || continue
+
+        read -r size mtime < <(stat -L -c '%s %Y' "$deb")
+        sha="${known["$name"$'\t'"$size"$'\t'"$mtime"]:-}"
+        if [[ -z "$sha" ]]; then
+            sha="$(sha256sum < "$deb" | cut -d' ' -f1)"
+            hashed=$((hashed + 1))
+        fi
+        printf '%s\t%s\t%s\t%s\n' "$name" "$size" "$mtime" "$sha" >> "$newcache"
+        {
+            printf '%s\n' "$control"
+            printf 'Filename: ./%s\nSize: %s\nSHA256: %s\n\n' "$name" "$size" "$sha"
+        } >> "$packages"
+        count=$((count + 1))
+    done < <(find -L "$dir" -maxdepth 1 -name '*.deb' -type f -print0 | sort -z)
+
+    gzip -9n -c "$packages" > "$dir/Packages.gz.tmp"
+    mv "$packages" "$dir/Packages"
+    mv "$dir/Packages.gz.tmp" "$dir/Packages.gz"
+
+    # No Date field: apt refuses a Release dated in the future, and another
+    # machine's clock only has to be a little behind this one's for that.
+    {
+        echo "Origin: kydra-local"
+        echo "Label: Local packages ($arch)"
+        echo "Architectures: $arch all"
+        echo "SHA256:"
+        local f
+        for f in Packages Packages.gz; do
+            printf ' %s %s %s\n' "$(sha256sum < "$dir/$f" | cut -d' ' -f1)" \
+                "$(stat -c %s "$dir/$f")" "$f"
+        done
+    } > "$dir/Release.tmp"
+    mv "$dir/Release.tmp" "$dir/Release"
+    mv "$newcache" "$cache"
+    echo "$stamp" > "$stampfile"
+
+    echo "$dir: $count package version(s) indexed, $hashed newly hashed"
+}
+
+if [[ -d "$ROOT/$HOST_ARCH" ]]; then
+    for arch in $KNOWN_ARCHES; do
+        [[ -d "$ROOT/$arch" ]] && index_folder "$ROOT/$arch" "$arch"
+    done
+else
+    index_folder "$ROOT" "$HOST_ARCH"
+fi
+exit 0

@@ -60,6 +60,10 @@
       <label>Path to local .deb folder for offline package installation.</label>
       <default></default>
     </entry>
+    <entry name="LocalRepository" type="String">
+      <label>Folder of .deb packages indexed as a local apt repository.</label>
+      <default></default>
+    </entry>
     <entry name="Repositories" type="StringList">
       <label>List of package repositories.</label>
       <default></default>

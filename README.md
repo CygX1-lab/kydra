@@ -13,7 +13,8 @@ Kydra brings a modern, Plasma-integrated interface to Debian package management.
 *   **📦 Complete Package Management**: Install, remove, purge, and upgrade packages with ease.
 *   **🕸️ Dependency Visualization**: View and understand package dependencies before making changes.
 *   **🔧 Repository Control**: Manage your sources, PPAs, and updates directly from the settings.
-*   **📂 Local Package Support**: Seamlessly install downloaded `.deb` files.
+*   **📂 Local Package Support**: Seamlessly install downloaded `.deb` files, and open them straight from your file manager.
+*   **🗄️ Local Repository**: Turn a folder of your own `.deb` builds into an apt source, so updates pick up every new version you drop into it.
 *   **🎨 Plasma Integration**: Built with Qt and KDE Frameworks to look and feel at home on your desktop.
 
 ## 🚀 Quick Start
@@ -31,6 +32,24 @@ kydra
 *   **Install/Remove**: Click the checkbox next to a package name to mark it for Installation or Removal.
 *   **Apply Changes**: Click the **Apply Changes** button in the toolbar to execute your queued actions.
 *   **Update System**: Click **Check for Updates** to refresh package lists, then **Full Upgrade** to mark all upgrades.
+*   **Open a .deb File**: Right-click it in your file manager and choose **Open With > Kydra**. If Kydra is already running, the package opens in that window.
+
+## 🗄️ Local Repository
+
+If you build your own packages, Kydra can keep them up to date like any others.
+
+1.  **Settings > Set Up Local Repository...** asks for the folder that holds the `.deb` files. Kydra indexes it, adds it to apt's sources (this asks for your password), and checks for updates.
+2.  After putting a new build in the folder, choose **Settings > Update Local Repository**. The new version then shows up as an ordinary upgrade, in Kydra and in `apt upgrade`.
+
+The folder can hold the packages directly, or one subfolder per architecture (`arm64/`, `amd64/`, ...), in which case each subfolder is indexed and apt on each machine reads its own. Every version in the folder is listed, and apt upgrades to the newest.
+
+The index can also be updated without Kydra, for instance at the end of a build script:
+
+```bash
+/usr/lib/$(dpkg-architecture -qDEB_HOST_MULTIARCH)/libexec/kydra/kydra-repo-index ~/Packages
+```
+
+⚠️ The index is not signed, so apt trusts whatever is in the folder: anyone who can write to it can have software installed as root. Keep it somewhere only you can write to. apt reads the folder as its own user, so it also has to be readable by others - Kydra checks this and says which folder is in the way.
 
 ## 📥 Download Kydra
 

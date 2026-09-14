@@ -95,16 +95,6 @@ if [[ "$DELETED" -gt 0 ]]; then
     echo "         Restore them with: git checkout -- ." >&2
 fi
 
-# The about box reads its number from KydraVersion.h.in, which hardcodes a
-# string instead of taking @PROJECT_VERSION@ from cmake. When the two drift,
-# the package says one version and the program says another.
-HDR_VERSION="$(sed -n 's/.*KYDRA_VERSION_STRING[[:space:]]\+"\([0-9][0-9.]*\)".*/\1/p' \
-    "$PROJECT_DIR/KydraVersion.h.in" | head -1)"
-if [[ -n "$HDR_VERSION" && "$HDR_VERSION" != "$VERSION" ]]; then
-    echo "WARNING: KydraVersion.h.in says $HDR_VERSION, CMakeLists.txt says $VERSION." >&2
-    echo "         The package is $VERSION; Help > About will say $HDR_VERSION." >&2
-fi
-
 # ---------------------------------------------------------------------------
 # Compile
 # ---------------------------------------------------------------------------
@@ -191,6 +181,13 @@ if [[ $WITH_KIRIGAMI -eq 1 ]]; then
             exit 1
         fi
     done
+fi
+# The local repository menu entries run this helper, and say only that it is
+# missing when it is not there.
+HELPER="$(find "$STAGING_DIR/usr" -path "*/$APP_NAME/kydra-repo-index" -type f -print -quit)"
+if [[ -z "$HELPER" ]]; then
+    echo "ERROR: kydra-repo-index is not in the package" >&2
+    exit 1
 fi
 echo "✓ $(find "$STAGING_DIR/usr" -type f | wc -l) file(s) staged, all of them expected"
 
@@ -383,13 +380,14 @@ CHANGELOG="$STAGING_DIR/usr/share/doc/$APP_NAME/changelog"
         echo "  * Kydra $VERSION. See docs/ChangeLog for the full release notes."
     fi
     echo ""
-    echo " -- ${MAINTAINER}  $(date -R)"
+    # Vienna time, whichever machine builds it.
+    echo " -- ${MAINTAINER}  $(TZ=Europe/Vienna date -R)"
 } > "$CHANGELOG"
 gzip -9n "$CHANGELOG"
 
 find "$STAGING_DIR/usr" -type f -exec chmod 644 {} +
 find "$STAGING_DIR" -type d -exec chmod 755 {} +
-chmod 755 "$BINARY"
+chmod 755 "$BINARY" "$HELPER"
 
 # ---------------------------------------------------------------------------
 # Build

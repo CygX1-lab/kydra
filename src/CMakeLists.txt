@@ -47,6 +47,8 @@ set(kydra_SRCS
     DonateDialog.cpp
     KirigamiBackend.cpp
     AppStreamHelper.cpp
+    LocalRepository.cpp
+    DebFileArgument.cpp
     Dashboard/DashboardWidget.cpp
     
     muonapt/ChangesDialog.cpp
@@ -76,6 +78,7 @@ target_link_libraries(kydra KF5::KIOWidgets
                            KF5::IconThemes
                            KF5::XmlGui
                            Qt5::Concurrent
+                           Qt5::DBus
                            QApt::Main)
 
 find_package(AppStreamQt5)
@@ -90,6 +93,13 @@ if(WITH_KIRIGAMI)
 endif()
 
 install(TARGETS kydra ${INSTALL_TARGETS_DEFAULT_ARGS} )
+
+# Indexes a folder of .deb files for Settings > Update Local Repository. The
+# copy beside the binary lets a build tree run it without installing.
+install(PROGRAMS kydra-repo-index DESTINATION ${KDE_INSTALL_LIBEXECDIR}/kydra)
+target_compile_definitions(kydra PRIVATE -DKYDRA_LIBEXECDIR=\"${KDE_INSTALL_FULL_LIBEXECDIR}/kydra\")
+add_custom_command(TARGET kydra POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/kydra-repo-index $<TARGET_FILE_DIR:kydra>/)
 
 
 ########### install files ###############

@@ -1,5 +1,19 @@
 # Kydra Release Notes
 
+## Version 1.7.1 (2026-09-14)
+
+### 🚀 New Features
+
+* **Local repository** - *Settings > Set Up Local Repository* turns a folder of `.deb` files into an apt source; *Settings > Update Local Repository* indexes new builds put there, so `apt update` and `apt upgrade` offer them like any other update. See the README for details and the security note.
+* **Open .deb files with Kydra** - File managers offer Kydra for `.deb` files, and a file opened while Kydra is running goes to the window already open.
+
+### 🐞 Bug Fixes
+
+* **Help > About** showed 1.6.0; the version now comes from the build.
+* Opening a `.deb` while Kydra was already running did nothing.
+
+---
+
 ## Version 1.0.0 - "Awakening of the Hydra" (2025-01-15)
 
 ### 🚀 Major Features

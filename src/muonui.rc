@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gui name="muon"
-     version="1"
+     version="2"
      xmlns="http://www.kde.org/standards/kxmlgui/1.0"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://www.kde.org/standards/kxmlgui/1.0
@@ -36,6 +36,9 @@
         </Menu>
         <Menu name="settings">
           <Action name="configure_repositories" />
+          <Separator />
+          <Action name="setup_local_repository" />
+          <Action name="update_local_repository" />
           <Separator />
           <Action name="software_properties" />
         </Menu>

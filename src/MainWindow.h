@@ -25,6 +25,8 @@
 #include <KXmlGuiWindow>
 #include <QApt/Globals>
 
+#include <functional>
+
 class QSplitter;
 class QStackedWidget;
 class QToolBox;
@@ -93,11 +95,14 @@ private:
     StatusWidget *m_statusWidget;
     bool m_reloading;
     QString m_pendingLocalPackage;
+    bool m_indexingLocalRepository = false;
 
     // Kirigami UI support
     QQmlApplicationEngine *m_qmlEngine;
     KirigamiBackend *m_kirigamiBackend;
     bool m_useKirigamiUI;
+
+    void indexLocalRepository(const QString &folder, const std::function<void()> &then);
 
 private Q_SLOTS:
     void initGUI();
@@ -126,6 +131,8 @@ private Q_SLOTS:
     void addLocalFolder();
     void installLocalPackage();
     void installLocalPackageFile(const QString &filePath);
+    void setupLocalRepository();
+    void updateLocalRepository();
 
 public Q_SLOTS:
     void revertChanges();

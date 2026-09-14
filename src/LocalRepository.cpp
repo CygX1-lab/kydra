@@ -94,6 +94,15 @@ QString LocalRepository::indexHelperPath()
     return QString();
 }
 
+QString LocalRepository::folderToIndexOnRefresh(const QString &folder,
+                                                const QString &configuredAptFolder)
+{
+    if (folder.isEmpty() || configuredAptFolder.isEmpty() || !QFileInfo(folder).isDir()) {
+        return QString();
+    }
+    return folder;
+}
+
 void LocalRepository::writeSourceFile(const QString &aptFolder, QObject *context,
                                       const std::function<void(const QString &error)> &done)
 {

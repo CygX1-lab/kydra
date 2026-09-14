@@ -55,6 +55,12 @@ QString folderAptCannotRead(const QString &dir);
 /// Path of the kydra-repo-index helper, or empty if it is not installed.
 QString indexHelperPath();
 
+/// The folder Refresh indexes before apt looks for updates: @p folder, the
+/// local repository chosen in Kydra, once apt has been pointed at it
+/// (@p configuredAptFolder is not empty) and while it is there; else empty,
+/// and Refresh only asks apt - a share that is not mounted is apt's to report.
+QString folderToIndexOnRefresh(const QString &folder, const QString &configuredAptFolder);
+
 /// Writes the sources file pointing apt at @p aptFolder. @p done is called
 /// with an empty string on success, else with the reason it failed.
 void writeSourceFile(const QString &aptFolder, QObject *context,

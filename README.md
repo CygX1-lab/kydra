@@ -31,7 +31,7 @@ kydra
 *   **Find a Package**: Use the search bar at the top. You can filter results using the sidebar categories.
 *   **Install/Remove**: Click the checkbox next to a package name to mark it for Installation or Removal.
 *   **Apply Changes**: Click the **Apply Changes** button in the toolbar to execute your queued actions.
-*   **Update System**: Click **Check for Updates** to refresh package lists, then **Full Upgrade** to mark all upgrades.
+*   **Update System**: Click **Refresh** to refresh package lists (and the local repository, if one is set up), then **Full Upgrade** to mark all upgrades.
 *   **Open a .deb File**: Right-click it in your file manager and choose **Open With > Kydra**. If Kydra is already running, the package opens in that window.
 
 ## 🗄️ Local Repository
@@ -39,7 +39,7 @@ kydra
 If you build your own packages, Kydra can keep them up to date like any others.
 
 1.  **Settings > Set Up Local Repository...** asks for the folder that holds the `.deb` files. Kydra indexes it, adds it to apt's sources (this asks for your password), and checks for updates.
-2.  After putting a new build in the folder, choose **Settings > Update Local Repository**. The new version then shows up as an ordinary upgrade, in Kydra and in `apt upgrade`.
+2.  After putting a new build in the folder, click **Refresh** (or choose **Settings > Update Local Repository**): Kydra indexes the folder, then checks for updates. The new version then shows up as an ordinary upgrade, in Kydra and in `apt upgrade`. If the folder is on a share that is not mounted, Refresh still checks every other source.
 
 The folder can hold the packages directly, or one subfolder per architecture (`arm64/`, `amd64/`, ...), in which case each subfolder is indexed and apt on each machine reads its own. Every version in the folder is listed, and apt upgrades to the newest.
 

@@ -1,3 +1,14 @@
+Kydra Version 1.7.2
+====================
+
+- New features:
+  * Refresh also updates the local repository: with one set up, it indexes the packages put into it since the last time before checking for updates, as Settings > Update Local Repository does. A repository that cannot be indexed is reported and the other sources are checked all the same; a folder that is not there (a share not mounted) is left to apt to report.
+
+- Bug fixes:
+  * apt 3 warned that the local repository's Release file had no valid Date on every update; it is now dated a day back, in English whatever the session's language, so a machine whose clock is a little behind still accepts it.
+  * The task manager showed a generic icon for Kydra's window instead of Kydra's own (or the icon theme's): the window now carries the desktop file's name, org.kydra.app, so Plasma matches it to its launcher and keeps its icon, and a running Kydra sits under a pinned launcher instead of beside it.
+  * The window icon asked for an icon named "kydra", which nothing installs; it now asks for org.kydra.app.
+
 Kydra Version 1.7.1
 ====================
 

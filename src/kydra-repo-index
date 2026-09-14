@@ -105,10 +105,13 @@ index_folder() {
     mv "$packages" "$dir/Packages"
     mv "$dir/Packages.gz.tmp" "$dir/Packages.gz"
 
-    # No Date field: apt refuses a Release dated in the future, and another
-    # machine's clock only has to be a little behind this one's for that.
+    # Dated a day back: apt refuses a Release dated in the future, and another
+    # machine's clock only has to be a little behind this one's for that - but
+    # apt 3 warns about a Release with no Date at all. In English, the only
+    # way apt reads it, whatever the language of the session.
     {
         echo "Origin: kydra-local"
+        echo "Date: $(LC_ALL=C date -u -d '1 day ago' '+%a, %d %b %Y %H:%M:%S UTC')"
         echo "Label: Local packages ($arch)"
         echo "Architectures: $arch all"
         echo "SHA256:"

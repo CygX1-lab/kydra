@@ -437,9 +437,10 @@ void MainWindow::setupActions()
     QAction* updateAction = actionCollection()->addAction("update");
     updateAction->setIcon(QIcon::fromTheme("system-software-update"));
     updateAction->setText(i18nc("@action", "Refresh"));
-    updateAction->setToolTip(i18nc("@info:tooltip", "Check for package updates"));
+    updateAction->setToolTip(i18nc("@info:tooltip",
+        "Index new packages in the local repository, if one is set up, and check for package updates"));
     actionCollection()->setDefaultShortcut(updateAction, QKeySequence(Qt::ControlModifier | Qt::Key_R));
-    connect(updateAction, SIGNAL(triggered()), SLOT(checkForUpdates()));
+    connect(updateAction, SIGNAL(triggered()), SLOT(refresh()));
     updateAction->setEnabled(QAptActions::self()->isConnected());
     connect(QAptActions::self(), SIGNAL(shouldConnect(bool)), updateAction, SLOT(setEnabled(bool)));
 
@@ -567,6 +568,26 @@ void MainWindow::handleDashboardUpdate()
     
     // Mark for upgrade (Smart Upgrade / Dist Upgrade)
     markDistUpgrade();
+}
+
+void MainWindow::refresh()
+{
+    // Already indexing: that ends in a check for updates of its own.
+    if (m_indexingLocalRepository) {
+        return;
+    }
+    // A local repository is indexed first, so packages put into it since the
+    // last time are among the updates found - Refresh does what Update Local
+    // Repository does. Without one, only apt is asked.
+    const QString folder = LocalRepository::folderToIndexOnRefresh(
+        MuonSettings::self()->localRepository(), LocalRepository::configuredAptFolder());
+    if (folder.isEmpty()) {
+        checkForUpdates();
+        return;
+    }
+    // A local repository that cannot be indexed is reported, but does not keep
+    // Refresh from checking every other source.
+    indexLocalRepository(folder, [this]() { checkForUpdates(); }, true);
 }
 
 void MainWindow::checkForUpdates()
@@ -1305,7 +1326,8 @@ void MainWindow::updateLocalRepository()
     indexLocalRepository(folder, [this]() { checkForUpdates(); });
 }
 
-void MainWindow::indexLocalRepository(const QString &folder, const std::function<void()> &then)
+void MainWindow::indexLocalRepository(const QString &folder, const std::function<void()> &then,
+                                      bool thenEvenIfItFails)
 {
     const QString helper = LocalRepository::indexHelperPath();
     if (helper.isEmpty()) {
@@ -1313,6 +1335,9 @@ void MainWindow::indexLocalRepository(const QString &folder, const std::function
             i18nc("@info", "The kydra-repo-index helper is missing. "
                            "Reinstalling Kydra restores it."),
             i18nc("@title:window", "Local Repository"));
+        if (thenEvenIfItFails) {
+            then();
+        }
         return;
     }
 
@@ -1335,16 +1360,20 @@ void MainWindow::indexLocalRepository(const QString &folder, const std::function
         process->deleteLater();
     };
     connect(process, &QProcess::errorOccurred, this,
-            [this, helper, cleanUp](QProcess::ProcessError error) {
+            [this, helper, cleanUp, then, thenEvenIfItFails](QProcess::ProcessError error) {
         // Every other error is followed by finished().
         if (error == QProcess::FailedToStart) {
             cleanUp();
             KMessageBox::error(this, i18nc("@info", "%1 could not be started.", helper),
                                i18nc("@title:window", "Local Repository"));
+            if (thenEvenIfItFails) {
+                then();
+            }
         }
     });
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
-            [this, process, progress, cleanUp, then](int exitCode, QProcess::ExitStatus status) {
+            [this, process, progress, cleanUp, then, thenEvenIfItFails](int exitCode,
+                                                                        QProcess::ExitStatus status) {
         const QString output = QString::fromLocal8Bit(process->readAll()).trimmed();
         const bool canceled = progress->wasCanceled();
         cleanUp();
@@ -1355,6 +1384,9 @@ void MainWindow::indexLocalRepository(const QString &folder, const std::function
             KMessageBox::detailedError(this,
                 i18nc("@info", "The local repository could not be indexed."),
                 output, i18nc("@title:window", "Local Repository"));
+            if (thenEvenIfItFails) {
+                then();
+            }
             return;
         }
         then();

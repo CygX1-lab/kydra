@@ -155,6 +155,13 @@ The installed desktop file (`/usr/share/applications/org.kydra.app.desktop`) inc
 - **Icon:** org.kydra.app
 - **Multi-language support** for name and descriptions
 
+Kydra's window carries the same name, `org.kydra.app` (its Wayland app id,
+set in `src/AppIdentity.h`), so Plasma's task manager matches a running
+Kydra to this desktop file: it keeps the icon - an icon theme's own version
+of it included - and groups the window under a pinned launcher. The desktop
+file, the icon and the window's name must stay the same; a test
+(`tests/AppIdentityTest.cpp`) checks that they do.
+
 ### Uninstallation
 
 To remove Kydra:

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(kydra VERSION 1.7.1)
+project(kydra VERSION 1.7.2)
 set(PROJECT_VERSION_MAJOR 5)
 
 find_package(ECM REQUIRED NO_MODULE)
@@ -21,7 +21,7 @@ include(ECMInstallIcons)
 include(ECMMarkAsTest)
 include(GenerateExportHeader)
 
-find_package(${KF_VERSION} REQUIRED KIO DBusAddons I18n IconThemes XmlGui)
+find_package(${KF_VERSION} REQUIRED CoreAddons KIO DBusAddons I18n IconThemes XmlGui)
 
 # Kirigami framework for modern UI
 # Note: Requires libkf5kirigami2-dev package to be installed

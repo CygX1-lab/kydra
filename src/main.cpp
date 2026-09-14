@@ -18,6 +18,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
+#include "AppIdentity.h"
 #include "MainWindow.h"
 
 #include <QApplication>
@@ -35,7 +36,7 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    app.setWindowIcon(QIcon::fromTheme("kydra"));
+    app.setWindowIcon(QIcon::fromTheme(AppIdentity::iconName()));
     KLocalizedString::setApplicationDomain("kydra");
     KAboutData about("kydra", i18n("Kydra Package Manager"), version, i18n("A modern KDE-native package manager"),
                      KAboutLicense::GPL, i18n("© 2024 CygX1"));
@@ -50,6 +51,9 @@ int main(int argc, char **argv)
              "ETH: 0xcAFdd35c1e00e6cc142F3df0c5DA4B0D428e6bf9\n"
              "SOL: 89xBb3fXYm68WHJsi7hpNBv4hVcaN3GJVXsLNiuYVqv1")
     );
+    // The window must carry the desktop file's name for the task manager to
+    // show Kydra's (themed) icon while it runs.
+    AppIdentity::applyTo(about);
     KAboutData::setApplicationData(about);
 
     // Used twice: for this process's own arguments, and for those of a later

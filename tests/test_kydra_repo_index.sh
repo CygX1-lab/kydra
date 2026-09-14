@@ -61,6 +61,14 @@ release_lists_packages() { # <folder>
     grep -q "^ $sha [0-9]* Packages$" "$1/Release"
 }
 
+release_dated_a_while_back_in_english() { # <folder>
+    local stamp
+    stamp="$(sed -n 's/^Date: //p' "$1/Release")"
+    [[ "$stamp" =~ ^[A-Z][a-z]{2},\ [0-9]{2}\ [A-Z][a-z]{2}\ [0-9]{4}\ [0-9:]{8}\ UTC$ ]] \
+        || return 1
+    (( $(LC_ALL=C date -u -d "$stamp" +%s) < $(date -u +%s) - 3600 ))
+}
+
 # --- one folder per architecture ---------------------------------------------
 STORE="$WORK/store"
 HOST="$STORE/$HOST_ARCH"
@@ -75,7 +83,8 @@ echo "not a package" > "$HOST/broken_1.0_all.deb"
 make_deb tool 2.0 "$OTHER_ARCH" "$OTHER"
 ln -s "../$HOST_ARCH/hello_1.1_all.deb" "$OTHER/"
 
-OUT="$("$HELPER" "$STORE" 2>&1)" && status=0 || status=$?
+# In a German session, as the Release file's date must be English regardless.
+OUT="$(LC_TIME=de_AT.UTF-8 "$HELPER" "$STORE" 2>&1)" && status=0 || status=$?
 check "should_succeed_when_some_files_are_not_packages" test "$status" -eq 0
 check "should_list_every_version_when_several_are_present" \
     test "$(versions_of "$HOST/Packages" hello)" == "1.0 1.1"
@@ -93,6 +102,8 @@ check "should_index_each_architecture_folder_when_the_folder_has_them" \
 check "should_record_hashes_that_match_the_files" hashes_match "$HOST"
 check "should_record_hashes_that_match_the_files_behind_links" hashes_match "$OTHER"
 check "should_list_the_index_in_Release_with_its_hash" release_lists_packages "$HOST"
+check "should_date_the_Release_a_while_back_in_english" \
+    release_dated_a_while_back_in_english "$HOST"
 check "should_write_Packages_gz_with_the_same_content" \
     cmp -s <(gzip -dc "$HOST/Packages.gz") "$HOST/Packages"
 check "should_leave_no_temporary_files" \

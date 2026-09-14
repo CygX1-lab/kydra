@@ -10,6 +10,16 @@ target_include_directories(LocalRepositoryTest PRIVATE ../src)
 target_compile_definitions(LocalRepositoryTest PRIVATE
     -DKYDRA_LIBEXECDIR=\"${KDE_INSTALL_FULL_LIBEXECDIR}/kydra\")
 
+# The window's id, the desktop file and the icon agreeing (the task manager's icon).
+ecm_add_test(AppIdentityTest.cpp
+    TEST_NAME AppIdentityTest
+    LINK_LIBRARIES Qt5::Test Qt5::Gui KF5::CoreAddons)
+target_include_directories(AppIdentityTest PRIVATE ../src)
+target_compile_definitions(AppIdentityTest PRIVATE
+    -DKYDRA_DATADIR=\"${CMAKE_SOURCE_DIR}/data\"
+    -DKYDRA_ICONDIR=\"${CMAKE_SOURCE_DIR}/src/icons\")
+set_tests_properties(AppIdentityTest PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
 # The index helper, against packages the test builds for itself.
 add_test(NAME kydra-repo-index
          COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/test_kydra_repo_index.sh

@@ -125,6 +125,28 @@ private Q_SLOTS:
         QVERIFY2(!blocked.startsWith(m_tmp.path()), qPrintable(blocked));
     }
 
+    void should_index_the_local_repository_on_refresh_when_one_is_set_up()
+    {
+        QVERIFY(QDir().mkpath(path("repo")));
+        QCOMPARE(LocalRepository::folderToIndexOnRefresh(path("repo"), canonical(path("repo"))),
+                 path("repo"));
+    }
+
+    void should_only_ask_apt_on_refresh_when_no_local_repository_is_set_up()
+    {
+        QVERIFY(QDir().mkpath(path("chosen")));
+        QCOMPARE(LocalRepository::folderToIndexOnRefresh(QString(), QString()), QString());
+        // chosen in Kydra, but apt not pointed at it (yet)
+        QCOMPARE(LocalRepository::folderToIndexOnRefresh(path("chosen"), QString()), QString());
+    }
+
+    void should_only_ask_apt_on_refresh_when_the_folder_is_not_there()
+    {
+        // a share that is not mounted: apt update says so, and Refresh goes on
+        QCOMPARE(LocalRepository::folderToIndexOnRefresh(path("unmounted"), path("unmounted")),
+                 QString());
+    }
+
     void should_accept_a_deb_path_relative_to_the_working_directory()
     {
         touch(path("hello_1.0_all.deb"));

@@ -102,7 +102,10 @@ private:
     KirigamiBackend *m_kirigamiBackend;
     bool m_useKirigamiUI;
 
-    void indexLocalRepository(const QString &folder, const std::function<void()> &then);
+    /// Indexes @p folder with kydra-repo-index, then calls @p then - after a
+    /// failure too, once it is reported, if @p thenEvenIfItFails.
+    void indexLocalRepository(const QString &folder, const std::function<void()> &then,
+                              bool thenEvenIfItFails = false);
 
 private Q_SLOTS:
     void initGUI();
@@ -117,6 +120,7 @@ private Q_SLOTS:
     void markUpgrade();
     void markDistUpgrade();
     void markAutoRemove();
+    void refresh();
     void checkForUpdates();
     void handleDashboardUpdate();
     void transactionStatusChanged(QApt::TransactionStatus status);
